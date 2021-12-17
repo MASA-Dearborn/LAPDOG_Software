@@ -5,7 +5,7 @@ include(CTest)
 enable_testing()
 
 add_subdirectory(src)
-include_directories(inc)
+include_directories(include)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
