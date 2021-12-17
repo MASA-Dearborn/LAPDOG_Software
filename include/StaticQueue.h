@@ -19,22 +19,22 @@ public:
 protected:
 
     T data[buffer_size];
-    unsigned int size;
-    unsigned int front;
-    unsigned int back;
+    unsigned int size {buffer_size};
+    unsigned int front {0};
+    unsigned int back {0};
 
 };
 
 template<typename T, const int buffer_size>
 bool StaticQueue<T, buffer_size>::isEmpty() const
 {
-
+    return front == back;
 }
 
 template<typename T, const int buffer_size>
 unsigned int StaticQueue<T, buffer_size>::getSize() const
 {
-
+    return size;
 }
 
 template<typename T, const int buffer_size>
