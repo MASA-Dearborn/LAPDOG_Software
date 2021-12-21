@@ -24,15 +24,15 @@ protected:
 
     T data[buffer_size];
     unsigned int size {buffer_size};
-    unsigned int front {0};
-    unsigned int back {0};
+    unsigned int top {0};
+    unsigned int bottom {0};
 
 };
 
 template<typename T, const int buffer_size>
 bool StaticQueue<T, buffer_size>::isEmpty() const
 {
-    return front == back;
+    return top == bottom;
 }
 
 template<typename T, const int buffer_size>
@@ -74,7 +74,7 @@ int StaticQueue<T, buffer_size>::enqueue(const T& value)
 template<typename T, const int buffer_size>
 int StaticQueue<T, buffer_size>::enqueue(const T* source, const unsigned int amount)
 {
-
+    return 0;
 }
 
 /**
@@ -89,7 +89,7 @@ T StaticQueue<T, buffer_size>::deqeue()
 
     if(willUnderflow(1))
     {
-        retVal = null;
+        retVal = nullptr;
     } 
     else 
     {
@@ -111,7 +111,7 @@ int StaticQueue<T, buffer_size>::deqeue(const T* dest, const unsigned int amount
 
     if(willUnderflow(amount)) return 0;
 
-    int wrappedAmount = needWrap(int amount);
+    int wrappedAmount = needWrap(amount);
     if(wrappedAmount > 0)
     {
         int unwrappedAmount = amount - wrappedAmount;
@@ -161,7 +161,7 @@ inline bool StaticQueue<T, buffer_size>::willOverflow(const int amount)
  *  @return Boolean true for underflow & false for not. 
 **/
 template<typename T, const int buffer_size>
-inline bool StaticQueue<T, buffer_size>::willOverflow(const int amount)
+inline bool StaticQueue<T, buffer_size>::willUnderflow(const int amount)
 {
     return (bottom < top) && (bottom + amount > top) || (top > bottom) && ((bottom + amount % size) > top);
 }
