@@ -1,20 +1,22 @@
 #pragma once
 
+// Does not work when dequeuing SIZE from the queue. If buffer is 4 big and we dequeue 4, does not work.
+
 template<typename T, const int buffer_size>
 class StaticQueue
 {
 public:
 
-    StaticQueue();
-    ~StaticQueue();
+    StaticQueue() {}
+    ~StaticQueue() {}
 
     bool isEmpty() const;
     unsigned int getSize() const;
 
     int enqueue(const T& value);
     int enqueue(const T* source, const unsigned int amount);
-    T deqeue();
-    int deqeue(const T* dest, const unsigned int amount);
+    T dequeue();
+    int dequeue(T* dest, const unsigned int amount);
 
 protected:
 
@@ -74,16 +76,49 @@ int StaticQueue<T, buffer_size>::enqueue(const T& value)
 template<typename T, const int buffer_size>
 int StaticQueue<T, buffer_size>::enqueue(const T* source, const unsigned int amount)
 {
-    return 0;
+    if(willOverflow(amount)) return 0;
+
+    int wrappedAmount = needWrap(amount);
+    if(wrappedAmount > 0)
+    {
+        int unwrappedAmount = amount - wrappedAmount;
+
+        for(int i = 0; i < unwrappedAmount; i++)
+        {
+            data[top + i] = source[i];
+        }
+
+        for(int i = 0; i < wrappedAmount; i++)
+        {
+            data[i] = source[unwrappedAmount + i];
+        }
+
+        top = wrappedAmount;
+
+    }
+    else
+    {
+
+        for(int i = 0; i < amount; i++)
+        {
+            data[top + i] = source[i];
+        }
+
+        top = top + amount;
+
+    }
+
+    return amount;
+
 }
 
 /**
- *  @brief  Deqeue one element 
+ *  @brief  Dequeue one element 
  * 
- *  @return Deqeued element of type T
+ *  @return Dequeued element of type T
 **/
 template<typename T, const int buffer_size>
-T StaticQueue<T, buffer_size>::deqeue()
+T StaticQueue<T, buffer_size>::dequeue()
 {
     T retVal = data[bottom];
 
@@ -101,12 +136,12 @@ T StaticQueue<T, buffer_size>::deqeue()
 }
 
 /**
- *  @brief  Deqeue multiple elements to dest
+ *  @brief  Dequeue multiple elements to dest
  *  @param  dest    pointer to location to store deqeued data
  *  @param  amount  amount of data to deqeue
  **/
 template<typename T, const int buffer_size>
-int StaticQueue<T, buffer_size>::deqeue(const T* dest, const unsigned int amount)
+int StaticQueue<T, buffer_size>::dequeue(T* dest, const unsigned int amount)
 {
 
     if(willUnderflow(amount)) return 0;
@@ -151,7 +186,7 @@ int StaticQueue<T, buffer_size>::deqeue(const T* dest, const unsigned int amount
 template<typename T, const int buffer_size>
 inline bool StaticQueue<T, buffer_size>::willOverflow(const int amount)
 {
-    return (top < bottom) && (top + amount > bottom) || (top > bottom) && ((top + amount % size) > bottom);
+    return (top < bottom) && (top + amount > bottom) || (top > bottom) && ((top + amount % size) > bottom) || (top == bottom) && (amount > size);
 }
 
 /**
@@ -163,7 +198,7 @@ inline bool StaticQueue<T, buffer_size>::willOverflow(const int amount)
 template<typename T, const int buffer_size>
 inline bool StaticQueue<T, buffer_size>::willUnderflow(const int amount)
 {
-    return (bottom < top) && (bottom + amount > top) || (top > bottom) && ((bottom + amount % size) > top);
+    return (top > bottom) && (bottom + amount > top) || (top < bottom) && (((bottom + amount) % size) > top) || (top == bottom);
 }
 
 /**
