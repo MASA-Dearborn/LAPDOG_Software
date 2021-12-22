@@ -21,7 +21,7 @@ namespace pubsub
     {
         public:
             Publisher() {}
-            Publisher(msg::ids::MessageType type) { m_type = type; }
+            Publisher(msg::ids::MessageType type);
             ~Publisher() {}
             void publishData(T& data);
 

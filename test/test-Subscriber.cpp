@@ -20,3 +20,14 @@ TEST(Subscriber, SubscriberCreation)
     EXPECT_EQ(sub.getData()->test, 5);
 
 }
+
+TEST(Subscriber, SubscriberRegistration)
+{
+
+    DataBroker.clearSubscribers(msg::ids::TEST_MESSAGE);
+
+    Subscriber<msg::types::TEST_MESSAGE> sub = createSubscriber(TEST_MESSAGE);
+
+    EXPECT_EQ(DataBroker.getNumSubscribers(msg::ids::TEST_MESSAGE), 1);
+
+}

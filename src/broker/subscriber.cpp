@@ -7,4 +7,5 @@ template <typename T>
 Subscriber<T>::Subscriber(msg::ids::MessageType type) 
 { 
     m_type = type; 
+    DataBroker.registerSubscriber(this);
 }

@@ -7,4 +7,5 @@ template <typename T>
 Publisher<T>::Publisher(msg::ids::MessageType type)
 {
     m_type = type;
+    DataBroker.registerPublisher(this);
 }
