@@ -8,8 +8,9 @@ namespace msg
     {
         enum MessageType
         {
-            NONE = 0,
-            TEST_MESSAGE,
+            TEST_MESSAGE = 0,
+            META_NUM_MESSAGES,
+            UNDEFINED_MESSAGE,
         };
     }
 

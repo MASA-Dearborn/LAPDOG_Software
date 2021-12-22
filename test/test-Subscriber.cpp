@@ -10,7 +10,7 @@ TEST(Subscriber, SubscriberCreation)
     TEST_MESSAGE.test = 5;
 
     // Create subscriber into generic object & setup object
-    Subscriber<msg::types::TEST_MESSAGE> sub = subscribeToMessage(TEST_MESSAGE);
+    Subscriber<msg::types::TEST_MESSAGE> sub = createSubscriber(TEST_MESSAGE);
     sub.setDataPointer(&TEST_MESSAGE);
     sub.setDataAvailable();
 

@@ -15,10 +15,13 @@ namespace pubsub
             void clearDataAvailable()   { m_isDataAvailable = false; };
 
             void setDataPointer(void* source) { m_dataPointer = source; }
-            msg::ids::MessageType getType() { return m_type; };
+            msg::ids::MessageType getType() const { return m_type; };
 
         protected:
-            msg::ids::MessageType m_type = msg::ids::NONE;
+
+            friend class Broker;
+
+            msg::ids::MessageType m_type = msg::ids::UNDEFINED_MESSAGE;
             bool m_isDataAvailable = false;
             void* m_dataPointer = nullptr;
     };
@@ -33,7 +36,7 @@ namespace pubsub
     {
         public:
             Subscriber() {}
-            Subscriber(msg::ids::MessageType type) { m_type = type; }
+            Subscriber(msg::ids::MessageType type);
             ~Subscriber() {}
             const T* getData() { return (T*)m_dataPointer; }
     };
@@ -50,7 +53,7 @@ namespace pubsub
         return Subscriber<T>(type);
     }
 
-    #define subscribeToMessage(Message)    subscribe<msg::types::Message>(msg::ids::Message)
+    #define createSubscriber(Message)    subscribe<msg::types::Message>(msg::ids::Message)
 
 }
 

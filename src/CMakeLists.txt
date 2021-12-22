@@ -1,4 +1,6 @@
 add_library(
     pubsub
-    subscriber.cpp
+    broker/subscriber.cpp
+    broker/broker.cpp
+    broker/publisher.cpp
 )
