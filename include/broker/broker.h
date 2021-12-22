@@ -8,9 +8,10 @@ namespace pubsub {
     {
     public:
 
-        void test();
+        
     protected:
         // Array of vectors for each subscriber type
+        msg::MessageCollection MessageCollection;
 
     };
 

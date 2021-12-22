@@ -1,8 +1,9 @@
 add_executable(
     tests
     test-StaticQueue.cpp
+    test-Subscriber.cpp
 )
 
-target_link_libraries(tests gtest_main)
+target_link_libraries(tests gtest_main pubsub)
 
 gtest_discover_tests(tests)
