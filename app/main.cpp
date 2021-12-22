@@ -5,6 +5,6 @@ using namespace pubsub;
 
 int main()
 {
-
+printf ("hello world");
 
 }
