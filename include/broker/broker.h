@@ -2,6 +2,7 @@
 
 #include <array>
 #include <vector>
+#include <list>
 #include <memory>
 
 #include "publisher.h"
@@ -13,7 +14,7 @@ namespace pubsub {
     {
     public:
         Broker() {}
-        ~Broker() {}
+        ~Broker();
 
         int getNumSubscribers(msg::ids::MessageType type) { return subscribers[type].size(); }
         
@@ -26,7 +27,7 @@ namespace pubsub {
 
     protected:
 
-        std::array<std::vector<std::unique_ptr<GenericSubscriber>>, msg::ids::META_NUM_MESSAGES> subscribers;   // Array of Vectors of unique_ptrs to GenericSubscribers
+        std::array<std::list<std::unique_ptr<GenericSubscriber>>, msg::ids::META_NUM_MESSAGES> subscribers;   // Array of Vectors of unique_ptrs to GenericSubscribers
         std::array<std::unique_ptr<GenericPublisher>, msg::ids::META_NUM_MESSAGES> publishers;                  // Array of unique_ptrs to GenericPublishers
         msg::MessageCollection MessageCollection;
 

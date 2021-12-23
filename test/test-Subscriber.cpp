@@ -10,23 +10,22 @@ TEST(Subscriber, SubscriberCreation)
     TEST_MESSAGE.test = 5;
 
     // Create subscriber into generic object & setup object
-    Subscriber<msg::types::TEST_MESSAGE> sub = createSubscriber(TEST_MESSAGE);
-    sub.setDataPointer(&TEST_MESSAGE);
-    sub.setDataAvailable();
+    Subscriber<msg::types::TEST_MESSAGE>* sub = createNewSubscriber(TEST_MESSAGE);
+    sub->setDataPointer(&TEST_MESSAGE);
+    sub->setDataAvailable();
 
     // Verify ID correct
-    EXPECT_EQ(sub.getType(), msg::ids::TEST_MESSAGE);
-    EXPECT_TRUE(sub.isDataAvailable());
-    EXPECT_EQ(sub.getData()->test, 5);
+    EXPECT_EQ(sub->getType(), msg::ids::TEST_MESSAGE);
+    EXPECT_TRUE(sub->isDataAvailable());
+    EXPECT_EQ(sub->getData()->test, 5);
+    EXPECT_EQ(DataBroker.getNumSubscribers(msg::ids::TEST_MESSAGE), 1);
 
 }
 
 TEST(Subscriber, SubscriberRegistration)
 {
 
-    //DataBroker.clearSubscribers(msg::ids::TEST_MESSAGE);
-
-    Subscriber<msg::types::TEST_MESSAGE> sub = createSubscriber(TEST_MESSAGE);
+    Subscriber<msg::types::TEST_MESSAGE>* sub = createNewSubscriber(TEST_MESSAGE);
 
     EXPECT_EQ(DataBroker.getNumSubscribers(msg::ids::TEST_MESSAGE), 1);
 

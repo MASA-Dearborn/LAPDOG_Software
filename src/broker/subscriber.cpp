@@ -7,3 +7,8 @@ void GenericSubscriber::registerSelf()
 {
     DataBroker.registerSubscriber(this);
 }
+
+void GenericSubscriber::unregisterSelf()
+{
+    DataBroker.unregisterSubscriber(this);
+}

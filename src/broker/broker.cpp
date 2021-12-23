@@ -1,8 +1,18 @@
 #include "broker/broker.h"
 
+#include <algorithm>
+
 using namespace pubsub;
 
 Broker pubsub::DataBroker;
+
+Broker::~Broker()
+{
+    for(int i = 0; i < (int)msg::ids::META_NUM_MESSAGES; i++)
+    {
+        clearSubscribers((msg::ids::MessageType)i);
+    }
+}
 
 void Broker::registerSubscriber(GenericSubscriber* subscriber)
 {
@@ -16,14 +26,19 @@ void Broker::registerPublisher(GenericPublisher* publisher)
 
 void Broker::unregisterSubscriber(GenericSubscriber* subscriber)
 {
-    for(int i = 0; i < subscribers[subscriber->getType()].size(); i++)
+
+    msg::ids::MessageType type = subscriber->getType();
+
+    for(std::list<std::unique_ptr<GenericSubscriber>>::iterator iter = subscribers[type].begin(); iter != subscribers[type].end();)
     {
-        if(subscribers[subscriber->getType()][i].get() == subscriber)
+        if(iter->get() == subscriber)
         {
-            subscribers[subscriber->getType()].erase(subscribers[subscriber->getType()].begin() + i);
-            return;
+            iter = subscribers[type].erase(iter);
+        } else {
+            ++iter;
         }
     }
+
 }
 
 void Broker::unregisterPublisher(GenericPublisher* publisher)

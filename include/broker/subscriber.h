@@ -8,7 +8,7 @@ namespace pubsub
     {
         public:
             GenericSubscriber() {}
-            ~GenericSubscriber() {}
+            ~GenericSubscriber() { unregisterSelf(); }
 
             bool isDataAvailable()      { return m_isDataAvailable; }
             void setDataAvailable()     { m_isDataAvailable = true; };
@@ -21,6 +21,7 @@ namespace pubsub
 
             friend class Broker;
             void registerSelf();
+            void unregisterSelf();
 
             msg::ids::MessageType m_type = msg::ids::UNDEFINED_MESSAGE;
             bool m_isDataAvailable = false;
@@ -44,7 +45,7 @@ namespace pubsub
                 registerSelf();
             }
 
-            ~Subscriber() {}
+            ~Subscriber() { unregisterSelf(); }
             const T* getData() { return (T*)m_dataPointer; }
     };
 
@@ -56,11 +57,11 @@ namespace pubsub
      * @return  GenericSubscriber derived from Subscriber<T> configured for message of type 
      */
     template <typename T>
-    Subscriber<T> subscribe(msg::ids::MessageType type)
+    Subscriber<T>* subscribe(msg::ids::MessageType type)
     {
-        return Subscriber<T>(type);
+        return new Subscriber<T>(type);
     }
 
-    #define createSubscriber(Message)    subscribe<msg::types::Message>(msg::ids::Message)
+    #define createNewSubscriber(Message)    subscribe<msg::types::Message>(msg::ids::Message)
 
 }
