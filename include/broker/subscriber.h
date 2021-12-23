@@ -20,6 +20,7 @@ namespace pubsub
         protected:
 
             friend class Broker;
+            void registerSelf();
 
             msg::ids::MessageType m_type = msg::ids::UNDEFINED_MESSAGE;
             bool m_isDataAvailable = false;
@@ -36,10 +37,17 @@ namespace pubsub
     {
         public:
             Subscriber() {}
-            Subscriber(msg::ids::MessageType type);
+
+            Subscriber(msg::ids::MessageType type)
+            {
+                m_type = type; 
+                registerSelf();
+            }
+
             ~Subscriber() {}
             const T* getData() { return (T*)m_dataPointer; }
     };
+
 
     /**
      * @brief   Interface function to generate a subscriber based on type enum
@@ -56,10 +64,3 @@ namespace pubsub
     #define createSubscriber(Message)    subscribe<msg::types::Message>(msg::ids::Message)
 
 }
-
-// USE MACROS TO SIMPLY USER INTERFACE
-
-/**
- *  Subscriber creation registers its self with the broker
- *  Broker stores subscriber in vector of its type
-**/

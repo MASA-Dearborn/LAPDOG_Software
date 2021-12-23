@@ -2,7 +2,7 @@
 
 using namespace pubsub;
 
-Broker DataBroker;
+Broker pubsub::DataBroker;
 
 void Broker::registerSubscriber(GenericSubscriber* subscriber)
 {

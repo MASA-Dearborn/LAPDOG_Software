@@ -12,10 +12,10 @@ namespace pubsub {
     class Broker
     {
     public:
-        Broker();
-        ~Broker();
+        Broker() {}
+        ~Broker() {}
 
-        int getNumSubscribers(msg::ids::MessageType type);
+        int getNumSubscribers(msg::ids::MessageType type) { return subscribers[type].size(); }
         
         void registerSubscriber(GenericSubscriber* subscriber);
         void registerPublisher(GenericPublisher* publisher);

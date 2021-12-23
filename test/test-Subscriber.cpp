@@ -24,7 +24,7 @@ TEST(Subscriber, SubscriberCreation)
 TEST(Subscriber, SubscriberRegistration)
 {
 
-    DataBroker.clearSubscribers(msg::ids::TEST_MESSAGE);
+    //DataBroker.clearSubscribers(msg::ids::TEST_MESSAGE);
 
     Subscriber<msg::types::TEST_MESSAGE> sub = createSubscriber(TEST_MESSAGE);
 
