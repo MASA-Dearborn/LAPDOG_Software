@@ -1,5 +1,4 @@
 #include "broker/broker.h"
-
 #include <algorithm>
 
 using namespace pubsub;
@@ -18,7 +17,6 @@ Broker::~Broker()
     }
 }
 
-
 /**
  * @brief   Registers a subscriber to the broker
  * 
@@ -26,6 +24,7 @@ Broker::~Broker()
  */
 void Broker::registerSubscriber(GenericSubscriber* subscriber)
 {
+    subscriber->setDataPointer(getLocalDataPointer(subscriber->getType()));
     subscribers[subscriber->getType()].push_back(std::unique_ptr<GenericSubscriber>(subscriber));
 }
 
@@ -69,4 +68,16 @@ void Broker::unregisterSubscriber(GenericSubscriber* subscriber)
 void Broker::unregisterPublisher(GenericPublisher* publisher)
 {
     // TODO: Implement
+}
+
+/**
+ * @brief   Get the Local Data Pointer for the MessageType
+ * @note    Add new messages here
+ * 
+ * @param   type    The Enum ID of the message pointer to recieve 
+ * @return  void*   Void pointer to data location 
+ */
+void* Broker::getLocalDataPointer(msg::ids::MessageType type)
+{
+    return msg::getMessageAddressFromCollection(MessageCollection, type);
 }

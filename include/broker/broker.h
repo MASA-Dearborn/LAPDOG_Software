@@ -1,7 +1,6 @@
 #pragma once
 
 #include <array>
-#include <vector>
 #include <list>
 #include <memory>
 
@@ -26,6 +25,8 @@ namespace pubsub {
         void clearSubscribers(msg::ids::MessageType type) { subscribers[type].erase(subscribers[type].begin(), subscribers[type].end()); }
 
     protected:
+
+        void* getLocalDataPointer(msg::ids::MessageType type);
 
         std::array<std::list<std::unique_ptr<GenericSubscriber>>, msg::ids::META_NUM_MESSAGES> subscribers;   // Array of Vectors of unique_ptrs to GenericSubscribers
         std::array<std::unique_ptr<GenericPublisher>, msg::ids::META_NUM_MESSAGES> publishers;                  // Array of unique_ptrs to GenericPublishers

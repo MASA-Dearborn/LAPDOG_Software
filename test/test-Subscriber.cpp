@@ -28,5 +28,6 @@ TEST(Subscriber, SubscriberRegistration)
     Subscriber<msg::types::TEST_MESSAGE>* sub = createNewSubscriber(TEST_MESSAGE);
 
     EXPECT_EQ(DataBroker.getNumSubscribers(msg::ids::TEST_MESSAGE), 1);
+    EXPECT_EQ(sub->getData()->test, 0);
 
 }
