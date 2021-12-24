@@ -57,11 +57,11 @@ namespace pubsub
      * @return  GenericSubscriber derived from Subscriber<T> configured for message of type 
      */
     template <typename T>
-    Subscriber<T>* subscribe(msg::ids::MessageType type)
+    Subscriber<T>* constructSubscriber(msg::ids::MessageType type)
     {
         return new Subscriber<T>(type);
     }
 
-    #define createNewSubscriber(Message)    subscribe<msg::types::Message>(msg::ids::Message)
+    #define createNewSubscriber(Message)    constructSubscriber<msg::types::Message>(msg::ids::Message)
 
 }

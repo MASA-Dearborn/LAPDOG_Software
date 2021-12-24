@@ -81,3 +81,16 @@ void* Broker::getLocalDataPointer(msg::ids::MessageType type)
 {
     return msg::getMessageAddressFromCollection(MessageCollection, type);
 }
+
+
+void Broker::setMessageUpdateFlag(msg::ids::MessageType type)
+{
+
+    auto setFlag = [](std::unique_ptr<GenericSubscriber>& sub)
+    {
+        sub->setDataAvailable();
+    };
+
+    std::for_each(subscribers[type].begin(), subscribers[type].end(), setFlag);
+
+}
