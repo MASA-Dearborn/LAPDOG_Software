@@ -13,6 +13,7 @@ namespace pubsub
             bool isDataAvailable()      { return m_isDataAvailable; }
             void setDataAvailable()     { m_isDataAvailable = true; };
             void clearDataAvailable()   { m_isDataAvailable = false; };
+            void unsubscribe() { this->~GenericSubscriber(); }
 
             void setDataPointer(void* source) { m_dataPointer = source; }
             msg::ids::MessageType getType() const { return m_type; };

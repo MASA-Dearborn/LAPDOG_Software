@@ -20,6 +20,8 @@ TEST(Subscriber, SubscriberCreation)
     EXPECT_EQ(sub->getData()->test, 5);
     EXPECT_EQ(DataBroker.getNumSubscribers(msg::ids::TEST_MESSAGE), 1);
 
+    sub->unsubscribe();
+
 }
 
 TEST(Subscriber, SubscriberRegistration)
@@ -29,5 +31,7 @@ TEST(Subscriber, SubscriberRegistration)
 
     EXPECT_EQ(DataBroker.getNumSubscribers(msg::ids::TEST_MESSAGE), 1);
     EXPECT_EQ(sub->getData()->test, 0);
+
+    sub->unsubscribe();
 
 }
