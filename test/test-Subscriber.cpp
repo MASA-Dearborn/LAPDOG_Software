@@ -6,11 +6,11 @@ using namespace pubsub;
 TEST(Subscriber, SubscriberCreation)
 {
     // Data Creation
-    msg::types::TEST_MESSAGE TEST_MESSAGE;
+    msg::real::TEST_MESSAGE TEST_MESSAGE;
     TEST_MESSAGE.test = 5;
 
     // Create subscriber into generic object & setup object
-    Subscriber<msg::types::TEST_MESSAGE>* sub = createNewSubscriber(TEST_MESSAGE);
+    Subscriber<msg::real::TEST_MESSAGE>* sub = createNewSubscriber(TEST_MESSAGE);
     sub->setDataPointer(&TEST_MESSAGE);
     sub->setDataAvailable();
 
@@ -27,7 +27,7 @@ TEST(Subscriber, SubscriberCreation)
 TEST(Subscriber, SubscriberRegistration)
 {
 
-    Subscriber<msg::types::TEST_MESSAGE>* sub = createNewSubscriber(TEST_MESSAGE);
+    Subscriber<msg::real::TEST_MESSAGE>* sub = createNewSubscriber(TEST_MESSAGE);
 
     EXPECT_EQ(DataBroker.getNumSubscribers(msg::id::TEST_MESSAGE), 1);
     EXPECT_EQ(sub->getData()->test, 0);

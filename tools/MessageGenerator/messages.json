@@ -1,0 +1,48 @@
+{
+    "MessageCollection" : [
+
+        {
+            "name" : "TEST_MESSAGE",
+            "signals" : [
+                {
+                    "name" : "test",
+                    "ctype" : "int",
+                    "init" : 0,
+                    "bits" : 10,
+                    "min"   : 0,
+                    "max" : 1023
+                },
+                {
+                    "name" : "VAR2",
+                    "ctype" : "float",
+                    "init" : 5.2,
+                    "bits" : 16,
+                    "min"   : 0,
+                    "max" : 100
+                }
+            ]
+        },
+        {
+            "name" : "TEST_MESSAGE_2",
+            "signals" : [
+                {
+                    "name" : "VAR1",
+                    "ctype" : "int",
+                    "init" : 0,
+                    "bits" : 10,
+                    "min"   : 0,
+                    "max" : 1023
+                },
+                {
+                    "name" : "VAR2",
+                    "ctype" : "float",
+                    "init" : 0.23,
+                    "bits" : 16,
+                    "min"   : 0,
+                    "max" : 200
+                }
+            ]
+        }
+
+    ]
+}
