@@ -6,11 +6,11 @@ using namespace pubsub;
 TEST(PubSub, PublisherSingleDataTransfer)
 {
 
-    msg::types::TEST_MESSAGE message;
+    msg::real::TEST_MESSAGE message;
     message.test = 5;
 
-    Subscriber<msg::types::TEST_MESSAGE>* sub = createNewSubscriber(TEST_MESSAGE);
-    Publisher<msg::types::TEST_MESSAGE>* pub = createNewPublisher(TEST_MESSAGE);
+    Subscriber<msg::real::TEST_MESSAGE>* sub = createNewSubscriber(TEST_MESSAGE);
+    Publisher<msg::real::TEST_MESSAGE>* pub = createNewPublisher(TEST_MESSAGE);
 
     pub->publish(&message);
 
@@ -25,11 +25,11 @@ TEST(PubSub, PublisherSingleDataTransfer)
 TEST(PubSub, PublisherRepeatedDataTransfer)
 {
 
-    msg::types::TEST_MESSAGE message;
+    msg::real::TEST_MESSAGE message;
     message.test = 5;
 
-    Subscriber<msg::types::TEST_MESSAGE>* sub = createNewSubscriber(TEST_MESSAGE);
-    Publisher<msg::types::TEST_MESSAGE>* pub = createNewPublisher(TEST_MESSAGE);
+    Subscriber<msg::real::TEST_MESSAGE>* sub = createNewSubscriber(TEST_MESSAGE);
+    Publisher<msg::real::TEST_MESSAGE>* pub = createNewPublisher(TEST_MESSAGE);
 
     pub->publish(&message);
 
@@ -51,12 +51,12 @@ TEST(PubSub, PublisherRepeatedDataTransfer)
 TEST(PubSub, PublisherMultipleDataTransfer)
 {
 
-    msg::types::TEST_MESSAGE message;
+    msg::real::TEST_MESSAGE message;
     message.test = 5;
 
-    Subscriber<msg::types::TEST_MESSAGE>* sub1 = createNewSubscriber(TEST_MESSAGE);
-    Subscriber<msg::types::TEST_MESSAGE>* sub2 = createNewSubscriber(TEST_MESSAGE);
-    Publisher<msg::types::TEST_MESSAGE>* pub = createNewPublisher(TEST_MESSAGE);
+    Subscriber<msg::real::TEST_MESSAGE>* sub1 = createNewSubscriber(TEST_MESSAGE);
+    Subscriber<msg::real::TEST_MESSAGE>* sub2 = createNewSubscriber(TEST_MESSAGE);
+    Publisher<msg::real::TEST_MESSAGE>* pub = createNewPublisher(TEST_MESSAGE);
 
     pub->publish(&message);
 

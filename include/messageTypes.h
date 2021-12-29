@@ -1,58 +1,97 @@
 #pragma once
 
-namespace msg
-{
+namespace msg::id {
 
-    /* Enum Namespace */
-    namespace id
-    {
-        enum MessageType
-        {
-            TEST_MESSAGE = 0,
-            META_NUM_MESSAGES,
-            UNDEFINED_MESSAGE,
-        };
-    }
-
-    /* Message Declarations */
-    namespace types
-    {
-
-        #define __MESSAGE_ID(NAME) msg::id::MessageType id = msg::id::NAME;
-
-        struct TEST_MESSAGE
-        {
-            __MESSAGE_ID(TEST_MESSAGE);
-            int test;
-        };
-
-    }
-
-    /* Overall Message Structure */
-    struct MessageCollection
-    {
-        types::TEST_MESSAGE TEST_MESSAGE;
+    enum MessageType {
+        TEST_MESSAGE = 0,
+        TEST_MESSAGE_2 = 1,
+        META_NUM_MESSAGES,
+        UNDEFINED_MESSAGE,
     };
+    
+}
 
+namespace msg::real {
 
-    /**
-    * @brief   Get the Relative Data Pointer for the MessageType in collection
-    * @note    Add new messages here
-    * 
-    * @param   collection   MessageCollection reference
-    * @param   type         The Enum ID of the message pointer to recieve 
-    * @return  void*        Void pointer to data location 
-    */
-    inline void* getMessageAddressFromCollection(MessageCollection& collection, const id::MessageType type)
-    {
-        using namespace id;
-        switch(type)
-        {
-            case TEST_MESSAGE:
+    struct TEST_MESSAGE {
+        msg::id::MessageType id = msg::id::MessageType::TEST_MESSAGE;
+        int test;
+        float VAR2 = 5.2;
+    };
+    
+    struct TEST_MESSAGE_2 {
+        msg::id::MessageType id = msg::id::MessageType::TEST_MESSAGE_2;
+        int VAR1;
+        float VAR2 = 0.23;
+    };
+    
+}
+
+namespace msg::raw {
+
+    struct TEST_MESSAGE {
+        msg::id::MessageType id = msg::id::MessageType::TEST_MESSAGE;
+        int test : 10;
+        int VAR2 : 16;
+    };
+    
+    struct TEST_MESSAGE_2 {
+        msg::id::MessageType id = msg::id::MessageType::TEST_MESSAGE_2;
+        int VAR1 : 10;
+        int VAR2 : 16;
+    };
+    
+}
+
+namespace msg {
+
+    struct MessageCollection {
+        real::TEST_MESSAGE TEST_MESSAGE;
+        real::TEST_MESSAGE_2 TEST_MESSAGE_2;
+    };
+    
+    inline void* getMessageAddressFromCollection(MessageCollection& collection, const id::MessageType type) {
+        switch (type) {
+            case msg::id::TEST_MESSAGE:
                 return &collection.TEST_MESSAGE;
+            case msg::id::TEST_MESSAGE_2:
+                return &collection.TEST_MESSAGE_2;
             default:
                 return nullptr;
         }
     }
-
+    
 }
+
+namespace msg::conv {
+
+    inline msg::real::TEST_MESSAGE TEST_MESSAGE_TO_REAL(msg::raw::TEST_MESSAGE raw) {
+        msg::real::TEST_MESSAGE real;
+        real.test = (raw.test * 1) + 0;
+        real.VAR2 = (raw.VAR2 * 0.00152587890625) + 0;
+        return real;
+    }
+    
+    inline msg::real::TEST_MESSAGE_2 TEST_MESSAGE_2_TO_REAL(msg::raw::TEST_MESSAGE_2 raw) {
+        msg::real::TEST_MESSAGE_2 real;
+        real.VAR1 = (raw.VAR1 * 1) + 0;
+        real.VAR2 = (raw.VAR2 * 0.0030517578125) + 0;
+        return real;
+    }
+    
+    inline msg::raw::TEST_MESSAGE TEST_MESSAGE_TO_RAW(msg::real::TEST_MESSAGE real) {
+        msg::raw::TEST_MESSAGE raw;
+        raw.test = (real.test - 0) / 1;
+        raw.VAR2 = (real.VAR2 - 0) / 0.00152587890625;
+        return raw;
+    }
+    
+    inline msg::raw::TEST_MESSAGE_2 TEST_MESSAGE_2_TO_RAW(msg::real::TEST_MESSAGE_2 real) {
+        msg::raw::TEST_MESSAGE_2 raw;
+        raw.VAR1 = (real.VAR1 - 0) / 1;
+        raw.VAR2 = (real.VAR2 - 0) / 0.0030517578125;
+        return raw;
+    }
+    
+}
+
