@@ -1,3 +1,11 @@
+'''
+    A Tool to generate a messageTypes.h file for the LAPDOG messaging system
+    Messages are defined in messages.json
+
+    Written by Lucas Ringe
+    12/28/2021
+'''
+
 import json
 
 real_struct_strings = []
@@ -52,26 +60,41 @@ def createRealStructStr(message):
     return struct
 
 def addMessageToIds(message, id):
+    '''
+        Adds a message to the message id enum with a specified id
+    '''
     global ids_enum
     ids_enum += '    ' + message['name'] + ' = ' + str(id) + ',\n'
     return
 
 def addMessageToTypes(message):
+    '''
+        Append the string version of the real and raw C struct to the correct global var
+    '''
     raw_struct_strings.append(createRawStructStr(message))
     real_struct_strings.append(createRealStructStr(message))
     return
 
 def addMessageToCollectionStruct(message):
+    '''
+        Adds a message type to the main MessageCollection struct
+    '''
     global message_collection_struct
     message_collection_struct += '    real::' + message['name'] + ' ' + message['name'] + ';\n'
     return
 
 def addMessageToCollectionCaseStatement(message):
+    '''
+        Generates a case statement for the collection address function
+    '''
     global collection_case_statements
     collection_case_statements += '        case msg::id::' + message['name'] + ':\n            return &collection.' + message['name'] + ';\n'
     return
 
 def addMessageRawToRealConversion(message):
+    '''
+        Generates function for raw to real message conversion
+    '''
     global rawToReal_conversions
 
     function = 'inline msg::real::' + message['name'] + ' ' + message['name'] + '_TO_REAL(msg::raw::' + message['name'] + ' raw) {\n'
@@ -84,6 +107,9 @@ def addMessageRawToRealConversion(message):
     return
 
 def addMessageRealToRawConversion(message):
+    '''
+        Generates function for real to raw message conversion
+    '''
     global realToRaw_conversions
     
     function = 'inline msg::raw::' + message['name'] + ' ' + message['name'] + '_TO_RAW(msg::real::' + message['name'] + ' real) {\n'
@@ -96,6 +122,10 @@ def addMessageRealToRawConversion(message):
     return
 
 def addMessage(message, id):
+    '''
+        Add a JSON message to the string collections
+        Must be called for every message
+    '''
     addMessageToIds(message, id)
     addMessageToTypes(message)
     addMessageToCollectionStruct(message)
@@ -106,6 +136,10 @@ def addMessage(message, id):
     return
 
 def initGlobalStrings():
+    '''
+        Prefixes global strings to ensure valid C code
+        Called before string creation section
+    '''
     global ids_enum, message_collection_struct, collection_case_statements
 
     message_collection_struct += 'struct MessageCollection {\n'
@@ -118,6 +152,10 @@ def initGlobalStrings():
     return
 
 def finishGlobalStrings():
+    '''
+        Appends endings to global strings to make valid C code
+        Called at end of string creation section
+    '''
     global ids_enum, message_collection_struct, collection_case_statements
 
     message_collection_struct += '};\n'
@@ -134,6 +172,9 @@ def finishGlobalStrings():
     return
 
 def writeNamespaceIds(file):
+    '''
+        Writes the namespace for the id enum definition
+    '''
     global ids_enum
 
     ids_enum = '    ' + ids_enum
@@ -145,6 +186,9 @@ def writeNamespaceIds(file):
     return
 
 def writeNamespaceReal(file):
+    '''
+        Writes the namespace for the real struct definitions
+    '''
     global real_struct_strings
 
     file.write('namespace msg::real {\n')
@@ -159,6 +203,9 @@ def writeNamespaceReal(file):
     return
 
 def writeNamespaceRaw(file):
+    '''
+        Writes the namespace for the raw struct definitions
+    '''
     global raw_struct_strings
 
     file.write('namespace msg::raw {\n')
@@ -173,6 +220,9 @@ def writeNamespaceRaw(file):
     return
 
 def writeNamespaceConv(file):
+    '''
+        Writes the namespace for conversion functions
+    '''
     global realToRaw_conversions, rawToReal_conversions
 
     file.write('namespace msg::conv {\n')
@@ -222,6 +272,7 @@ if __name__ == "__main__":
     finishGlobalStrings()
 
     with open('messageTypes.h', 'w') as outputFile:
+        outputFile.write('/* Auto-generated Code from messageGenerator.py */')
         outputFile.write('#pragma once\n\n')
         writeNamespaceIds(outputFile)
         writeNamespaceReal(outputFile)
