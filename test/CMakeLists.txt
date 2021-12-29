@@ -3,6 +3,7 @@ add_executable(
     test-StaticQueue.cpp
     test-Subscriber.cpp
     test-PubSub.cpp
+    test-Main.cpp
 )
 
 target_link_libraries(
@@ -11,4 +12,4 @@ target_link_libraries(
     pubsub
 )
 
-gtest_discover_tests(tests)
+#gtest_discover_tests(tests)
