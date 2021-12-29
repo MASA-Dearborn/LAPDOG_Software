@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.0.0)
 project(lapdog VERSION 0.1.0)
 set(CMAKE_CXX_STANDARD 11)
 
+set(CMAKE_TOOLCHAIN_FILE TC-zynq.cmake)
+
 # Google Test Setup
 include(FetchContent)
 FetchContent_Declare(
@@ -14,7 +16,7 @@ FetchContent_MakeAvailable(googletest)
 
 include(GoogleTest)
 include(CTest)
-enable_testing()
+#enable_testing()
 
 include_directories(include)
 add_subdirectory(src)
