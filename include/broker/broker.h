@@ -15,7 +15,7 @@ namespace pubsub {
         Broker() {}
         ~Broker();
 
-        int getNumSubscribers(msg::ids::MessageType type) { return subscribers[type].size(); }
+        int getNumSubscribers(msg::id::MessageType type) { return subscribers[type].size(); }
 
     protected:
 
@@ -26,14 +26,14 @@ namespace pubsub {
         void unregisterPublisher(GenericPublisher* publisher);
 
         /* Data Methods */        
-        void* getLocalDataPointer(msg::ids::MessageType type);
-        void setMessageUpdateFlag(msg::ids::MessageType type);
+        void* getLocalDataPointer(msg::id::MessageType type);
+        void setMessageUpdateFlag(msg::id::MessageType type);
 
-        void clearSubscribers(msg::ids::MessageType type) { subscribers[type].erase(subscribers[type].begin(), subscribers[type].end()); }
+        void clearSubscribers(msg::id::MessageType type) { subscribers[type].erase(subscribers[type].begin(), subscribers[type].end()); }
 
 
-        std::array<std::list<std::unique_ptr<GenericSubscriber>>, msg::ids::META_NUM_MESSAGES> subscribers;   // Array of Vectors of unique_ptrs to GenericSubscribers
-        std::array<std::unique_ptr<GenericPublisher>, msg::ids::META_NUM_MESSAGES> publishers;                  // Array of unique_ptrs to GenericPublishers
+        std::array<std::list<std::unique_ptr<GenericSubscriber>>, msg::id::META_NUM_MESSAGES> subscribers;   // Array of Vectors of unique_ptrs to GenericSubscribers
+        std::array<std::unique_ptr<GenericPublisher>, msg::id::META_NUM_MESSAGES> publishers;                  // Array of unique_ptrs to GenericPublishers
         msg::MessageCollection MessageCollection;
 
         friend class GenericSubscriber;

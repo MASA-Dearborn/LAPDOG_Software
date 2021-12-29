@@ -15,10 +15,10 @@ TEST(Subscriber, SubscriberCreation)
     sub->setDataAvailable();
 
     // Verify ID correct
-    EXPECT_EQ(sub->getType(), msg::ids::TEST_MESSAGE);
+    EXPECT_EQ(sub->getType(), msg::id::TEST_MESSAGE);
     EXPECT_TRUE(sub->isDataAvailable());
     EXPECT_EQ(sub->getData()->test, 5);
-    EXPECT_EQ(DataBroker.getNumSubscribers(msg::ids::TEST_MESSAGE), 1);
+    EXPECT_EQ(DataBroker.getNumSubscribers(msg::id::TEST_MESSAGE), 1);
 
     sub->unsubscribe();
 
@@ -29,7 +29,7 @@ TEST(Subscriber, SubscriberRegistration)
 
     Subscriber<msg::types::TEST_MESSAGE>* sub = createNewSubscriber(TEST_MESSAGE);
 
-    EXPECT_EQ(DataBroker.getNumSubscribers(msg::ids::TEST_MESSAGE), 1);
+    EXPECT_EQ(DataBroker.getNumSubscribers(msg::id::TEST_MESSAGE), 1);
     EXPECT_EQ(sub->getData()->test, 0);
 
     sub->unsubscribe();

@@ -4,7 +4,7 @@ namespace msg
 {
 
     /* Enum Namespace */
-    namespace ids
+    namespace id
     {
         enum MessageType
         {
@@ -18,8 +18,11 @@ namespace msg
     namespace types
     {
 
+        #define __MESSAGE_ID(NAME) msg::id::MessageType id = msg::id::NAME;
+
         struct TEST_MESSAGE
         {
+            __MESSAGE_ID(TEST_MESSAGE);
             int test;
         };
 
@@ -31,6 +34,7 @@ namespace msg
         types::TEST_MESSAGE TEST_MESSAGE;
     };
 
+
     /**
     * @brief   Get the Relative Data Pointer for the MessageType in collection
     * @note    Add new messages here
@@ -39,9 +43,9 @@ namespace msg
     * @param   type         The Enum ID of the message pointer to recieve 
     * @return  void*        Void pointer to data location 
     */
-    inline void* getMessageAddressFromCollection(MessageCollection& collection, const ids::MessageType type)
+    inline void* getMessageAddressFromCollection(MessageCollection& collection, const id::MessageType type)
     {
-        using namespace ids;
+        using namespace id;
         switch(type)
         {
             case TEST_MESSAGE:

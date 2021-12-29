@@ -16,7 +16,7 @@ namespace pubsub
             void unsubscribe() { this->~GenericSubscriber(); }
 
             void setDataPointer(void* source) { m_dataPointer = source; }
-            msg::ids::MessageType getType() const { return m_type; };
+            msg::id::MessageType getType() const { return m_type; };
 
         protected:
 
@@ -24,7 +24,7 @@ namespace pubsub
             void registerSelf();
             void unregisterSelf();
 
-            msg::ids::MessageType m_type = msg::ids::UNDEFINED_MESSAGE;
+            msg::id::MessageType m_type = msg::id::UNDEFINED_MESSAGE;
             bool m_isDataAvailable = false;
             void* m_dataPointer = nullptr;
     };
@@ -40,7 +40,7 @@ namespace pubsub
         public:
             Subscriber() {}
 
-            Subscriber(msg::ids::MessageType type)
+            Subscriber(msg::id::MessageType type)
             {
                 m_type = type; 
                 registerSelf();
@@ -62,11 +62,11 @@ namespace pubsub
      * @return  GenericSubscriber derived from Subscriber<T> configured for message of type 
      */
     template <typename T>
-    Subscriber<T>* constructSubscriber(msg::ids::MessageType type)
+    Subscriber<T>* constructSubscriber(msg::id::MessageType type)
     {
         return new Subscriber<T>(type);
     }
 
-    #define createNewSubscriber(Message)    constructSubscriber<msg::types::Message>(msg::ids::Message)
+    #define createNewSubscriber(Message)    constructSubscriber<msg::types::Message>(msg::id::Message)
 
 }

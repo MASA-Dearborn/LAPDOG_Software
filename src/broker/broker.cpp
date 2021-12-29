@@ -11,9 +11,9 @@ Broker pubsub::DataBroker;
  */
 Broker::~Broker()
 {
-    for(int i = 0; i < (int)msg::ids::META_NUM_MESSAGES; i++)
+    for(int i = 0; i < (int)msg::id::META_NUM_MESSAGES; i++)
     {
-        clearSubscribers((msg::ids::MessageType)i);
+        clearSubscribers((msg::id::MessageType)i);
     }
 }
 
@@ -46,7 +46,7 @@ void Broker::registerPublisher(GenericPublisher* publisher)
 void Broker::unregisterSubscriber(GenericSubscriber* subscriber)
 {
 
-    msg::ids::MessageType type = subscriber->getType();
+    msg::id::MessageType type = subscriber->getType();
 
     for(std::list<std::unique_ptr<GenericSubscriber>>::iterator iter = subscribers[type].begin(); iter != subscribers[type].end();)
     {
@@ -77,13 +77,13 @@ void Broker::unregisterPublisher(GenericPublisher* publisher)
  * @param   type    The Enum ID of the message pointer to recieve 
  * @return  void*   Void pointer to data location 
  */
-void* Broker::getLocalDataPointer(msg::ids::MessageType type)
+void* Broker::getLocalDataPointer(msg::id::MessageType type)
 {
     return msg::getMessageAddressFromCollection(MessageCollection, type);
 }
 
 
-void Broker::setMessageUpdateFlag(msg::ids::MessageType type)
+void Broker::setMessageUpdateFlag(msg::id::MessageType type)
 {
 
     auto setFlag = [](std::unique_ptr<GenericSubscriber>& sub)

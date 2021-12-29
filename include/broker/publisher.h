@@ -10,7 +10,7 @@ namespace pubsub
             GenericPublisher() {}
             ~GenericPublisher() {}
 
-            msg::ids::MessageType getType() const { return m_type; }
+            msg::id::MessageType getType() const { return m_type; }
 
         protected:
 
@@ -19,7 +19,7 @@ namespace pubsub
 
             void _pushDataToBroker(void* data, int size);
 
-            msg::ids::MessageType m_type;
+            msg::id::MessageType m_type;
 
     };
 
@@ -28,7 +28,7 @@ namespace pubsub
     {
         public:
             Publisher() {}
-            Publisher(msg::ids::MessageType type)
+            Publisher(msg::id::MessageType type)
             {
                 m_type = type;
                 registerSelf();
@@ -43,11 +43,11 @@ namespace pubsub
     };
 
     template <typename T>
-    Publisher<T>* constructPublisher(msg::ids::MessageType type)
+    Publisher<T>* constructPublisher(msg::id::MessageType type)
     {
         return new Publisher<T>(type);
     }
 
-    #define createNewPublisher(Message)    constructPublisher<msg::types::Message>(msg::ids::Message)
+    #define createNewPublisher(Message)    constructPublisher<msg::types::Message>(msg::id::Message)
 
 }
