@@ -272,7 +272,7 @@ if __name__ == "__main__":
     finishGlobalStrings()
 
     with open('messageTypes.h', 'w') as outputFile:
-        outputFile.write('/* Auto-generated Code from messageGenerator.py */')
+        outputFile.write('/* Auto-generated Code from messageGenerator.py */\n\n')
         outputFile.write('#pragma once\n\n')
         writeNamespaceIds(outputFile)
         writeNamespaceReal(outputFile)

@@ -1,3 +1,5 @@
+/* Auto-generated Code from messageGenerator.py */
+
 #pragma once
 
 namespace msg::id {
