@@ -13,16 +13,25 @@ namespace msg::id {
     
 }
 
+namespace msg {
+
+    struct GENERIC_MESSAGE {
+        msg::id::MessageType id = msg::id::UNDEFINED_MESSAGE;
+        unsigned int size = sizeof(GENERIC_MESSAGE);
+    };
+
+}
+
 namespace msg::real {
 
-    struct TEST_MESSAGE {
-        msg::id::MessageType id = msg::id::MessageType::TEST_MESSAGE;
+    struct TEST_MESSAGE : GENERIC_MESSAGE {
+        TEST_MESSAGE() { id = msg::id::TEST_MESSAGE; size = sizeof(TEST_MESSAGE); }
         int test;
         float VAR2 = 5.2;
     };
     
-    struct TEST_MESSAGE_2 {
-        msg::id::MessageType id = msg::id::MessageType::TEST_MESSAGE_2;
+    struct TEST_MESSAGE_2 : GENERIC_MESSAGE {
+        TEST_MESSAGE_2() { id = msg::id::TEST_MESSAGE_2; size = sizeof(TEST_MESSAGE_2); }
         int VAR1;
         float VAR2 = 0.23;
     };
@@ -31,14 +40,14 @@ namespace msg::real {
 
 namespace msg::raw {
 
-    struct TEST_MESSAGE {
-        msg::id::MessageType id = msg::id::MessageType::TEST_MESSAGE;
+    struct TEST_MESSAGE : GENERIC_MESSAGE {
+        TEST_MESSAGE() { id = msg::id::TEST_MESSAGE; size = sizeof(TEST_MESSAGE); }
         int test : 10;
         int VAR2 : 16;
     };
     
-    struct TEST_MESSAGE_2 {
-        msg::id::MessageType id = msg::id::MessageType::TEST_MESSAGE_2;
+    struct TEST_MESSAGE_2 : GENERIC_MESSAGE {
+        TEST_MESSAGE_2() { id = msg::id::TEST_MESSAGE_2; size = sizeof(TEST_MESSAGE_2); }
         int VAR1 : 10;
         int VAR2 : 16;
     };

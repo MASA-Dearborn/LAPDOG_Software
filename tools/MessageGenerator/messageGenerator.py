@@ -27,33 +27,33 @@ def signalToRealString(signal):
  
 def signalRawToReal(signal):
     # real.signal = raw.signal * factor + min
-    if signal['ctype'] in ['int', 'unsigned int', 'char', 'unsigned char']:
-        factor = 1
-    else:
+    if signal['ctype'] in ['float', 'double']:
         factor = (signal['max'] - signal['min']) / 2**signal['bits']
+    else:
+        factor = 1
 
     return signal['name'] + ' = (raw.' + signal['name'] + ' * ' + str(factor) + ') + ' + str(signal['min']) + ';\n'
 
 def signalRealToRaw(signal):
     # raw.signal = (real.signal - min) / factor
-    if signal['ctype'] in ['int', 'unsigned int', 'char', 'unsigned char']:
-        factor = 1
-    else:
+    if signal['ctype'] in ['float', 'double']:
         factor = (signal['max'] - signal['min']) / 2**signal['bits']
+    else:
+        factor = 1
 
     return signal['name'] + ' = (real.' + signal['name'] + ' - ' + str(signal['min']) + ') / ' + str(factor) + ';\n'
 
 def createRawStructStr(message):
-    struct = "struct " + message['name'] + ' {\n'
-    struct += '    msg::id::MessageType id = msg::id::MessageType::' + message['name'] + ';\n'
+    struct = "struct " + message['name'] + ' : GENERIC_MESSAGE {\n'
+    struct += '    ' + message['name'] + '() { id = msg::id::' + message['name'] + '; size = sizeof(' + message['name'] + '); }\n'
     for signal in message['signals']:
         struct += '    ' + signalToRawString(signal)
     struct += '};\n'
     return struct
 
 def createRealStructStr(message):
-    struct = "struct " + message['name'] + ' {\n'
-    struct += '    msg::id::MessageType id = msg::id::MessageType::' + message['name'] + ';\n'
+    struct = "struct " + message['name'] + ' : GENERIC_MESSAGE {\n'
+    struct += '    ' + message['name'] + '() { id = msg::id::' + message['name'] + '; size = sizeof(' + message['name'] + '); }\n'
     for signal in message['signals']:
         struct += '    ' + signalToRealString(signal)
     struct += '};\n'
@@ -242,6 +242,17 @@ def writeNamespaceConv(file):
     file.write('\n}\n\n')
     return
 
+def writeGenericNamespace(file):
+    file.write('namespace msg {\n\n')
+
+    # Write Generic Messages
+    file.write('    struct GENERIC_MESSAGE {\n')
+    file.write('        msg::id::MessageType id = msg::id::UNDEFINED_MESSAGE;\n')
+    file.write('        unsigned int size = sizeof(GENERIC_MESSAGE);\n')
+    file.write('    };\n')
+
+    file.write('\n}\n\n')
+
 def writeNamespaceMsg(file):
     global collection_case_statements, message_collection_struct
 
@@ -253,6 +264,7 @@ def writeNamespaceMsg(file):
 
     file.write('namespace msg {\n\n')
 
+    # Write Generated Messages
     file.write(message_collection_struct)
     file.write('\n')
     file.write(collection_case_statements)
@@ -275,6 +287,7 @@ if __name__ == "__main__":
         outputFile.write('/* Auto-generated Code from messageGenerator.py */\n\n')
         outputFile.write('#pragma once\n\n')
         writeNamespaceIds(outputFile)
+        writeGenericNamespace(outputFile)
         writeNamespaceReal(outputFile)
         writeNamespaceRaw(outputFile)
         writeNamespaceMsg(outputFile)
