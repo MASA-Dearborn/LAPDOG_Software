@@ -3,6 +3,7 @@ add_executable(
     test-StaticQueue.cpp
     test-Subscriber.cpp
     test-PubSub.cpp
+    test-Messages.cpp
     test-Main.cpp
 )
 
