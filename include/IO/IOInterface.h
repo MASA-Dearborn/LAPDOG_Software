@@ -2,6 +2,11 @@
 
 #include <cstdint>
 
+#include "../StaticQueue.h"
+#include "../messageTypes.h"
+
+#define BUFFER_SIZE 1024*1024*16
+
 namespace IO
 {
 
@@ -11,12 +16,16 @@ namespace IO
     public:
 
         // IO Interaction Methods
-        virtual int read(const void* dest, const int num) = 0;
-        virtual int write(const void* src, const int num) = 0;
+        virtual int readMessage(void* dest, const int num) = 0;
+        virtual int writeMessage(void* src, const int num) = 0;
 
         // Internal State Methods
-        virtual int getReadableAmount() = 0;
-        virtual int getWriteSpaceAvailable() = 0;
+        int getMessageSize();
+        int getMessageID();
+
+    protected:
+        StaticQueue<uint8_t, BUFFER_SIZE> RX_BUFFER;
+        StaticQueue<uint8_t, BUFFER_SIZE> TX_BUFFER;
 
     };
 

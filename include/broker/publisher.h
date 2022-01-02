@@ -1,5 +1,5 @@
 #pragma once
-#include "messageTypes.h"
+#include "../messageTypes.h"
 
 namespace pubsub
 {

@@ -13,6 +13,7 @@ raw_struct_strings = []
 realToRaw_conversions = []
 rawToReal_conversions = []
 message_collection_struct = ''
+message_union_struct = ''
 ids_enum = ''
 collection_case_statements = ''
 
@@ -83,6 +84,15 @@ def addMessageToCollectionStruct(message):
     message_collection_struct += '    real::' + message['name'] + ' ' + message['name'] + ';\n'
     return
 
+def addMessageToCollectionUnion(message):
+    '''
+        Adds a message type to the main MessageUnion struct
+    '''
+    global message_union_struct
+    message_union_struct += '    real::' + message['name'] + ' ' + message['name'] + ';\n'
+    message_union_struct += '    raw::' + message['name'] + ' ' + message['name'] + ';\n'
+    return
+
 def addMessageToCollectionCaseStatement(message):
     '''
         Generates a case statement for the collection address function
@@ -129,6 +139,7 @@ def addMessage(message, id):
     addMessageToIds(message, id)
     addMessageToTypes(message)
     addMessageToCollectionStruct(message)
+    addMessageToCollectionUnion(message)
     addMessageToCollectionCaseStatement(message)
     addMessageRealToRawConversion(message)
     addMessageRawToRealConversion(message)
@@ -140,9 +151,10 @@ def initGlobalStrings():
         Prefixes global strings to ensure valid C code
         Called before string creation section
     '''
-    global ids_enum, message_collection_struct, collection_case_statements
+    global ids_enum, message_collection_struct, collection_case_statements, message_union_struct
 
     message_collection_struct += 'struct MessageCollection {\n'
+    message_union_struct += 'union MessageUnion {\n'
 
     collection_case_statements += 'inline void* getMessageAddressFromCollection(MessageCollection& collection, const id::MessageType type) {\n'
     collection_case_statements += '    ' + 'switch (type) {\n'
@@ -156,9 +168,10 @@ def finishGlobalStrings():
         Appends endings to global strings to make valid C code
         Called at end of string creation section
     '''
-    global ids_enum, message_collection_struct, collection_case_statements
+    global ids_enum, message_collection_struct, collection_case_statements, message_union_struct
 
     message_collection_struct += '};\n'
+    message_union_struct += '};\n'
 
     collection_case_statements += '        default:\n'
     collection_case_statements += '            return nullptr;\n'
@@ -254,7 +267,7 @@ def writeGenericNamespace(file):
     file.write('\n}\n\n')
 
 def writeNamespaceMsg(file):
-    global collection_case_statements, message_collection_struct
+    global collection_case_statements, message_collection_struct, message_union_struct
 
     collection_case_statements = '    ' + collection_case_statements
     collection_case_statements = collection_case_statements.replace('\n', '\n    ')
@@ -262,10 +275,15 @@ def writeNamespaceMsg(file):
     message_collection_struct = '    ' + message_collection_struct
     message_collection_struct = message_collection_struct.replace('\n', '\n    ')
 
+    message_union_struct = '    ' + message_union_struct
+    message_union_struct = message_union_struct.replace('\n', '\n    ')
+
     file.write('namespace msg {\n\n')
 
     # Write Generated Messages
     file.write(message_collection_struct)
+    file.write('\n')
+    file.write(message_union_struct)
     file.write('\n')
     file.write(collection_case_statements)
 

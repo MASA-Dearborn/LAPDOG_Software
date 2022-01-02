@@ -4,3 +4,8 @@ add_library(
     broker/publisher.cpp
     broker/broker.cpp
 )
+
+add_library(
+    IO
+    IO/IOInterface.cpp
+)

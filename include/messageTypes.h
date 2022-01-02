@@ -61,6 +61,11 @@ namespace msg {
         real::TEST_MESSAGE_2 TEST_MESSAGE_2;
     };
     
+    union MessageUnion {
+        real::TEST_MESSAGE* TEST_MESSAGE;
+        real::TEST_MESSAGE_2* TEST_MESSAGE_2;
+    };
+    
     inline void* getMessageAddressFromCollection(MessageCollection& collection, const id::MessageType type) {
         switch (type) {
             case msg::id::TEST_MESSAGE:
