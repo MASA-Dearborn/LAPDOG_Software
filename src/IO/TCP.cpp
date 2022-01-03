@@ -34,7 +34,6 @@ int TCP_Interface::writeMessage(void* src, const int num)
 
 void TCP_Interface::init()
 {
-
 	if (openServer() < 0) 
 		return;
 
@@ -193,6 +192,7 @@ void TCP_Interface::_dataThread()
 			// Socket ready to read
 			if(client.pollObject.revents & POLLIN)
 			{
+				_dataRead(client, data);
 				client.pollObject.revents -= POLLIN;
 			}
 
@@ -205,9 +205,11 @@ void TCP_Interface::_dataThread()
 	}
 }
 
-void TCP_Interface::_dataRead(tcp::ClientInfo& client)
+void TCP_Interface::_dataRead(tcp::ClientInfo& client, uint8_t* dataBuffer)
 {
-
+	int dataRead = recv(client.socketID, (void*)dataBuffer, BUFFER_SIZE, MSG_DONTWAIT);
+	if(RX_BUFFER.enqueue(dataBuffer, dataRead) != dataRead)
+		return; // TODO: Implement Error handling
 }
 
 void TCP_Interface::_dataWrite(tcp::ClientInfo& client, uint8_t* dataBuffer, int size)

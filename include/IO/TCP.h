@@ -56,7 +56,7 @@ namespace IO
 
             void _listenerThread();
             void _dataThread();
-            void _dataRead(tcp::ClientInfo& client);
+            void _dataRead(tcp::ClientInfo& client, uint8_t* dataBuffer);
             void _dataWrite(tcp::ClientInfo& client, uint8_t* data, int size);
 
         private:
