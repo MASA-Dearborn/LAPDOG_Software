@@ -9,7 +9,7 @@
 TEST(StaticQueueTest, Initialization) 
 {
     StaticQueue<int, 16> buffer;
-    EXPECT_EQ(buffer.getSize(), 16);
+    EXPECT_EQ(buffer.getBufferSize(), 16);
     EXPECT_EQ(buffer.top, 0);
     EXPECT_EQ(buffer.bottom, 0);
 }

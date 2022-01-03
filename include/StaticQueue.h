@@ -11,7 +11,8 @@ public:
     ~StaticQueue() {}
 
     bool isEmpty() const;
-    unsigned int getSize() const;
+    unsigned int getBufferSize() const;
+    unsigned int getDataSize() const;
 
     int enqueue(const T& value);
     int enqueue(const T* source, const unsigned int amount);
@@ -39,9 +40,20 @@ bool StaticQueue<T, buffer_size>::isEmpty() const
 }
 
 template<typename T, const int buffer_size>
-unsigned int StaticQueue<T, buffer_size>::getSize() const
+unsigned int StaticQueue<T, buffer_size>::getBufferSize() const
 {
     return size;
+}
+
+template<typename T, const int buffer_size>
+unsigned int StaticQueue<T, buffer_size>::getDataSize() const
+{
+    if (top > bottom)
+        return top - bottom;
+    else if (top < bottom)
+        return (size - bottom) + top;
+    else
+        return 0;
 }
 
 /**

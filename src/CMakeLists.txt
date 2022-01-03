@@ -8,4 +8,9 @@ add_library(
 add_library(
     IO
     IO/IOInterface.cpp
+    IO/CAN.cpp
+    IO/TCP.cpp
+    IO/I2C.cpp
+    IO/SPI.cpp
+    IO/UART.cpp
 )
