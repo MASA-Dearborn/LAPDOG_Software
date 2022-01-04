@@ -102,6 +102,19 @@ void TCP_Interface::closeServer()
 
 }
 
+void TCP_Interface::closeClient(int socketID)
+{
+	for(auto iter = clientList.begin(); iter != clientList.end();)
+    {
+        if(iter->socketID == socketID)
+        {
+            iter = clientList.erase(iter);
+        } else {
+            ++iter;
+        }
+    }
+}
+
 /**
  * @brief 	Writes data to the socket
  * 
@@ -163,6 +176,7 @@ void TCP_Interface::_listenerThread()
 		inet_ntop(AF_INET, &(newClient.address.sin_addr), newClient.ip_addr, sizeof(newClient.ip_addr));
 
 		newClient.pollObject.fd = newClient.socketID;
+		newClient.pollObject.events = POLLOUT | POLLIN | POLLERR;
 
 		clientList.push_back(newClient);
 	}
@@ -172,7 +186,7 @@ void TCP_Interface::_listenerThread()
 void TCP_Interface::_dataThread()
 {
 
-	uint8_t* data = new uint8_t(BUFFER_SIZE);
+	uint8_t* data = new uint8_t[BUFFER_SIZE];
 
 	while(thread_active)
 	{
@@ -189,30 +203,46 @@ void TCP_Interface::_dataThread()
 		for(tcp::ClientInfo& client : clientList)
 		{
 			// Poll for actions required
-			if (poll(&(client.pollObject), 1, 0))
+			if (poll(&(client.pollObject), 1, 0) < 0)
 				perror("Poll");
-
-			// Socket ready to read
-			if(client.pollObject.revents & POLLIN)
-			{
-				_dataRead(client, data);
-				client.pollObject.revents -= POLLIN;
-			}
 
 			// Socket Error Occured
 			if ((client.pollObject.revents & POLLERR))
 			{
 				client.pollObject.revents -= POLLERR;
+				closeClient(client.socketID);
 			}
+
+			// Socket ready to read
+			if(client.pollObject.revents & POLLIN)
+			{
+				client.pollObject.revents -= POLLIN;
+				_dataRead(client, data);
+			}
+
 		}
 	}
+
+	delete data;
+
 }
 
 void TCP_Interface::_dataRead(tcp::ClientInfo& client, uint8_t* dataBuffer)
 {
 	int dataRead = recv(client.socketID, (void*)dataBuffer, BUFFER_SIZE, MSG_DONTWAIT);
+
+	if (dataRead <= 0) 
+	{ 
+		closeClient(client.socketID);
+		return;
+	}
+	
+	printf("%s", dataBuffer);
+	TX_BUFFER->enqueue(dataBuffer, dataRead);
+	
 	if(RX_BUFFER->enqueue(dataBuffer, dataRead) != dataRead)
 		return; // TODO: Implement Error handling
+
 }
 
 void TCP_Interface::_dataWrite(tcp::ClientInfo& client, uint8_t* dataBuffer, int size)

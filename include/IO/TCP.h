@@ -50,6 +50,7 @@ namespace IO
             void init();
             int openServer();
             void closeServer();
+            void closeClient(int socketID);
 
             int writeToSocket(const int socketID, const char* data, const int amount);
             int readFromSocket(const int socketID, char* data, const int amount);
