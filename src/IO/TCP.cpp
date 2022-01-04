@@ -178,7 +178,9 @@ void TCP_Interface::_listenerThread()
 		newClient.pollObject.fd = newClient.socketID;
 		newClient.pollObject.events = POLLOUT | POLLIN | POLLERR;
 
+		clientWriteLock.lock();
 		clientList.push_back(newClient);
+		clientWriteLock.unlock();
 	}
 
 }
@@ -200,26 +202,30 @@ void TCP_Interface::_dataThread()
 			}
 		}
 
-		for(tcp::ClientInfo& client : clientList)
+		if(clientWriteLock.try_lock())
 		{
-			// Poll for actions required
-			if (poll(&(client.pollObject), 1, 0) < 0)
-				perror("Poll");
-
-			// Socket Error Occured
-			if ((client.pollObject.revents & POLLERR))
+			for(tcp::ClientInfo& client : clientList)
 			{
-				client.pollObject.revents -= POLLERR;
-				closeClient(client.socketID);
-			}
+				// Poll for actions required
+				if (poll(&(client.pollObject), 1, 0) < 0)
+					perror("Poll");
 
-			// Socket ready to read
-			if(client.pollObject.revents & POLLIN)
-			{
-				client.pollObject.revents -= POLLIN;
-				_dataRead(client, data);
-			}
+				// Socket Error Occured
+				if ((client.pollObject.revents & POLLERR))
+				{
+					client.pollObject.revents -= POLLERR;
+					closeClient(client.socketID);
+				}
 
+				// Socket ready to read
+				if(client.pollObject.revents & POLLIN)
+				{
+					client.pollObject.revents -= POLLIN;
+					_dataRead(client, data);
+				}
+
+			}
+			clientWriteLock.unlock();
 		}
 	}
 

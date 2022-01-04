@@ -6,6 +6,7 @@
 #include <string.h>
 #include <vector>
 #include <thread>
+#include <mutex>
 
 #include "IOInterface.h"
 
@@ -64,6 +65,7 @@ namespace IO
 
             std::thread listenThreadObj;
             std::thread dataThreadObj;
+            std::mutex clientWriteLock;
             bool thread_active = false;
 
             tcp::ServerInfo serverInfo;
