@@ -1,13 +1,16 @@
 add_library(
     pubsub
     broker/subscriber.cpp
-    broker/broker.cpp
     broker/publisher.cpp
+    broker/broker.cpp
 )
 
 add_library(
-    datalogger
-    datalogger/dataLogger.cpp
-    datalogger/fileHandler.cpp
-    datalogger/fileWriter.cpp
+    IO
+    IO/IOInterface.cpp
+    IO/CAN.cpp
+    IO/TCP.cpp
+    IO/I2C.cpp
+    IO/SPI.cpp
+    IO/UART.cpp
 )

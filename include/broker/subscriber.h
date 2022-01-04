@@ -1,5 +1,5 @@
 #pragma once
-#include "messageTypes.h"
+#include "../messageTypes.h"
 
 namespace pubsub
 {
@@ -8,20 +8,23 @@ namespace pubsub
     {
         public:
             GenericSubscriber() {}
-            ~GenericSubscriber() {}
+            ~GenericSubscriber() { unregisterSelf(); }
 
             bool isDataAvailable()      { return m_isDataAvailable; }
             void setDataAvailable()     { m_isDataAvailable = true; };
             void clearDataAvailable()   { m_isDataAvailable = false; };
+            void unsubscribe() { this->~GenericSubscriber(); }
 
             void setDataPointer(void* source) { m_dataPointer = source; }
-            msg::ids::MessageType getType() const { return m_type; };
+            msg::id::MessageType getType() const { return m_type; };
 
         protected:
 
             friend class Broker;
+            void registerSelf();
+            void unregisterSelf();
 
-            msg::ids::MessageType m_type = msg::ids::UNDEFINED_MESSAGE;
+            msg::id::MessageType m_type = msg::id::UNDEFINED_MESSAGE;
             bool m_isDataAvailable = false;
             void* m_dataPointer = nullptr;
     };
@@ -36,10 +39,21 @@ namespace pubsub
     {
         public:
             Subscriber() {}
-            Subscriber(msg::ids::MessageType type);
-            ~Subscriber() {}
-            const T* getData() { return (T*)m_dataPointer; }
+
+            Subscriber(msg::id::MessageType type)
+            {
+                m_type = type; 
+                registerSelf();
+            }
+
+            ~Subscriber() { unregisterSelf(); }
+            const T* getData() 
+            {
+                clearDataAvailable(); 
+                return (T*)m_dataPointer; 
+            }
     };
+
 
     /**
      * @brief   Interface function to generate a subscriber based on type enum
@@ -48,18 +62,11 @@ namespace pubsub
      * @return  GenericSubscriber derived from Subscriber<T> configured for message of type 
      */
     template <typename T>
-    Subscriber<T> subscribe(msg::ids::MessageType type)
+    Subscriber<T>* constructSubscriber(msg::id::MessageType type)
     {
-        return Subscriber<T>(type);
+        return new Subscriber<T>(type);
     }
 
-    #define createSubscriber(Message)    subscribe<msg::types::Message>(msg::ids::Message)
+    #define createNewSubscriber(Message)    constructSubscriber<msg::real::Message>(msg::id::Message)
 
 }
-
-// USE MACROS TO SIMPLY USER INTERFACE
-
-/**
- *  Subscriber creation registers its self with the broker
- *  Broker stores subscriber in vector of its type
-**/

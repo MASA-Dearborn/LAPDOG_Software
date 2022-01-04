@@ -1,11 +1,19 @@
 #include "broker/broker.h"
 #include "broker/publisher.h"
 
+#include <stdio.h>
+#include <string.h>
+
 using namespace pubsub;
 
-template <typename T>
-Publisher<T>::Publisher(msg::ids::MessageType type)
+void GenericPublisher::registerSelf()
 {
-    m_type = type;
     DataBroker.registerPublisher(this);
+}
+
+void GenericPublisher::_pushDataToBroker(void* data, int size)
+{
+    void* dataLocation = DataBroker.getLocalDataPointer(m_type);
+    memcpy(dataLocation, data, size);
+    DataBroker.setMessageUpdateFlag(m_type);
 }

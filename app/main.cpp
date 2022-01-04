@@ -1,10 +1,12 @@
 #include "broker/subscriber.h"
+#include "IO/TCP.h"
 #include <cstdio>
-
-using namespace pubsub;
 
 int main()
 {
-printf ("hello world");
+
+    IO::TCP_Interface* test = new IO::TCP_Interface();
+
+    while (true);
 
 }
