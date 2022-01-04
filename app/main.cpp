@@ -7,4 +7,6 @@ int main()
 
     IO::TCP_Interface* test = new IO::TCP_Interface();
 
+    while (true);
+
 }

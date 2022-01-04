@@ -172,7 +172,7 @@ void TCP_Interface::_listenerThread()
 void TCP_Interface::_dataThread()
 {
 
-	uint8_t data[BUFFER_SIZE];
+	uint8_t* data = new uint8_t(BUFFER_SIZE);
 
 	while(thread_active)
 	{
