@@ -20,12 +20,13 @@ namespace IO
         virtual int writeMessage(void* src, const int num) = 0;
 
         // Internal State Methods
+        int initBuffers();
         int getMessageSize();
         int getMessageID();
 
     protected:
-        StaticQueue<uint8_t, BUFFER_SIZE> RX_BUFFER;
-        StaticQueue<uint8_t, BUFFER_SIZE> TX_BUFFER;
+        StaticQueue<uint8_t, BUFFER_SIZE>* RX_BUFFER;
+        StaticQueue<uint8_t, BUFFER_SIZE>* TX_BUFFER;
 
     };
 

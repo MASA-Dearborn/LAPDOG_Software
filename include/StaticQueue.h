@@ -18,7 +18,7 @@ public:
     int enqueue(const T* source, const unsigned int amount);
     T dequeue();
     int dequeue(T* dest, const unsigned int amount);
-    const T* peak();
+    const T* peek();
 
 protected:
 
@@ -191,7 +191,7 @@ int StaticQueue<T, buffer_size>::dequeue(T* dest, const unsigned int amount)
 }
 
 template<typename T, const int buffer_size>
-const T* StaticQueue<T, buffer_size>::peak()
+const T* StaticQueue<T, buffer_size>::peek()
 {
     return &data[bottom];
 }

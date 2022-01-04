@@ -34,6 +34,9 @@ int TCP_Interface::writeMessage(void* src, const int num)
 
 void TCP_Interface::init()
 {
+	if (initBuffers() < 0)
+		return;
+
 	if (openServer() < 0) 
 		return;
 
@@ -68,7 +71,7 @@ int TCP_Interface::openServer()
 		return -1;
 	}
 
-	// printf("Server Listening for connections at port: %d\n", serverInfo.listeningPort);
+	printf("Server Listening for connections at port: %d\n", serverInfo.listeningPort);
 
 	// Configures server port to listen for connections
 	while (listen(serverInfo.socketID, 5) < 0)
@@ -174,9 +177,9 @@ void TCP_Interface::_dataThread()
 	while(thread_active)
 	{
 
-		if(TX_BUFFER.getDataSize() > 0)
+		if(TX_BUFFER->getDataSize() > 0)
 		{
-			int dataSize = TX_BUFFER.dequeue(data, TX_BUFFER.getDataSize());
+			int dataSize = TX_BUFFER->dequeue(data, TX_BUFFER->getDataSize());
 			for(tcp::ClientInfo& client : clientList)
 			{
 				_dataWrite(client, data, dataSize);
@@ -208,7 +211,7 @@ void TCP_Interface::_dataThread()
 void TCP_Interface::_dataRead(tcp::ClientInfo& client, uint8_t* dataBuffer)
 {
 	int dataRead = recv(client.socketID, (void*)dataBuffer, BUFFER_SIZE, MSG_DONTWAIT);
-	if(RX_BUFFER.enqueue(dataBuffer, dataRead) != dataRead)
+	if(RX_BUFFER->enqueue(dataBuffer, dataRead) != dataRead)
 		return; // TODO: Implement Error handling
 }
 
