@@ -17,3 +17,8 @@ void GenericPublisher::_pushDataToBroker(void* data, int size)
     memcpy(dataLocation, data, size);
     DataBroker.setMessageUpdateFlag(m_type);
 }
+
+void GenericPublisher::unregisterSelf() 
+{ 
+    DataBroker.unregisterPublisher(this); 
+}

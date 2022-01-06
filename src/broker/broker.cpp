@@ -35,7 +35,7 @@ void Broker::registerSubscriber(GenericSubscriber* subscriber)
  */
 void Broker::registerPublisher(GenericPublisher* publisher)
 {
-    publishers[publisher->getType()] = std::unique_ptr<GenericPublisher>(publisher);
+    publishers[publisher->getType()].push_back(std::unique_ptr<GenericPublisher>(publisher));
 }
 
 /**
@@ -67,7 +67,17 @@ void Broker::unregisterSubscriber(GenericSubscriber* subscriber)
  */
 void Broker::unregisterPublisher(GenericPublisher* publisher)
 {
-    // TODO: Implement
+    msg::id::MessageType type = publisher->getType();
+
+    for(std::list<std::unique_ptr<GenericPublisher>>::iterator iter = publishers[type].begin(); iter != publishers[type].end();)
+    {
+        if(iter->get() == publisher)
+        {
+            iter = publishers[type].erase(iter);
+        } else {
+            ++iter;
+        }
+    }
 }
 
 /**

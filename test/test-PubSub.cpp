@@ -19,6 +19,7 @@ TEST(PubSub, PublisherSingleDataTransfer)
     EXPECT_FALSE(sub->isDataAvailable());
 
     sub->unsubscribe();
+    pub->unregister();
 
 }
 
@@ -45,6 +46,7 @@ TEST(PubSub, PublisherRepeatedDataTransfer)
     EXPECT_FALSE(sub->isDataAvailable());
 
     sub->unsubscribe();
+    pub->unregister();
 
 }
 
@@ -70,5 +72,35 @@ TEST(PubSub, PublisherMultipleDataTransfer)
 
     sub1->unsubscribe();
     sub2->unsubscribe();
+    pub->unregister();
+
+}
+
+TEST(PubSub, MultiplePublishers)
+{
+
+    msg::real::TEST_MESSAGE message;
+    message.test = 5;
+
+    Publisher<msg::real::TEST_MESSAGE>* pub1 = createNewPublisher(TEST_MESSAGE);
+    Publisher<msg::real::TEST_MESSAGE>* pub2 = createNewPublisher(TEST_MESSAGE);
+    Subscriber<msg::real::TEST_MESSAGE>* sub = createNewSubscriber(TEST_MESSAGE);
+
+    pub1->publish(&message);
+
+    EXPECT_TRUE(sub->isDataAvailable());
+    EXPECT_EQ(sub->getData()->test, 5);
+    EXPECT_FALSE(sub->isDataAvailable());
+
+    message.test = 10;
+    pub2->publish(&message);
+
+    EXPECT_TRUE(sub->isDataAvailable());
+    EXPECT_EQ(sub->getData()->test, 10);
+    EXPECT_FALSE(sub->isDataAvailable());
+
+    sub->unsubscribe();
+    pub1->unregister();
+    pub2->unregister();
 
 }
