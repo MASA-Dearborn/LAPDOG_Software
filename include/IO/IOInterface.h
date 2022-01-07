@@ -10,6 +10,17 @@
 namespace IO
 {
 
+    enum IOInterfaceType
+    {
+        TYPE_TCP = 0,
+        TYPE_I2C,
+        TYPE_SPI,
+        TYPE_CAN,
+        TYPE_UART,
+        NUM_TYPES,
+        ALL_TYPES,
+    };
+
     // Pure Virtual interface class
     class IOInterface
     {
@@ -25,6 +36,7 @@ namespace IO
         int getMessageID();
 
     protected:
+        IOInterfaceType type;
         StaticQueue<uint8_t, BUFFER_SIZE>* RX_BUFFER;
         StaticQueue<uint8_t, BUFFER_SIZE>* TX_BUFFER;
 
