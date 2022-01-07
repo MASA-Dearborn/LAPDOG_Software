@@ -67,6 +67,6 @@ namespace pubsub
         return new Subscriber<T>(type);
     }
 
-    #define createNewSubscriber(Message)    constructSubscriber<msg::real::Message>(msg::id::Message)
+    #define createNewSubscriber(Message)    pubsub::constructSubscriber<msg::real::Message>(msg::id::Message)
 
 }

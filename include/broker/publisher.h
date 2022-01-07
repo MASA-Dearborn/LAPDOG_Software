@@ -51,6 +51,6 @@ namespace pubsub
         return new Publisher<T>(type);
     }
 
-    #define createNewPublisher(Message)    constructPublisher<msg::real::Message>(msg::id::Message)
+    #define createNewPublisher(Message)    pubsub::constructPublisher<msg::real::Message>(msg::id::Message)
 
 }
