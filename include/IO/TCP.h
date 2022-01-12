@@ -43,8 +43,8 @@ namespace IO
             ~TCP_Interface();
 
             // Inherited from IOInterface
-            int readMessage(void* dest, const int num);
-            int writeMessage(void* src, const int num);
+            int readMessage(uint8_t* dest, const int num);
+            int writeMessage(uint8_t* src, const int num);
 
         protected:
 

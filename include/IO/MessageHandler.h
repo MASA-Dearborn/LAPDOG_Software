@@ -1,16 +1,21 @@
 #pragma once
 
 #include <array>
+#include <thread>
+#include <vector>
 
 #include "../messageTypes.h"
 #include "../broker/broker.h"
 #include "IOInterface.h"
+
 
 class MessageHandler
 {
     public:
         MessageHandler();
         ~MessageHandler();
+
+        void attachIOInterface(IO::IOInterface* interface);
 
     protected:
 
@@ -19,12 +24,15 @@ class MessageHandler
 
         void _initPublishers();
         void _initSubscribers();
-
-    private:
+        void _initIOInterface();
+        void _threadProcess();
 
         friend class IOInterface;
+        std::array<std::vector<IO::IOInterface*>, IO::NUM_TYPES> IOInterfaceList;
+
         std::array<pubsub::GenericPublisher*, msg::id::META_NUM_MESSAGES> publishers;
-        std::array<pubsub::GenericPublisher*, msg::id::META_NUM_MESSAGES> subscribers;
+        std::array<pubsub::GenericSubscriber*, msg::id::META_NUM_MESSAGES> subscribers;
         
+        std::thread messageHandlerThread;
 
 };

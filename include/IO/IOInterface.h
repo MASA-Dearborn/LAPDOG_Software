@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <memory>
 
 #include "../StaticQueue.h"
 #include "../messageTypes.h"
@@ -27,19 +28,33 @@ namespace IO
     public:
 
         // IO Interaction Methods
-        virtual int readMessage(void* dest, const int num) = 0;
-        virtual int writeMessage(void* src, const int num) = 0;
+        virtual int readMessage(uint8_t* dest, const int num) = 0;
+        virtual int writeMessage(uint8_t* src, const int num) = 0;
 
         // Internal State Methods
         int initBuffers();
         int getMessageSize();
         int getMessageID();
+        IOInterfaceType getType() { return type; }
 
     protected:
         IOInterfaceType type;
-        StaticQueue<uint8_t, BUFFER_SIZE>* RX_BUFFER;
-        StaticQueue<uint8_t, BUFFER_SIZE>* TX_BUFFER;
+        std::unique_ptr<StaticQueue<uint8_t, BUFFER_SIZE>> RX_BUFFER_PTR;
+        std::unique_ptr<StaticQueue<uint8_t, BUFFER_SIZE>> TX_BUFFER_PTR;
 
+    };
+
+    class GenericInterface : public IOInterface
+    {
+        public:
+            GenericInterface() { initBuffers(); }
+
+            int readMessage(uint8_t* dest, const int num) { return RX_BUFFER_PTR.get()->dequeue(dest, num); }
+            int writeMessage(uint8_t* src, const int num) { return TX_BUFFER_PTR.get()->enqueue(src, num); }
+
+            StaticQueue<uint8_t, BUFFER_SIZE>* getRXBuffer() { return RX_BUFFER_PTR.get(); }
+            StaticQueue<uint8_t, BUFFER_SIZE>* getTXBuffer() { return TX_BUFFER_PTR.get(); }
+    
     };
 
 }

@@ -7,6 +7,7 @@ add_library(
 
 add_library(
     IO
+    IO/MessageHandler.cpp
     IO/IOInterface.cpp
     IO/CAN.cpp
     IO/TCP.cpp

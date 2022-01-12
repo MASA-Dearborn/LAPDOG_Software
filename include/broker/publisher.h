@@ -13,6 +13,11 @@ namespace pubsub
             void unregister() { this->~GenericPublisher(); }
             msg::id::MessageType getType() const { return m_type; }
 
+            void publish(void* data)
+            {
+                _pushDataToBroker(data, m_size);
+            }
+
         protected:
 
             friend class Broker;
@@ -22,6 +27,7 @@ namespace pubsub
             void _pushDataToBroker(void* data, int size);
 
             msg::id::MessageType m_type;
+            unsigned int m_size;
 
     };
 
@@ -30,17 +36,12 @@ namespace pubsub
     {
         public:
             Publisher() {}
+            ~Publisher() {}
             Publisher(msg::id::MessageType type)
             {
                 m_type = type;
+                m_size = sizeof(T);
                 registerSelf();
-            }
-            ~Publisher() {}
-            
-            void unregister() { this->~GenericPublisher(); }
-            void publish(T* data)
-            {
-                _pushDataToBroker(data, sizeof(T));
             }
 
     };

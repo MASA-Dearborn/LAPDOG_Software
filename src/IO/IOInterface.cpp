@@ -4,18 +4,18 @@ using namespace IO;
 
 int IOInterface::getMessageSize() 
 { 
-    if ((msg::GENERIC_MESSAGE*)RX_BUFFER->peek() == nullptr) 
+    if ((msg::GENERIC_MESSAGE*)RX_BUFFER_PTR.get()->peek() == nullptr) 
         return -1;
     else
-        return ((msg::GENERIC_MESSAGE*)(RX_BUFFER->peek()))->size; 
+        return ((msg::GENERIC_MESSAGE*)(RX_BUFFER_PTR.get()->peek()))->size; 
 }
 
 int IOInterface::getMessageID() 
 { 
-    if ((msg::GENERIC_MESSAGE*)(RX_BUFFER->peek()) == nullptr) 
+    if ((msg::GENERIC_MESSAGE*)(RX_BUFFER_PTR.get()->peek()) == nullptr) 
         return -1;
     else
-        return ((msg::GENERIC_MESSAGE*)RX_BUFFER->peek())->id; 
+        return ((msg::GENERIC_MESSAGE*)RX_BUFFER_PTR.get()->peek())->id; 
 }
 
 /**
@@ -25,10 +25,10 @@ int IOInterface::getMessageID()
  */
 int IOInterface::initBuffers()
 {
-    RX_BUFFER = new StaticQueue<uint8_t, BUFFER_SIZE>();
-    TX_BUFFER = new StaticQueue<uint8_t, BUFFER_SIZE>();
+    RX_BUFFER_PTR = std::unique_ptr<StaticQueue<uint8_t, BUFFER_SIZE>>(new StaticQueue<uint8_t, BUFFER_SIZE>());
+    TX_BUFFER_PTR = std::unique_ptr<StaticQueue<uint8_t, BUFFER_SIZE>>(new StaticQueue<uint8_t, BUFFER_SIZE>());
 
-    if (RX_BUFFER == nullptr || TX_BUFFER == nullptr)
+    if (RX_BUFFER_PTR.get() == nullptr || TX_BUFFER_PTR.get() == nullptr)
         return -1;
     return 1;
 }

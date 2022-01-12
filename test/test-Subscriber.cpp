@@ -30,7 +30,7 @@ TEST(Subscriber, SubscriberRegistration)
     Subscriber<msg::real::TEST_MESSAGE>* sub = createNewSubscriber(TEST_MESSAGE);
 
     EXPECT_EQ(DataBroker.getNumSubscribers(msg::id::TEST_MESSAGE), 1);
-    EXPECT_EQ(sub->getData()->test, 0);
+    EXPECT_EQ(sub->getData()->test, 10);
 
     sub->unsubscribe();
 

@@ -7,12 +7,14 @@ using namespace IO;
 
 TCP_Interface::TCP_Interface()
 {
+	this->type = TYPE_TCP;
     this->serverInfo.listeningPort = 9000;
     init();
 }
 
 TCP_Interface::TCP_Interface(int listeningPort)
 {
+	this->type = TYPE_TCP;
     this->serverInfo.listeningPort = listeningPort;
     init();
 }
@@ -22,12 +24,12 @@ TCP_Interface::~TCP_Interface()
     closeServer();
 }
 
-int TCP_Interface::readMessage(void* dest, const int num)
+int TCP_Interface::readMessage(uint8_t* dest, const int num)
 {
 	return 0;
 }
 
-int TCP_Interface::writeMessage(void* src, const int num)
+int TCP_Interface::writeMessage(uint8_t* src, const int num)
 {
 	return 0;
 }
@@ -193,9 +195,9 @@ void TCP_Interface::_dataThread()
 	while(thread_active)
 	{
 
-		if(TX_BUFFER->getDataSize() > 0)
+		if(TX_BUFFER_PTR.get()->getDataSize() > 0)
 		{
-			int dataSize = TX_BUFFER->dequeue(data, TX_BUFFER->getDataSize());
+			int dataSize = TX_BUFFER_PTR.get()->dequeue(data, TX_BUFFER_PTR.get()->getDataSize());
 			for(tcp::ClientInfo& client : clientList)
 			{
 				_dataWrite(client, data, dataSize);
@@ -244,9 +246,9 @@ void TCP_Interface::_dataRead(tcp::ClientInfo& client, uint8_t* dataBuffer)
 	}
 	
 	printf("%s", dataBuffer);
-	TX_BUFFER->enqueue(dataBuffer, dataRead);
+	TX_BUFFER_PTR.get()->enqueue(dataBuffer, dataRead);
 	
-	if(RX_BUFFER->enqueue(dataBuffer, dataRead) != dataRead)
+	if(RX_BUFFER_PTR.get()->enqueue(dataBuffer, dataRead) != dataRead)
 		return; // TODO: Implement Error handling
 
 }
