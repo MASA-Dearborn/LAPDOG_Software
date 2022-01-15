@@ -31,13 +31,16 @@ namespace IO
         virtual int readMessage(uint8_t* dest, const int num) = 0;
         virtual int writeMessage(uint8_t* src, const int num) = 0;
 
-        // Internal State Methods
-        int initBuffers();
+        // RX Internal State Methods
         int getMessageSize();
         int getMessageID();
+        bool isMessageAvailable();
         IOInterfaceType getType() { return type; }
+        msg::GENERIC_MESSAGE* getMessagePtr();
 
     protected:
+        int initBuffers();
+
         IOInterfaceType type;
         std::unique_ptr<StaticQueue<uint8_t, BUFFER_SIZE>> RX_BUFFER_PTR;
         std::unique_ptr<StaticQueue<uint8_t, BUFFER_SIZE>> TX_BUFFER_PTR;

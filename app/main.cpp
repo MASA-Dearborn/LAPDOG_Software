@@ -1,12 +1,23 @@
-#include "broker/subscriber.h"
-#include "IO/TCP.h"
+#include "IO/MessageHandler.h"
+#include "broker/broker.h"
+
 #include <cstdio>
+
+using namespace pubsub;
 
 int main()
 {
 
-    IO::TCP_Interface* test = new IO::TCP_Interface();
+    MessageHandler* test = new MessageHandler();
 
-    while (true);
+    Subscriber<msg::real::TEST_MESSAGE>* sub = createNewSubscriber(TEST_MESSAGE);
 
+    while (true)
+    {
+        if(sub->isDataAvailable())
+        {
+            printf("Pushed data\n");
+            sub->getData();
+        }
+    }
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include "../messageTypes.h"
+#include <mutex>
 
 namespace pubsub
 {
@@ -10,10 +11,10 @@ namespace pubsub
             GenericSubscriber() {}
             ~GenericSubscriber() { unregisterSelf(); }
 
-            bool isDataAvailable()      { return m_isDataAvailable; }
-            void setDataAvailable()     { m_isDataAvailable = true; };
-            void clearDataAvailable()   { m_isDataAvailable = false; };
-            void unsubscribe() { this->~GenericSubscriber(); }
+            bool isDataAvailable();
+            void setDataAvailable();
+            void clearDataAvailable();
+            void unsubscribe();
 
             void setDataPointer(void* source) { m_dataPointer = source; }
             msg::id::MessageType getType() const { return m_type; };
@@ -24,8 +25,9 @@ namespace pubsub
             void registerSelf();
             void unregisterSelf();
 
+            std::mutex m_lock;
             msg::id::MessageType m_type = msg::id::UNDEFINED_MESSAGE;
-            bool m_isDataAvailable = false;
+            bool m_isDataAvailable;
             void* m_dataPointer = nullptr;
     };
 
@@ -43,6 +45,7 @@ namespace pubsub
             Subscriber(msg::id::MessageType type)
             {
                 m_type = type; 
+                m_isDataAvailable = false;
                 registerSelf();
             }
 

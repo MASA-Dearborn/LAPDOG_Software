@@ -15,3 +15,4 @@ add_library(
     IO/SPI.cpp
     IO/UART.cpp
 )
+target_link_libraries(IO PUBLIC pubsub)

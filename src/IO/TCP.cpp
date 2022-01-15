@@ -8,7 +8,7 @@ using namespace IO;
 TCP_Interface::TCP_Interface()
 {
 	this->type = TYPE_TCP;
-    this->serverInfo.listeningPort = 9000;
+    this->serverInfo.listeningPort = 9010;
     init();
 }
 
@@ -26,7 +26,7 @@ TCP_Interface::~TCP_Interface()
 
 int TCP_Interface::readMessage(uint8_t* dest, const int num)
 {
-	return 0;
+	return RX_BUFFER_PTR.get()->dequeue(dest, num);
 }
 
 int TCP_Interface::writeMessage(uint8_t* src, const int num)
@@ -245,8 +245,8 @@ void TCP_Interface::_dataRead(tcp::ClientInfo& client, uint8_t* dataBuffer)
 		return;
 	}
 	
-	printf("%s", dataBuffer);
-	TX_BUFFER_PTR.get()->enqueue(dataBuffer, dataRead);
+	//printf("%s", dataBuffer);
+	//TX_BUFFER_PTR.get()->enqueue(dataBuffer, dataRead);
 	
 	if(RX_BUFFER_PTR.get()->enqueue(dataBuffer, dataRead) != dataRead)
 		return; // TODO: Implement Error handling

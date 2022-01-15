@@ -4,18 +4,36 @@ using namespace IO;
 
 int IOInterface::getMessageSize() 
 { 
-    if ((msg::GENERIC_MESSAGE*)RX_BUFFER_PTR.get()->peek() == nullptr) 
+    if (getMessagePtr() == nullptr) 
         return -1;
-    else
-        return ((msg::GENERIC_MESSAGE*)(RX_BUFFER_PTR.get()->peek()))->size; 
+    
+    int messageSize = (getMessagePtr())->size;
+    int messageID = (getMessagePtr())->id;
+    return (messageID < 0 || messageID >= msg::id::META_NUM_MESSAGES) ? -1 : messageSize;
 }
 
 int IOInterface::getMessageID() 
 { 
-    if ((msg::GENERIC_MESSAGE*)(RX_BUFFER_PTR.get()->peek()) == nullptr) 
+    if (getMessagePtr() == nullptr) 
         return -1;
-    else
-        return ((msg::GENERIC_MESSAGE*)RX_BUFFER_PTR.get()->peek())->id; 
+
+    int messageID = (getMessagePtr())->id;
+    return (messageID < 0 || messageID >= msg::id::META_NUM_MESSAGES) ? -1 : messageID;
+}
+
+bool IOInterface::isMessageAvailable()
+{   
+    if (getMessagePtr() == nullptr) 
+        return -1;
+
+    int messageID = (getMessagePtr())->id;
+    int messageSize = getMessagePtr()->size;
+    return ((messageID < 0 || messageID >= msg::id::META_NUM_MESSAGES) || messageSize <= 0) ? false : true;
+}
+
+msg::GENERIC_MESSAGE* IOInterface::getMessagePtr()
+{
+    return (msg::GENERIC_MESSAGE*)RX_BUFFER_PTR.get()->peek();
 }
 
 /**
