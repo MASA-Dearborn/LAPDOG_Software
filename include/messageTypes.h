@@ -1,6 +1,7 @@
 /* Auto-generated Code from messageGenerator.py */
 
 #pragma once
+#include "string.h"
 
 namespace msg::id {
 
@@ -62,8 +63,8 @@ namespace msg {
     };
     
     union MessageUnion {
-        real::TEST_MESSAGE* TEST_MESSAGE;
-        real::TEST_MESSAGE_2* TEST_MESSAGE_2;
+        MessageUnion() { memset( this, 0, sizeof( MessageUnion ) ); }    real::TEST_MESSAGE TEST_MESSAGE;
+        real::TEST_MESSAGE_2 TEST_MESSAGE_2;
     };
     
     inline void* getMessageAddressFromCollection(MessageCollection& collection, const id::MessageType type) {
@@ -81,33 +82,42 @@ namespace msg {
 
 namespace msg::conv {
 
-    inline msg::real::TEST_MESSAGE TEST_MESSAGE_TO_REAL(msg::raw::TEST_MESSAGE raw) {
+    inline msg::real::TEST_MESSAGE TEST_MESSAGE_TO_REAL(msg::raw::TEST_MESSAGE* raw) {
         msg::real::TEST_MESSAGE real;
-        real.test = (raw.test * 1) + 0;
-        real.VAR2 = (raw.VAR2 * 0.00152587890625) + 0;
+        real.test = (raw->test * 1) + 0;
+        real.VAR2 = (raw->VAR2 * 0.00152587890625) + 0;
         return real;
     }
     
-    inline msg::real::TEST_MESSAGE_2 TEST_MESSAGE_2_TO_REAL(msg::raw::TEST_MESSAGE_2 raw) {
+    inline msg::real::TEST_MESSAGE_2 TEST_MESSAGE_2_TO_REAL(msg::raw::TEST_MESSAGE_2* raw) {
         msg::real::TEST_MESSAGE_2 real;
-        real.VAR1 = (raw.VAR1 * 1) + 0;
-        real.VAR2 = (raw.VAR2 * 0.0030517578125) + 0;
+        real.VAR1 = (raw->VAR1 * 1) + 0;
+        real.VAR2 = (raw->VAR2 * 0.0030517578125) + 0;
         return real;
     }
     
-    inline msg::raw::TEST_MESSAGE TEST_MESSAGE_TO_RAW(msg::real::TEST_MESSAGE real) {
+    inline msg::raw::TEST_MESSAGE TEST_MESSAGE_TO_RAW(msg::real::TEST_MESSAGE* real) {
         msg::raw::TEST_MESSAGE raw;
-        raw.test = (real.test - 0) / 1;
-        raw.VAR2 = (real.VAR2 - 0) / 0.00152587890625;
+        raw.test = (real->test - 0) / 1;
+        raw.VAR2 = (real->VAR2 - 0) / 0.00152587890625;
         return raw;
     }
     
-    inline msg::raw::TEST_MESSAGE_2 TEST_MESSAGE_2_TO_RAW(msg::real::TEST_MESSAGE_2 real) {
+    inline msg::raw::TEST_MESSAGE_2 TEST_MESSAGE_2_TO_RAW(msg::real::TEST_MESSAGE_2* real) {
         msg::raw::TEST_MESSAGE_2 raw;
-        raw.VAR1 = (real.VAR1 - 0) / 1;
-        raw.VAR2 = (real.VAR2 - 0) / 0.0030517578125;
+        raw.VAR1 = (real->VAR1 - 0) / 1;
+        raw.VAR2 = (real->VAR2 - 0) / 0.0030517578125;
         return raw;
     }
     
+    inline msg::id::MessageType convertRawToReal(msg::MessageUnion* dest, GENERIC_MESSAGE* raw) {
+        switch(raw->id) {
+            case msg::id::TEST_MESSAGE:
+                dest->TEST_MESSAGE = msg::conv::TEST_MESSAGE_TO_REAL((msg::raw::TEST_MESSAGE*)(raw));
+            case msg::id::TEST_MESSAGE_2:
+                dest->TEST_MESSAGE_2 = msg::conv::TEST_MESSAGE_2_TO_REAL((msg::raw::TEST_MESSAGE_2*)(raw));
+        }
+        return raw->id;
+    }
 }
 

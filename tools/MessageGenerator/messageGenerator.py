@@ -16,6 +16,7 @@ message_collection_struct = ''
 message_union_struct = ''
 ids_enum = ''
 collection_case_statements = ''
+conversion_case_statement = ''
 
 def signalToRawString(signal):
     return 'int ' + signal['name'] + ' : ' + str(signal['bits']) + ';\n'
@@ -33,7 +34,7 @@ def signalRawToReal(signal):
     else:
         factor = 1
 
-    return signal['name'] + ' = (raw.' + signal['name'] + ' * ' + str(factor) + ') + ' + str(signal['min']) + ';\n'
+    return signal['name'] + ' = (raw->' + signal['name'] + ' * ' + str(factor) + ') + ' + str(signal['min']) + ';\n'
 
 def signalRealToRaw(signal):
     # raw.signal = (real.signal - min) / factor
@@ -42,7 +43,7 @@ def signalRealToRaw(signal):
     else:
         factor = 1
 
-    return signal['name'] + ' = (real.' + signal['name'] + ' - ' + str(signal['min']) + ') / ' + str(factor) + ';\n'
+    return signal['name'] + ' = (real->' + signal['name'] + ' - ' + str(signal['min']) + ') / ' + str(factor) + ';\n'
 
 def createRawStructStr(message):
     struct = "struct " + message['name'] + ' : GENERIC_MESSAGE {\n'
@@ -90,7 +91,7 @@ def addMessageToCollectionUnion(message):
     '''
     global message_union_struct
     message_union_struct += '    real::' + message['name'] + ' ' + message['name'] + ';\n'
-    message_union_struct += '    raw::' + message['name'] + ' ' + message['name'] + ';\n'
+    #message_union_struct += '    raw::' + message['name'] + ' ' + message['name'] + ';\n'
     return
 
 def addMessageToCollectionCaseStatement(message):
@@ -107,7 +108,7 @@ def addMessageRawToRealConversion(message):
     '''
     global rawToReal_conversions
 
-    function = 'inline msg::real::' + message['name'] + ' ' + message['name'] + '_TO_REAL(msg::raw::' + message['name'] + ' raw) {\n'
+    function = 'inline msg::real::' + message['name'] + ' ' + message['name'] + '_TO_REAL(msg::raw::' + message['name'] + '* raw) {\n'
     function += '    msg::real::' + message['name'] + ' real;\n'
     for signal in message['signals']:
         function += '    real.' + signalRawToReal(signal)
@@ -122,13 +123,22 @@ def addMessageRealToRawConversion(message):
     '''
     global realToRaw_conversions
     
-    function = 'inline msg::raw::' + message['name'] + ' ' + message['name'] + '_TO_RAW(msg::real::' + message['name'] + ' real) {\n'
+    function = 'inline msg::raw::' + message['name'] + ' ' + message['name'] + '_TO_RAW(msg::real::' + message['name'] + '* real) {\n'
     function += '    msg::raw::' + message['name'] + ' raw;\n'
     for signal in message['signals']:
         function += '    raw.' + signalRealToRaw(signal)
     function += '    return raw;\n}\n'
 
     realToRaw_conversions.append(function)
+    return
+
+def addMessageToConversionStatement(message):
+    global conversion_case_statement
+
+    statement = '        case msg::id::' + message['name'] + ':\n'
+    statement += '            dest->' + message['name'] + ' = msg::conv::' + message['name'] + '_TO_REAL((msg::raw::' + message['name'] + '*)(raw));\n'           
+
+    conversion_case_statement += (statement)
     return
 
 def addMessage(message, id):
@@ -143,6 +153,7 @@ def addMessage(message, id):
     addMessageToCollectionCaseStatement(message)
     addMessageRealToRawConversion(message)
     addMessageRawToRealConversion(message)
+    addMessageToConversionStatement(message)
 
     return
 
@@ -151,15 +162,19 @@ def initGlobalStrings():
         Prefixes global strings to ensure valid C code
         Called before string creation section
     '''
-    global ids_enum, message_collection_struct, collection_case_statements, message_union_struct
+    global ids_enum, message_collection_struct, collection_case_statements, message_union_struct, conversion_case_statement
 
     message_collection_struct += 'struct MessageCollection {\n'
     message_union_struct += 'union MessageUnion {\n'
+    message_union_struct += '    MessageUnion() { memset( this, 0, sizeof( MessageUnion ) ); }'
 
     collection_case_statements += 'inline void* getMessageAddressFromCollection(MessageCollection& collection, const id::MessageType type) {\n'
     collection_case_statements += '    ' + 'switch (type) {\n'
 
     ids_enum += 'enum MessageType {\n'
+
+    conversion_case_statement += 'inline msg::id::MessageType convertRawToReal(msg::MessageUnion* dest, GENERIC_MESSAGE* raw) {\n'
+    conversion_case_statement += '    switch(raw->id) {\n'
 
     return
 
@@ -168,7 +183,7 @@ def finishGlobalStrings():
         Appends endings to global strings to make valid C code
         Called at end of string creation section
     '''
-    global ids_enum, message_collection_struct, collection_case_statements, message_union_struct
+    global ids_enum, message_collection_struct, collection_case_statements, message_union_struct, conversion_case_statement
 
     message_collection_struct += '};\n'
     message_union_struct += '};\n'
@@ -181,6 +196,8 @@ def finishGlobalStrings():
     ids_enum += '    META_NUM_MESSAGES,\n'
     ids_enum += '    UNDEFINED_MESSAGE,\n'
     ids_enum += '};\n'
+
+    conversion_case_statement += '    }\n    return raw->id;\n}'
 
     return
 
@@ -236,7 +253,7 @@ def writeNamespaceConv(file):
     '''
         Writes the namespace for conversion functions
     '''
-    global realToRaw_conversions, rawToReal_conversions
+    global realToRaw_conversions, rawToReal_conversions, conversion_case_statement
 
     file.write('namespace msg::conv {\n')
 
@@ -251,7 +268,11 @@ def writeNamespaceConv(file):
         func = '    ' + func
         func = func.replace('\n', '\n    ')
         file.write(func)
-    
+        
+    conversion_case_statement = '\n' + conversion_case_statement
+    conversion_case_statement = conversion_case_statement.replace('\n', '\n    ')
+    file.write(conversion_case_statement)
+
     file.write('\n}\n\n')
     return
 
@@ -303,7 +324,7 @@ if __name__ == "__main__":
 
     with open('messageTypes.h', 'w') as outputFile:
         outputFile.write('/* Auto-generated Code from messageGenerator.py */\n\n')
-        outputFile.write('#pragma once\n\n')
+        outputFile.write('#pragma once\n#include "string.h"\n\n')
         writeNamespaceIds(outputFile)
         writeGenericNamespace(outputFile)
         writeNamespaceReal(outputFile)
