@@ -32,7 +32,7 @@ int TCP_Interface::readMessage(uint8_t* dest, const int num)
 
 int TCP_Interface::writeMessage(uint8_t* src, const int num)
 {
-	return 0;
+	return TX_BUFFER_PTR.get()->enqueue(src, num);
 }
 
 void TCP_Interface::init()
