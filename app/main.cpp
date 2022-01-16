@@ -1,6 +1,7 @@
 #include "IO/MessageHandler.h"
 #include "broker/broker.h"
 
+#include <unistd.h>
 #include <cstdio>
 
 using namespace pubsub;
@@ -19,5 +20,6 @@ int main()
             printf("Pushed data\n");
             sub->getData();
         }
+        usleep(1000);
     }
 }

@@ -1,6 +1,8 @@
 #include "IO/MessageHandler.h"
 #include "IO/TCP.h"
 
+#include <unistd.h>
+
 #define __ADD_PUBLISHER_TO_MESSAGE_HANDLER(name)     publishers[msg::id::name] = createNewPublisher(name)
 #define __ADD_SUBSCRIBER_TO_MESSAGE_HANDLER(name)    subscribers[msg::id::name] = createNewSubscriber(name)
 
@@ -104,7 +106,6 @@ void MessageHandler::_initSubscribers()
 
 void MessageHandler::_messageHandlerThread()
 {
-
     uint8_t* buffer = new uint8_t[2048];
 
     while(messageHandlerThreadActive)
@@ -120,6 +121,9 @@ void MessageHandler::_messageHandlerThread()
                 }
             }
         }
+
+        usleep(1000);
+
     }
     delete buffer;
 }

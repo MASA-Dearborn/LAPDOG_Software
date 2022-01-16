@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <algorithm>
+#include <unistd.h>
 
 using namespace IO;
 
@@ -183,6 +184,9 @@ void TCP_Interface::_listenerThread()
 		clientWriteLock.lock();
 		clientList.push_back(newClient);
 		clientWriteLock.unlock();
+
+		usleep(10000);
+
 	}
 
 }
@@ -229,6 +233,9 @@ void TCP_Interface::_dataThread()
 			}
 			clientWriteLock.unlock();
 		}
+
+		usleep(500);
+
 	}
 
 	delete data;
