@@ -9,7 +9,7 @@ using namespace IO;
 TCP_Interface::TCP_Interface()
 {
 	this->type = TYPE_TCP;
-    this->serverInfo.listeningPort = 9010;
+    this->serverInfo.listeningPort = 9000;
     init();
 }
 
@@ -23,6 +23,8 @@ TCP_Interface::TCP_Interface(int listeningPort)
 TCP_Interface::~TCP_Interface()
 {
     closeServer();
+	listenThreadObj.join();
+	dataThreadObj.join();
 }
 
 int TCP_Interface::readMessage(uint8_t* dest, const int num)

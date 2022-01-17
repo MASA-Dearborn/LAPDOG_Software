@@ -15,6 +15,7 @@ namespace IO
 
     namespace tcp
     {
+
         struct ClientInfo
         {
             int socketID;
@@ -35,12 +36,16 @@ namespace IO
 
     };
 
+    /**
+     * @brief   TCP implementation fo IOInterface
+     * 
+     */
     class TCP_Interface : public IOInterface
     {
         public:
             TCP_Interface();
             TCP_Interface(int listeningPort);
-            ~TCP_Interface();
+            virtual ~TCP_Interface();
 
             // Inherited from IOInterface
             int readMessage(uint8_t* dest, const int num);
@@ -71,6 +76,32 @@ namespace IO
             tcp::ServerInfo serverInfo;
             std::vector<tcp::ClientInfo> clientList;
 
+    };
+
+    /**
+     * @brief   Basic client implementation for testing purposes
+     */
+    class TCPClient
+    {
+        public:
+            TCPClient() {}
+            TCPClient(const char* ip, int port) { initClient(ip, port); }
+            ~TCPClient() { disconnect(); }
+
+            int write(char* src, int amount) { return send(client.socketID, src, amount, 0); }
+            int read(char* dest, int amount) { return recv(client.socketID, dest, amount, MSG_DONTWAIT); };
+            void disconnect() { shutdown(client.socketID, SHUT_RDWR); }
+
+            void initClient(const char* ip, int port)
+            {
+                client.socketID = socket(AF_INET, SOCK_STREAM, 0);
+                client.address.sin_family = AF_INET;
+                client.address.sin_port = htons(port);
+                client.address.sin_addr.s_addr = inet_addr(ip);
+                connect(client.socketID, (struct sockaddr *)&client.address, sizeof(client.address));
+            }
+
+            tcp::ClientInfo client;
     };
 
 }

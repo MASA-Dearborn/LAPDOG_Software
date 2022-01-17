@@ -27,6 +27,8 @@ namespace IO
     {
     public:
 
+        virtual ~IOInterface() {}
+
         // IO Interaction Methods
         virtual int readMessage(uint8_t* dest, const int num) = 0;
         virtual int writeMessage(uint8_t* src, const int num) = 0;
