@@ -136,7 +136,8 @@ def addMessageToConversionStatement(message):
     global conversion_case_statement
 
     statement = '        case msg::id::' + message['name'] + ':\n'
-    statement += '            dest->' + message['name'] + ' = msg::conv::' + message['name'] + '_TO_REAL((msg::raw::' + message['name'] + '*)(raw));\n'           
+    statement += '            dest->' + message['name'] + ' = msg::conv::' + message['name'] + '_TO_REAL((msg::raw::' + message['name'] + '*)(raw));\n'
+    statement += '            break;\n'
 
     conversion_case_statement += (statement)
     return
