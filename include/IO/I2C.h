@@ -30,7 +30,6 @@ namespace IO
             void _init();
             void _openDevice();
             void _closeDevice();
-            void _setSlaveAddress(long address);
             void _registerMessageOperation(long slave_address, void (*read_function)(int, char*, int));
 
             void _thread();
@@ -42,8 +41,8 @@ namespace IO
             int m_fileDescriptor;
     };
 
-    static void _i2c_read(int fileDescriptor, char* dest, const int num);
-    static void _i2c_write(int fileDescriptor, int reg, char* src, const int num);
+    static void _i2c_read(int fileDescriptor, char* dest, const uint32_t num);
+    static void _i2c_write(int fileDescriptor, uint32_t reg, char* src, const uint32_t num);
     static void _i2c_set_slave_address(int fileDescriptor, long slave_address);
 
 };
