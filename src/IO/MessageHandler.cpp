@@ -110,6 +110,8 @@ void MessageHandler::_messageHandlerThread()
 
     while(messageHandlerThreadActive)
     {
+
+        // Check each IOInterface for an incomming message
         for(std::vector<IO::IOInterface*> IOInterfaceVector : IOInterfaceList)
         {
             for(IO::IOInterface* IOInterface : IOInterfaceVector)
@@ -120,6 +122,21 @@ void MessageHandler::_messageHandlerThread()
                     publishRawMessageToBroker((msg::GENERIC_MESSAGE*)buffer);
                 }
             }
+        }
+        
+        // Check each subscriber for recieved data to send
+        for(pubsub::GenericSubscriber* sub: subscribers)
+        {
+            if(sub == nullptr)
+                continue;
+            
+            if(sub->isDataAvailable())
+            {
+                // TODO: How to get data from generic subscriber without breaking architecture
+                // Maybe get the data pointer using a generic message cast and send that?
+                //sendSubscribedToIO(sub->getData());
+            }
+            
         }
 
         usleep(1000);
