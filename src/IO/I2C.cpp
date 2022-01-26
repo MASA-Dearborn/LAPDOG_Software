@@ -6,6 +6,8 @@
 
 using namespace IO;
 
+static void READ_TEST_MESSAGE(int fileDescriptor, char* buffer, int buffer_size);
+
 I2C_Interface::I2C_Interface()
 {
 
@@ -13,6 +15,7 @@ I2C_Interface::I2C_Interface()
 
 I2C_Interface::I2C_Interface(const char* dev_name)
 {
+    m_deviceName = dev_name;
     _init();
 }
 
@@ -26,7 +29,7 @@ I2C_Interface::~I2C_Interface()
 void I2C_Interface::_init()
 {
     /* Registration Functions */
-
+    _registerMessageOperation(0x30, READ_TEST_MESSAGE);
 
     _openDevice();
     m_threadObj = std::thread(&I2C_Interface::_thread, this);
@@ -152,8 +155,9 @@ static void READ_TEST_MESSAGE(int fileDescriptor, char* buffer, int buffer_size)
     char data[] = {64};
     _i2c_write(fileDescriptor, 8, data, 1);
 
-    char ret[16];
-    _i2c_read(fileDescriptor, ret, 16);
+    char ret[13] = {0};
+    ret[13] = '\0';
+    _i2c_read(fileDescriptor, ret, 12);
 
     printf("ret = %s\n", ret);
 }
