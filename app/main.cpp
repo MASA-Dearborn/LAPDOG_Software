@@ -1,16 +1,17 @@
 #include "IO/MessageHandler.h"
 #include "broker/broker.h"
+#include "IO/I2C.h"
 
 #include <unistd.h>
 #include <cstdio>
 
-using namespace pubsub;
+using namespace IO;
 
 int main()
 {
 
+    /*
     MessageHandler* test = new MessageHandler();
-
     Subscriber<msg::real::TEST_MESSAGE>* sub = createNewSubscriber(TEST_MESSAGE);
 
     while (true)
@@ -22,4 +23,13 @@ int main()
         }
         usleep(1000);
     }
+    */
+
+   I2C_Interface temp("/dev/i2c-1");
+
+   while(true)
+   {
+       usleep(1000);
+   }
+
 }

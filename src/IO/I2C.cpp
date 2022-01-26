@@ -13,12 +13,23 @@ I2C_Interface::I2C_Interface()
 
 I2C_Interface::I2C_Interface(const char* dev_name)
 {
-
+    _init();
 }
 
 I2C_Interface::~I2C_Interface()
 {
+    m_threadActive = false;
+    m_threadObj.join();
+    _closeDevice();
+}
 
+void I2C_Interface::_init()
+{
+    /* Registration Functions */
+
+
+    _openDevice();
+    m_threadObj = std::thread(&I2C_Interface::_thread, this);
 }
 
 int I2C_Interface::readMessage(uint8_t* dest, const int num)
@@ -27,11 +38,6 @@ int I2C_Interface::readMessage(uint8_t* dest, const int num)
 }
 
 int I2C_Interface::writeMessage(uint8_t* src, const int num)
-{
-
-}
-
-void I2C_Interface::_init()
 {
 
 }
@@ -59,6 +65,20 @@ void I2C_Interface::_registerMessageOperation(long slave_address, void (*read_fu
                                 .read_function = read_function  };
 
     m_slaveMessageOperations.push_back(temp);
+}
+
+void I2C_Interface::_thread()
+{
+
+    while (true) {
+
+        usleep(100000);
+
+        for(I2C_Slave_Message operation : m_slaveMessageOperations) {
+            operation.read_function(m_fileDescriptor, nullptr, 0);
+        }
+
+    }
 }
 
 /* I2C Functions */
@@ -127,5 +147,13 @@ static void _i2c_set_slave_address(int fileDescriptor, long slave_address)
 
 static void READ_TEST_MESSAGE(int fileDescriptor, char* buffer, int buffer_size)
 {
+    _i2c_set_slave_address(fileDescriptor, 0x30);
 
+    char data[] = {64};
+    _i2c_write(fileDescriptor, 8, data, 1);
+
+    char ret[16];
+    _i2c_read(fileDescriptor, ret, 16);
+
+    printf("ret = %s\n", ret);
 }
