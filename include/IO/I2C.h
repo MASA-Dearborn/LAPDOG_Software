@@ -41,8 +41,4 @@ namespace IO
             int m_fileDescriptor;
     };
 
-    static void _i2c_read(int fileDescriptor, char* dest, const uint32_t num);
-    static void _i2c_write(int fileDescriptor, uint32_t reg, char* src, const uint32_t num);
-    static void _i2c_set_slave_address(int fileDescriptor, long slave_address);
-
 };
