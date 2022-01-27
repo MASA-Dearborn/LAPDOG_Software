@@ -37,12 +37,12 @@ void I2C_Interface::_init()
 
 int I2C_Interface::readMessage(uint8_t* dest, const int num)
 {
-
+    return RX_BUFFER_PTR.get()->dequeue(dest, num);
 }
 
 int I2C_Interface::writeMessage(uint8_t* src, const int num)
 {
-
+    return TX_BUFFER_PTR.get()->enqueue(src, num);
 }
 
 void I2C_Interface::_openDevice()
