@@ -2,7 +2,6 @@
 
 #include <thread>
 #include <vector>
-#include <linux/i2c-dev.h>
 
 #include "IOInterface.h"
 
@@ -12,7 +11,7 @@ namespace IO
     struct I2C_Slave_Message
     {
         long slave_address;
-        void (*read_function)(int, char*, int); // file_id, data_buffer, size_of_buffer
+        void (*read_function)(int, int, char*, int); // file_id, data_buffer, size_of_buffer
     };
 
     class I2C_Interface : public IOInterface
@@ -30,7 +29,7 @@ namespace IO
             void _init();
             void _openDevice();
             void _closeDevice();
-            void _registerMessageOperation(long slave_address, void (*read_function)(int, char*, int));
+            void _registerMessageOperation(long slave_address, void (*read_function)(int, int, char*, int));
 
             void _thread();
             std::thread m_threadObj;

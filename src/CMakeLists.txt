@@ -12,6 +12,7 @@ add_library(
     IO/CAN.cpp
     IO/TCP.cpp
     IO/I2C.cpp
+    IO/I2C_Operations.cpp
     IO/SPI.cpp
     IO/UART.cpp
 )
