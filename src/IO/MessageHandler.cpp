@@ -57,6 +57,14 @@ void MessageHandler::publishRawMessageToBroker(msg::GENERIC_MESSAGE* message)
     publishers[message->id]->publish((msg::GENERIC_MESSAGE*)(&temp));
 }
 
+static void __sendMessageToInterfaces(std::vector<IO::IOInterface*>& interfaceVector, msg::GENERIC_MESSAGE* message)
+{
+    for (IO::IOInterface* interface : interfaceVector)
+    {
+        interface->writeMessage((uint8_t*)message, message->size);
+    }
+}
+
 /**
  * @brief   Pushes a GENERIC_MESSAGE to the IOInterfaces
  * 
@@ -67,13 +75,23 @@ void MessageHandler::sendSubscribedToIO(msg::GENERIC_MESSAGE* message)
     if (message == nullptr) 
         return;
 
-    for(std::vector<IO::IOInterface*> IOInterfaceVector : IOInterfaceList)
+    // Brute force method
+    // for(std::vector<IO::IOInterface*> IOInterfaceVector : IOInterfaceList)
+    // {
+    //     for(auto& IOInterface : IOInterfaceVector)
+    //     {
+    //         IOInterface->writeMessage((uint8_t*)message, message->size);
+    //     }
+    // }
+
+    // Send message to different Interface depending on the type
+    switch ( message->id )
     {
-        for(auto& IOInterface : IOInterfaceVector)
-        {
-            IOInterface->writeMessage((uint8_t*)message, message->size);
-        }
+    case msg::id::TEST_MESSAGE:
+        __sendMessageToInterfaces(this->IOInterfaceList[IO::TYPE_TCP], message);
+        break;
     }
+
 }
 
 /**
@@ -134,7 +152,7 @@ void MessageHandler::_messageHandlerThread()
             {
                 // TODO: How to get data from generic subscriber without breaking architecture
                 // Maybe get the data pointer using a generic message cast and send that?
-                //sendSubscribedToIO(sub->getData());
+                sendSubscribedToIO(sub->getGenericPointer());
             }
             
         }

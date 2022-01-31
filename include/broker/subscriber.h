@@ -17,6 +17,7 @@ namespace pubsub
             void unsubscribe();
 
             void setDataPointer(void* source) { m_dataPointer = source; }
+            msg::GENERIC_MESSAGE* getGenericPointer() { return (msg::GENERIC_MESSAGE*)m_dataPointer; }
             msg::id::MessageType getType() const { return m_type; };
 
         protected:
