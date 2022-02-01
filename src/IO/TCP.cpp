@@ -104,7 +104,6 @@ void TCP_Interface::closeServer()
 	shutdown(serverInfo.socketID, SHUT_RDWR);
 	clientList.resize(0);
 	thread_active = false;
-
 }
 
 void TCP_Interface::closeClient(int socketID)

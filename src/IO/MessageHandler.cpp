@@ -97,7 +97,6 @@ void MessageHandler::sendSubscribedToIO(msg::GENERIC_MESSAGE* message)
 void MessageHandler::_initIOInterface()
 {
     using namespace IO;
-    attachIOInterface(new TCP_Interface());
 }
 
 /**

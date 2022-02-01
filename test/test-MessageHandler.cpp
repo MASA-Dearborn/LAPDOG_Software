@@ -24,7 +24,7 @@ TEST(MessageHandlerTest, PublishAndSendTest)
     output.VAR2 = 30.4992676;
     
     pub->publish(&output);
-    usleep(1000);
+    usleep(100);
 
     returned_output = *((msg::real::TEST_MESSAGE_2*)interface->getTXBuffer());
     EXPECT_EQ(output.id, returned_output.id);
@@ -41,6 +41,9 @@ TEST(MessageHandlerTest, TCPInterfaceTest)
 
     MessageHandler handler;
     IO::TCPClient tcpClient;
+    handler.attachIOInterface(new IO::TCP_Interface());
+
+    usleep(100);
     tcpClient.initClient("127.0.0.1", LISTEN_PORT);
 
     pubsub::Subscriber<msg::real::TEST_MESSAGE>* sub = createNewSubscriber(TEST_MESSAGE);
