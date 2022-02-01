@@ -75,20 +75,16 @@ void MessageHandler::sendSubscribedToIO(msg::GENERIC_MESSAGE* message)
     if (message == nullptr) 
         return;
 
-    // Brute force method
-    // for(std::vector<IO::IOInterface*> IOInterfaceVector : IOInterfaceList)
-    // {
-    //     for(auto& IOInterface : IOInterfaceVector)
-    //     {
-    //         IOInterface->writeMessage((uint8_t*)message, message->size);
-    //     }
-    // }
-
     // Send message to different Interface depending on the type
     switch ( message->id )
     {
     case msg::id::TEST_MESSAGE:
         __sendMessageToInterfaces(this->IOInterfaceList[IO::TYPE_TCP], message);
+        __sendMessageToInterfaces(this->IOInterfaceList[IO::TYPE_GENERIC], message);
+        break;
+    case msg::id::TEST_MESSAGE_2:
+        __sendMessageToInterfaces(this->IOInterfaceList[IO::TYPE_TCP], message);
+        __sendMessageToInterfaces(this->IOInterfaceList[IO::TYPE_GENERIC], message);
         break;
     }
 

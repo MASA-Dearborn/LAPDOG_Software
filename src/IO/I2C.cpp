@@ -70,11 +70,12 @@ void I2C_Interface::_registerMessageOperation(long slave_address, void (*read_fu
 
 void I2C_Interface::_thread()
 {
-
+    // TODO: Create an approach that lets messages read at different intervals
     while (true) {
 
         usleep(100000);
 
+        // Read all messages
         for(I2C_Slave_Message operation : m_slaveMessageOperations) {
             operation.read_function(m_fileDescriptor, operation.slave_address, nullptr, 0);
         }

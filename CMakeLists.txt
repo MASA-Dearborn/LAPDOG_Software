@@ -4,6 +4,8 @@ set(CMAKE_CXX_STANDARD 11)
 
 set(CMAKE_TOOLCHAIN_FILE TC-zynq.cmake)
 
+add_compile_definitions(LISTEN_PORT=9015)
+
 # Google Test Setup
 include(FetchContent)
 FetchContent_Declare(

@@ -9,7 +9,7 @@ using namespace IO;
 TCP_Interface::TCP_Interface()
 {
 	this->type = TYPE_TCP;
-    this->serverInfo.listeningPort = 9000;
+    this->serverInfo.listeningPort = LISTEN_PORT;
     init();
 }
 

@@ -5,26 +5,45 @@
 
 #include <unistd.h>
 
-class MessageHandlerTest : public ::testing::Test
-{
-    public:
-        virtual void SetUp()
-        {
-            tcpClient.initClient("127.0.0.1", 9000);
-        }
 
-        virtual void TearDown()
-        {
-            tcpClient.disconnect();
-        }
+
+TEST(MessageHandlerTest, PublishAndSendTest)
+{
+
+    MessageHandler handler;
+
+    pubsub::Subscriber<msg::real::TEST_MESSAGE>* sub = createNewSubscriber(TEST_MESSAGE);
+    pubsub::Publisher<msg::real::TEST_MESSAGE_2>* pub = createNewPublisher(TEST_MESSAGE_2);
+    IO::GenericInterface* interface = new IO::GenericInterface();
+
+    handler.attachIOInterface(interface);
+
+    msg::real::TEST_MESSAGE_2 returned_output;
+    msg::real::TEST_MESSAGE_2 output;
+    output.VAR1 = 10;
+    output.VAR2 = 30.4992676;
+    
+    pub->publish(&output);
+    usleep(1000);
+
+    returned_output = *((msg::real::TEST_MESSAGE_2*)interface->getTXBuffer());
+    EXPECT_EQ(output.id, returned_output.id);
+    EXPECT_EQ(output.size, returned_output.size);
+    EXPECT_EQ(output.VAR1, returned_output.VAR1);
+    EXPECT_EQ(output.VAR2, returned_output.VAR2);
+
+    handler.~MessageHandler();
+    sub->unsubscribe();
+    pub->unregister();
+
+}
+
+TEST(MessageHandlerTest, TCPInterfaceTest)
+{
 
     MessageHandler handler;
     IO::TCPClient tcpClient;
-
-};
-
-TEST_F(MessageHandlerTest, TCPInterfaceTest)
-{
+    tcpClient.initClient("127.0.0.1", LISTEN_PORT);
 
     pubsub::Subscriber<msg::real::TEST_MESSAGE>* sub = createNewSubscriber(TEST_MESSAGE);
     EXPECT_FALSE(sub->isDataAvailable());
@@ -49,5 +68,6 @@ TEST_F(MessageHandlerTest, TCPInterfaceTest)
     EXPECT_EQ(tempReal.VAR2, retVal.VAR2);
 
     sub->unsubscribe();
+    tcpClient.disconnect();
 
 }

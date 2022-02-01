@@ -18,8 +18,8 @@ namespace IO
         TYPE_SPI,
         TYPE_CAN,
         TYPE_UART,
+        TYPE_GENERIC,
         NUM_TYPES,
-        ALL_TYPES,
     };
 
     // Pure Virtual interface class

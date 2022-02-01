@@ -25,7 +25,7 @@ int main()
     }
     */
 
-   I2C_Interface temp("/dev/i2c-1");
+   //I2C_Interface temp("/dev/i2c-1");
 
    while(true)
    {
