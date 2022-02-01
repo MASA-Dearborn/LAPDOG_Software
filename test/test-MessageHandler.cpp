@@ -32,10 +32,8 @@ TEST(MessageHandlerTest, PublishAndSendTest)
     EXPECT_EQ(output.VAR1, returned_output.VAR1);
     EXPECT_EQ(output.VAR2, returned_output.VAR2);
 
-    handler.~MessageHandler();
     sub->unsubscribe();
     pub->unregister();
-
 }
 
 TEST(MessageHandlerTest, TCPInterfaceTest)

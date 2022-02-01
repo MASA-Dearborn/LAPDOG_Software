@@ -30,8 +30,8 @@ class MessageHandler
         friend class IOInterface;
         std::array<std::vector<IO::IOInterface*>, IO::NUM_TYPES> IOInterfaceList;
 
-        std::array<pubsub::GenericPublisher*, msg::id::META_NUM_MESSAGES> publishers;
-        std::array<pubsub::GenericSubscriber*, msg::id::META_NUM_MESSAGES> subscribers;
+        std::array<pubsub::GenericPublisher*, msg::id::META_NUM_MESSAGES> publishers {nullptr};
+        std::array<pubsub::GenericSubscriber*, msg::id::META_NUM_MESSAGES> subscribers {nullptr};
         
         std::thread messageHandlerThreadObj;
         bool messageHandlerThreadActive = true;
