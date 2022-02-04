@@ -1,5 +1,6 @@
 #pragma once
-#include "messageTypes.h"
+#include "../messageTypes.h"
+#include <mutex>
 
 namespace pubsub
 {
@@ -10,13 +11,14 @@ namespace pubsub
             GenericSubscriber() {}
             ~GenericSubscriber() { unregisterSelf(); }
 
-            bool isDataAvailable()      { return m_isDataAvailable; }
-            void setDataAvailable()     { m_isDataAvailable = true; };
-            void clearDataAvailable()   { m_isDataAvailable = false; };
-            void unsubscribe() { this->~GenericSubscriber(); }
+            bool isDataAvailable();
+            void setDataAvailable();
+            void clearDataAvailable();
+            void unsubscribe();
 
             void setDataPointer(void* source) { m_dataPointer = source; }
-            msg::ids::MessageType getType() const { return m_type; };
+            msg::GENERIC_MESSAGE* getGenericPointer() { return (msg::GENERIC_MESSAGE*)m_dataPointer; }
+            msg::id::MessageType getType() const { return m_type; };
 
         protected:
 
@@ -24,8 +26,9 @@ namespace pubsub
             void registerSelf();
             void unregisterSelf();
 
-            msg::ids::MessageType m_type = msg::ids::UNDEFINED_MESSAGE;
-            bool m_isDataAvailable = false;
+            std::mutex m_lock;
+            msg::id::MessageType m_type = msg::id::UNDEFINED_MESSAGE;
+            bool m_isDataAvailable;
             void* m_dataPointer = nullptr;
     };
 
@@ -40,9 +43,10 @@ namespace pubsub
         public:
             Subscriber() {}
 
-            Subscriber(msg::ids::MessageType type)
+            Subscriber(msg::id::MessageType type)
             {
                 m_type = type; 
+                m_isDataAvailable = false;
                 registerSelf();
             }
 
@@ -62,11 +66,11 @@ namespace pubsub
      * @return  GenericSubscriber derived from Subscriber<T> configured for message of type 
      */
     template <typename T>
-    Subscriber<T>* constructSubscriber(msg::ids::MessageType type)
+    Subscriber<T>* constructSubscriber(msg::id::MessageType type)
     {
         return new Subscriber<T>(type);
     }
 
-    #define createNewSubscriber(Message)    constructSubscriber<msg::types::Message>(msg::ids::Message)
+    #define createNewSubscriber(Message)    pubsub::constructSubscriber<msg::real::Message>(msg::id::Message)
 
 }

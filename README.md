@@ -10,6 +10,10 @@ Inside build directory, initialize cmake with
 
 To build the code
 - cmake --build ./
+- cmake --build ./ --target main
+
+To run the code (while in build directory)
+- ./app/main 
 
 To Test the code
 - ctest

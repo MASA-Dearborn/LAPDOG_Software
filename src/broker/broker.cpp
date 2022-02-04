@@ -11,9 +11,9 @@ Broker pubsub::DataBroker;
  */
 Broker::~Broker()
 {
-    for(int i = 0; i < (int)msg::ids::META_NUM_MESSAGES; i++)
+    for(int i = 0; i < (int)msg::id::META_NUM_MESSAGES; i++)
     {
-        clearSubscribers((msg::ids::MessageType)i);
+        clearSubscribers((msg::id::MessageType)i);
     }
 }
 
@@ -35,7 +35,7 @@ void Broker::registerSubscriber(GenericSubscriber* subscriber)
  */
 void Broker::registerPublisher(GenericPublisher* publisher)
 {
-    publishers[publisher->getType()] = std::unique_ptr<GenericPublisher>(publisher);
+    publishers[publisher->getType()].push_back(std::unique_ptr<GenericPublisher>(publisher));
 }
 
 /**
@@ -46,7 +46,7 @@ void Broker::registerPublisher(GenericPublisher* publisher)
 void Broker::unregisterSubscriber(GenericSubscriber* subscriber)
 {
 
-    msg::ids::MessageType type = subscriber->getType();
+    msg::id::MessageType type = subscriber->getType();
 
     for(std::list<std::unique_ptr<GenericSubscriber>>::iterator iter = subscribers[type].begin(); iter != subscribers[type].end();)
     {
@@ -67,7 +67,17 @@ void Broker::unregisterSubscriber(GenericSubscriber* subscriber)
  */
 void Broker::unregisterPublisher(GenericPublisher* publisher)
 {
-    // TODO: Implement
+    msg::id::MessageType type = publisher->getType();
+
+    for(std::list<std::unique_ptr<GenericPublisher>>::iterator iter = publishers[type].begin(); iter != publishers[type].end();)
+    {
+        if(iter->get() == publisher)
+        {
+            iter = publishers[type].erase(iter);
+        } else {
+            ++iter;
+        }
+    }
 }
 
 /**
@@ -77,20 +87,26 @@ void Broker::unregisterPublisher(GenericPublisher* publisher)
  * @param   type    The Enum ID of the message pointer to recieve 
  * @return  void*   Void pointer to data location 
  */
-void* Broker::getLocalDataPointer(msg::ids::MessageType type)
+void* Broker::getLocalDataPointer(msg::id::MessageType type)
 {
     return msg::getMessageAddressFromCollection(MessageCollection, type);
 }
 
 
-void Broker::setMessageUpdateFlag(msg::ids::MessageType type)
+void Broker::setMessageUpdateFlag(msg::id::MessageType type)
 {
 
-    auto setFlag = [](std::unique_ptr<GenericSubscriber>& sub)
-    {
-        sub->setDataAvailable();
-    };
+    //auto setFlag = [](std::unique_ptr<GenericSubscriber>& sub)
+    //{
+    //    sub.get()->setDataAvailable();
+    //    printf("set\n");
+    //};
 
-    std::for_each(subscribers[type].begin(), subscribers[type].end(), setFlag);
+    //std::for_each(subscribers[type].begin(), subscribers[type].end(), setFlag);
+
+    for(std::unique_ptr<GenericSubscriber>& sub : subscribers[type])
+    {
+        sub.get()->setDataAvailable();
+    }
 
 }
