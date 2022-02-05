@@ -17,4 +17,10 @@ add_library(
     IO/SPI_Operations.cpp
     IO/UART.cpp
 )
-target_link_libraries(IO PUBLIC pubsub)
+target_link_libraries(IO PUBLIC pubsub Timer)
+
+add_library(
+    Timer
+    timer.cpp
+)
+target_link_libraries(Timer PUBLIC rt)
