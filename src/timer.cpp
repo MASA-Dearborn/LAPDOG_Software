@@ -36,13 +36,13 @@ void Timer::stopTimer()
 
 void Timer::setIntervalMilliseconds(long int milliseconds)
 {
-    timer_specs.it_interval.tv_sec = milliseconds % 1000;
+    timer_specs.it_interval.tv_sec = (milliseconds/1000);
     timer_specs.it_interval.tv_nsec = (milliseconds % 1000) * MILLISECONDS_TO_NANOSECONDS;
 }
 
 void Timer::setStartDelayMilliseconds(long int milliseconds)
 {
-    timer_specs.it_value.tv_sec = milliseconds % 1000;
+    timer_specs.it_value.tv_sec = (milliseconds/1000);
     timer_specs.it_value.tv_nsec = (milliseconds % 1000) * MILLISECONDS_TO_NANOSECONDS;
 }
 
