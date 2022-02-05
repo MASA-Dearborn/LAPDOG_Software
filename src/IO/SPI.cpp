@@ -15,7 +15,9 @@ SPI_Interface::SPI_Interface()
 
 SPI_Interface::~SPI_Interface()
 {
-    // Close all devices and shutdown thread
+    std::for_each(devices.begin(), devices.end(), [this](spi_device& dev){
+        _closeDevice(dev);
+    });
 }
 
 int SPI_Interface::readMessage(uint8_t* dest, const int num)
