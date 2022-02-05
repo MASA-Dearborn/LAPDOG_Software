@@ -14,6 +14,7 @@ add_library(
     IO/I2C.cpp
     IO/I2C_Operations.cpp
     IO/SPI.cpp
+    IO/SPI_Operations.cpp
     IO/UART.cpp
 )
 target_link_libraries(IO PUBLIC pubsub)
