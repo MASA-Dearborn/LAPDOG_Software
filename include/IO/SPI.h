@@ -1,3 +1,16 @@
+/**
+ * @file        SPI.h
+ * @author      Lucas Ringe (lringe@umich.edu)
+ * @brief       Contains all interfacing classes and data structures for SPI communication
+ * @version     0.1
+ * @date        2022-02-04
+ * @copyright   Copyright (c) 2022
+ * 
+ * @note        To add a SPI device, use the _registerDevice() function inside the _init() function.
+ *              To add a new read or write operation, use _registerOperation() in _init() and declare 
+ *              the function in SPI_Operations.h and define  in SPI_Operations.cpp
+ */
+
 #pragma once
 #include <thread>
 #include <array>
@@ -14,7 +27,7 @@
 namespace IO
 {
 
-    int example_read(int file_id, msg::GENERIC_MESSAGE* message);
+    // int example_read(int file_id, msg::GENERIC_MESSAGE* message);
 
     enum SPI_OperationType
     {
@@ -31,8 +44,10 @@ namespace IO
     struct spi_device
     {
         char name[64];
-        char device_file_name[64];
+        char device_file[64];
         int file_descriptor = -1;
+        uint8_t num_read_operations = 0;
+        uint8_t num_write_operations = 0;
         std::array<SPI_Slave_Message, MAX_SPI_OPERATIONS> read_operations;
         std::array<SPI_Slave_Message, MAX_SPI_OPERATIONS> write_operations;
     };
@@ -41,7 +56,6 @@ namespace IO
     {
         public:
             SPI_Interface();
-            SPI_Interface(const char* dev_name);
             ~SPI_Interface();
 
             // Inherited from IOInterface
@@ -53,7 +67,7 @@ namespace IO
             void _openDevice(spi_device& device);
             void _closeDevice(spi_device& device);
             void _registerDevice(const char* name, const char* device_file);
-            void _registerOperation(const char* device, SPI_OperationType type, int interval_ms, int*(int, msg::GENERIC_MESSAGE));
+            void _registerOperation(const char* device_name, SPI_OperationType type, int interval_ms, int (*func)(int, msg::GENERIC_MESSAGE*));
 
             /* Thread Data */
             void _thread();
