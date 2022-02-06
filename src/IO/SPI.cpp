@@ -8,8 +8,12 @@
 
 using namespace IO;
 
+static bool _timeIntervalPassed(uint64_t& last_trigger, uint64_t& current_time, uint64_t& interval);
+
 SPI_Interface::SPI_Interface()
 {
+    io_event_data.ref = this;
+    io_event_data.time_count = 50;
     _init();
 }
 
@@ -36,7 +40,18 @@ int SPI_Interface::writeMessage(uint8_t* src, const int num)
  */
 void SPI_Interface::_init()
 {
+    /* Initialize Buffers */
+    if (initBuffers() < 0)
+		return;
+
     // TODO: Define all default SPI devices here
+
+    /* Setup the Timer */
+    io_timer.setHandler((void (*)(union sigval))&SPI_Interface::_ioHandler);
+    io_timer.setHandlerDataPointer(&io_event_data);
+    io_timer.setIntervalMilliseconds(SPI_IO_INTERVAL_BASE_MS);
+    io_timer.setStartDelayMilliseconds(SPI_IO_INTERVAL_BASE_MS);
+    io_timer.startTimer();
 }
 
 /**
@@ -124,7 +139,57 @@ void SPI_Interface::_registerOperation(const char* device_name, SPI_OperationTyp
     }
 }
 
-void SPI_Interface::_thread()
+void SPI_Interface::_ioHandler(union sigval data)
 {
+    spi_timer_data* args = (spi_timer_data*)this; // <-- Stack Issue due to _ioHandler being a member of SPI_Interace #FIXME: remove _ioHandler from class
+    SPI_Interface* obj = (SPI_Interface*)args->ref;
+    static uint8_t data_buffer[1024];
 
+    /* Write message to devices */
+    while (obj->TX_BUFFER_PTR.get()->getDataSize() > 0)
+    {
+        msg::GENERIC_MESSAGE* temp = (msg::GENERIC_MESSAGE*)obj->TX_BUFFER_PTR.get()->peek();
+        obj->TX_BUFFER_PTR.get()->dequeue(data_buffer, temp->size);
+        temp = (msg::GENERIC_MESSAGE*)data_buffer;
+
+        std::for_each (obj->devices.begin(), obj->devices.begin() + obj->device_count, [&](spi_device& device)
+        {
+            if (device.file_descriptor == -1)
+                return;
+
+            std::for_each (device.write_operations.begin(), device.write_operations.begin() + device.num_write_operations, [&](SPI_Slave_Message& op) {
+                if (op.msg_type == temp->id)
+                    op.function(device.file_descriptor, temp);
+            });
+        });
+    }
+
+    /* Read message from devices */
+    std::for_each (obj->devices.begin(), obj->devices.begin() + obj->device_count, [&](spi_device& device)
+    {
+        if (device.file_descriptor == -1)
+            return;
+
+        std::for_each (device.read_operations.begin(), device.read_operations.begin() + device.num_read_operations, [&](SPI_Slave_Message& op) {
+            if (_timeIntervalPassed(op.last_trigger, args->time_count, op.interval_ms))
+                op.function(device.file_descriptor, (msg::GENERIC_MESSAGE*)data_buffer);
+
+            obj->RX_BUFFER_PTR.get()->enqueue(data_buffer, ((msg::GENERIC_MESSAGE*)data_buffer)->size);
+        });
+    });
+
+
+    // Increment time
+    args->time_count += SPI_IO_INTERVAL_BASE_MS;
+}
+
+static bool _timeIntervalPassed(uint64_t& last_trigger, uint64_t& current_time, uint64_t& interval)
+{
+    if ((current_time - last_trigger) > interval)
+    {
+        last_trigger = current_time;
+        return true;
+    } else {
+        return false;
+    }
 }
