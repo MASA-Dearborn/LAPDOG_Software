@@ -75,16 +75,19 @@ void MessageHandler::sendSubscribedToIO(msg::GENERIC_MESSAGE* message)
     if (message == nullptr) 
         return;
 
+    msg::RawMessageUnion converted_message;
+    msg::conv::convertRealToRaw(&converted_message, message);
+
     // Send message to different Interface depending on the type
     switch ( message->id )
     {
     case msg::id::TEST_MESSAGE:
-        __sendMessageToInterfaces(this->IOInterfaceList[IO::TYPE_TCP], message);
-        __sendMessageToInterfaces(this->IOInterfaceList[IO::TYPE_GENERIC], message);
+        __sendMessageToInterfaces(this->IOInterfaceList[IO::TYPE_TCP], &converted_message.TEST_MESSAGE);
+        __sendMessageToInterfaces(this->IOInterfaceList[IO::TYPE_GENERIC], &converted_message.TEST_MESSAGE);
         break;
     case msg::id::TEST_MESSAGE_2:
-        __sendMessageToInterfaces(this->IOInterfaceList[IO::TYPE_TCP], message);
-        __sendMessageToInterfaces(this->IOInterfaceList[IO::TYPE_GENERIC], message);
+        __sendMessageToInterfaces(this->IOInterfaceList[IO::TYPE_TCP], &converted_message.TEST_MESSAGE_2);
+        __sendMessageToInterfaces(this->IOInterfaceList[IO::TYPE_GENERIC], &converted_message.TEST_MESSAGE_2);
         break;
     }
 
