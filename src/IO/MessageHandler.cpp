@@ -50,7 +50,7 @@ void MessageHandler::publishRawMessageToBroker(msg::GENERIC_MESSAGE* message)
     if (message == nullptr) 
         return;
 
-    msg::MessageUnion temp;
+    msg::RealMessageUnion temp;
 
     msg::conv::convertRawToReal(&temp, message);
 

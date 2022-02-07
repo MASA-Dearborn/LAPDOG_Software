@@ -13,10 +13,12 @@ raw_struct_strings = []
 realToRaw_conversions = []
 rawToReal_conversions = []
 message_collection_struct = ''
-message_union_struct = ''
+real_message_union = ''
+raw_message_union = ''
 ids_enum = ''
 collection_case_statements = ''
-conversion_case_statement = ''
+raw_to_real_converter = ''
+real_to_raw_converter = ''
 
 def signalToRawString(signal):
     return 'int ' + signal['name'] + ' : ' + str(signal['bits']) + ';\n'
@@ -89,9 +91,9 @@ def addMessageToCollectionUnion(message):
     '''
         Adds a message type to the main MessageUnion struct
     '''
-    global message_union_struct
-    message_union_struct += '    real::' + message['name'] + ' ' + message['name'] + ';\n'
-    #message_union_struct += '    raw::' + message['name'] + ' ' + message['name'] + ';\n'
+    global real_message_union, raw_message_union
+    real_message_union += '    real::' + message['name'] + ' ' + message['name'] + ';\n'
+    raw_message_union += '    raw::' + message['name'] + ' ' + message['name'] + ';\n'
     return
 
 def addMessageToCollectionCaseStatement(message):
@@ -133,13 +135,18 @@ def addMessageRealToRawConversion(message):
     return
 
 def addMessageToConversionStatement(message):
-    global conversion_case_statement
+    global raw_to_real_converter, real_to_raw_converter
 
-    statement = '        case msg::id::' + message['name'] + ':\n'
-    statement += '            dest->' + message['name'] + ' = msg::conv::' + message['name'] + '_TO_REAL((msg::raw::' + message['name'] + '*)(raw));\n'
-    statement += '            break;\n'
+    statement_raw_to_real = '        case msg::id::' + message['name'] + ':\n'
+    statement_raw_to_real += '            dest->' + message['name'] + ' = msg::conv::' + message['name'] + '_TO_REAL((msg::raw::' + message['name'] + '*)(raw));\n'
+    statement_raw_to_real += '            break;\n'
 
-    conversion_case_statement += (statement)
+    statement_real_to_raw = '        case msg::id::' + message['name'] + ':\n'
+    statement_real_to_raw += '            dest->' + message['name'] + ' = msg::conv::' + message['name'] + '_TO_RAW((msg::real::' + message['name'] + '*)(real));\n'
+    statement_real_to_raw += '            break;\n'
+
+    raw_to_real_converter += (statement_raw_to_real)
+    real_to_raw_converter += (statement_real_to_raw)
     return
 
 def addMessage(message, id):
@@ -163,19 +170,26 @@ def initGlobalStrings():
         Prefixes global strings to ensure valid C code
         Called before string creation section
     '''
-    global ids_enum, message_collection_struct, collection_case_statements, message_union_struct, conversion_case_statement
+    global ids_enum, message_collection_struct, collection_case_statements, real_message_union, raw_message_union, raw_to_real_converter, real_to_raw_converter
 
     message_collection_struct += 'struct MessageCollection {\n'
-    message_union_struct += 'union MessageUnion {\n'
-    message_union_struct += '    MessageUnion() { memset( this, 0, sizeof( MessageUnion ) ); }'
+
+    real_message_union += 'union RealMessageUnion {\n'
+    real_message_union += '    RealMessageUnion() { memset( this, 0, sizeof( RealMessageUnion ) ); }\n'
+
+    raw_message_union += 'union RawMessageUnion {\n'
+    raw_message_union += '    RawMessageUnion() { memset( this, 0, sizeof( RawMessageUnion ) ); }\n'
 
     collection_case_statements += 'inline void* getMessageAddressFromCollection(MessageCollection& collection, const id::MessageType type) {\n'
     collection_case_statements += '    ' + 'switch (type) {\n'
 
     ids_enum += 'enum MessageType {\n'
 
-    conversion_case_statement += 'inline msg::id::MessageType convertRawToReal(msg::MessageUnion* dest, GENERIC_MESSAGE* raw) {\n'
-    conversion_case_statement += '    switch(raw->id) {\n'
+    raw_to_real_converter += 'inline msg::id::MessageType convertRawToReal(msg::RealMessageUnion* dest, GENERIC_MESSAGE* raw) {\n'
+    raw_to_real_converter += '    switch(raw->id) {\n'
+
+    real_to_raw_converter += 'inline msg::id::MessageType convertRealToRaw(msg::RawMessageUnion* dest, GENERIC_MESSAGE* real) {\n'
+    real_to_raw_converter += '    switch(real->id) {\n'
 
     return
 
@@ -184,10 +198,11 @@ def finishGlobalStrings():
         Appends endings to global strings to make valid C code
         Called at end of string creation section
     '''
-    global ids_enum, message_collection_struct, collection_case_statements, message_union_struct, conversion_case_statement
+    global ids_enum, message_collection_struct, collection_case_statements, real_message_union, raw_message_union, raw_to_real_converter, real_to_raw_converter
 
     message_collection_struct += '};\n'
-    message_union_struct += '};\n'
+    real_message_union += '};\n'
+    raw_message_union += '};\n'
 
     collection_case_statements += '        default:\n'
     collection_case_statements += '            return nullptr;\n'
@@ -198,7 +213,8 @@ def finishGlobalStrings():
     ids_enum += '    UNDEFINED_MESSAGE,\n'
     ids_enum += '};\n'
 
-    conversion_case_statement += '    }\n    return raw->id;\n}'
+    raw_to_real_converter += '    }\n    return raw->id;\n}\n'
+    real_to_raw_converter += '    }\n    return real->id;\n}\n'
 
     return
 
@@ -254,7 +270,7 @@ def writeNamespaceConv(file):
     '''
         Writes the namespace for conversion functions
     '''
-    global realToRaw_conversions, rawToReal_conversions, conversion_case_statement
+    global realToRaw_conversions, rawToReal_conversions, raw_to_real_converter, real_to_raw_converter
 
     file.write('namespace msg::conv {\n')
 
@@ -270,9 +286,13 @@ def writeNamespaceConv(file):
         func = func.replace('\n', '\n    ')
         file.write(func)
         
-    conversion_case_statement = '\n' + conversion_case_statement
-    conversion_case_statement = conversion_case_statement.replace('\n', '\n    ')
-    file.write(conversion_case_statement)
+    raw_to_real_converter = '\n' + raw_to_real_converter
+    raw_to_real_converter = raw_to_real_converter.replace('\n', '\n    ')
+    file.write(raw_to_real_converter)
+
+    real_to_raw_converter = '\n' + real_to_raw_converter
+    real_to_raw_converter = real_to_raw_converter.replace('\n', '\n    ')
+    file.write(real_to_raw_converter)
 
     file.write('\n}\n\n')
     return
@@ -289,7 +309,7 @@ def writeGenericNamespace(file):
     file.write('\n}\n\n')
 
 def writeNamespaceMsg(file):
-    global collection_case_statements, message_collection_struct, message_union_struct
+    global collection_case_statements, message_collection_struct, real_message_union, raw_message_union
 
     collection_case_statements = '    ' + collection_case_statements
     collection_case_statements = collection_case_statements.replace('\n', '\n    ')
@@ -297,15 +317,20 @@ def writeNamespaceMsg(file):
     message_collection_struct = '    ' + message_collection_struct
     message_collection_struct = message_collection_struct.replace('\n', '\n    ')
 
-    message_union_struct = '    ' + message_union_struct
-    message_union_struct = message_union_struct.replace('\n', '\n    ')
+    real_message_union = '    ' + real_message_union
+    real_message_union = real_message_union.replace('\n', '\n    ')
+
+    raw_message_union = '    ' + raw_message_union
+    raw_message_union = raw_message_union.replace('\n', '\n    ')
 
     file.write('namespace msg {\n\n')
 
     # Write Generated Messages
     file.write(message_collection_struct)
     file.write('\n')
-    file.write(message_union_struct)
+    file.write(real_message_union)
+    file.write('\n')
+    file.write(raw_message_union)
     file.write('\n')
     file.write(collection_case_statements)
 
@@ -326,6 +351,8 @@ if __name__ == "__main__":
     with open('messageTypes.h', 'w') as outputFile:
         outputFile.write('/* Auto-generated Code from messageGenerator.py */\n\n')
         outputFile.write('#pragma once\n#include "string.h"\n\n')
+        outputFile.write('#define MAX_RAW_MESSAGE_SIZE sizeof(msg::RawMessageUnion)\n')
+        outputFile.write('#define MAX_REAL_MESSAGE_SIZE sizeof(msg::RealMessageUnion)\n\n')
         writeNamespaceIds(outputFile)
         writeGenericNamespace(outputFile)
         writeNamespaceReal(outputFile)
