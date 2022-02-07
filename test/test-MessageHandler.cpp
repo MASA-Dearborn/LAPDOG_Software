@@ -18,19 +18,21 @@ TEST(MessageHandlerTest, PublishAndSendTest)
 
     handler.attachIOInterface(interface);
 
-    msg::real::TEST_MESSAGE_2 returned_output;
     msg::real::TEST_MESSAGE_2 output;
+    msg::raw::TEST_MESSAGE_2 returned_output;
+    msg::RealMessageUnion converted_message;
     output.VAR1 = 10;
     output.VAR2 = 30.4992676;
     
     pub->publish(&output);
     usleep(100);
 
-    returned_output = *((msg::real::TEST_MESSAGE_2*)interface->getTXBuffer());
-    EXPECT_EQ(output.id, returned_output.id);
-    EXPECT_EQ(output.size, returned_output.size);
-    EXPECT_EQ(output.VAR1, returned_output.VAR1);
-    EXPECT_EQ(output.VAR2, returned_output.VAR2);
+    returned_output = *((msg::raw::TEST_MESSAGE_2*)interface->getTXBuffer());
+    msg::conv::convertRawToReal(&converted_message, &returned_output);
+    EXPECT_EQ(output.id, converted_message.TEST_MESSAGE_2.id);
+    EXPECT_EQ(output.size, converted_message.TEST_MESSAGE_2.size);
+    EXPECT_EQ(output.VAR1, converted_message.TEST_MESSAGE_2.VAR1);
+    EXPECT_EQ(output.VAR2, converted_message.TEST_MESSAGE_2.VAR2);
 
     sub->unsubscribe();
     pub->unregister();
