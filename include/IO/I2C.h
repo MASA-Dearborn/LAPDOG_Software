@@ -11,7 +11,7 @@ namespace IO
     struct I2C_Slave_Message
     {
         long slave_address;
-        void (*read_function)(int, int, char*, int); // file_id, data_buffer, size_of_buffer
+        void (*read_function)(int, int, char*, int); // file_id, slave_address, data_buffer, size_of_buffer
     };
 
     class I2C_Interface : public IOInterface
