@@ -27,6 +27,7 @@ namespace IO
 {
 
     // int example_read(int file_id, msg::GENERIC_MESSAGE* message);
+    void _spi_io_handler(union sigval data);
 
     enum SPI_OperationType
     {
@@ -68,6 +69,7 @@ namespace IO
             // Inherited from IOInterface
             int readMessage(uint8_t* dest, const int num);
             int writeMessage(uint8_t* src, const int num);
+            friend void _spi_io_handler(union sigval data);
 
         protected:
             void _init();
@@ -77,7 +79,6 @@ namespace IO
             void _registerOperation(const char* device_name, SPI_OperationType type, int interval_ms, int (*func)(int, msg::GENERIC_MESSAGE*));
 
             /* IO Handling Data */
-            void _ioHandler(union sigval data);
             Timer io_timer;
             spi_timer_data io_event_data;
 

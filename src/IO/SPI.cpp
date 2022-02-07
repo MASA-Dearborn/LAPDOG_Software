@@ -47,7 +47,7 @@ void SPI_Interface::_init()
     // TODO: Define all default SPI devices here
 
     /* Setup the Timer */
-    io_timer.setHandler((void (*)(union sigval))&SPI_Interface::_ioHandler);
+    io_timer.setHandler((void (*)(union sigval))&_spi_io_handler);
     io_timer.setHandlerDataPointer(&io_event_data);
     io_timer.setIntervalMilliseconds(SPI_IO_INTERVAL_BASE_MS);
     io_timer.setStartDelayMilliseconds(SPI_IO_INTERVAL_BASE_MS);
@@ -139,9 +139,10 @@ void SPI_Interface::_registerOperation(const char* device_name, SPI_OperationTyp
     }
 }
 
-void SPI_Interface::_ioHandler(union sigval data)
+void IO::_spi_io_handler(union sigval data)
 {
-    spi_timer_data* args = (spi_timer_data*)this; // <-- Stack Issue due to _ioHandler being a member of SPI_Interace #FIXME: remove _ioHandler from class
+    /* Get the needed references from data */
+    spi_timer_data* args = (spi_timer_data*)data.sival_ptr;
     SPI_Interface* obj = (SPI_Interface*)args->ref;
     static uint8_t data_buffer[1024];
 
@@ -177,7 +178,6 @@ void SPI_Interface::_ioHandler(union sigval data)
             obj->RX_BUFFER_PTR.get()->enqueue(data_buffer, ((msg::GENERIC_MESSAGE*)data_buffer)->size);
         });
     });
-
 
     // Increment time
     args->time_count += SPI_IO_INTERVAL_BASE_MS;
