@@ -12,7 +12,6 @@
  */
 
 #pragma once
-#include <thread>
 #include <array>
 
 #include "timer.h"
@@ -76,7 +75,7 @@ namespace IO
             void _openDevice(spi_device& device);
             void _closeDevice(spi_device& device);
             void _registerDevice(const char* name, const char* device_file);
-            void _registerOperation(const char* device_name, SPI_OperationType type, int interval_ms, int (*func)(int, msg::GENERIC_MESSAGE*));
+            void _registerOperation(const char* device_name, SPI_OperationType type, msg::id::MessageType msg_id, int interval_ms, int (*func)(int, msg::GENERIC_MESSAGE*));
 
             /* IO Handling Data */
             Timer io_timer;
