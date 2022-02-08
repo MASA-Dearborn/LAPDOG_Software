@@ -26,10 +26,11 @@ void I2C_Interface::_init()
 {
     /* Registration Functions */
     _registerMessageOperation(0x30, 100, READ_TEST_MESSAGE);
-
     _openDevice();
     
     /* Start Timer */
+    io_event_data.time_count = 0;
+    io_event_data.ref = this;
     io_timer.setHandler((void (*)(union sigval))&_i2c_io_handler);
     io_timer.setHandlerDataPointer(&io_event_data);
     io_timer.setIntervalMilliseconds(I2C_IO_INTERVAL_BASE_MS);
@@ -75,6 +76,17 @@ void I2C_Interface::_registerMessageOperation(long slave_address, int interval_m
     m_slaveMessageOperations.push_back(temp);
 }
 
+static bool _timeIntervalPassed(uint64_t& last_trigger, uint64_t& current_time, uint64_t& interval)
+{
+    if ((current_time - last_trigger) > interval)
+    {
+        last_trigger = current_time;
+        return true;
+    } else {
+        return false;
+    }
+}
+
 void IO::_i2c_io_handler(union sigval data)
 {
     /* Get the needed references from data */
@@ -82,12 +94,11 @@ void IO::_i2c_io_handler(union sigval data)
     I2C_Interface* obj = (I2C_Interface*)args->ref;
     static uint8_t data_buffer[1024];
 
-    while (true) {
-
-        // Read all messages
-        for(I2C_Slave_Message operation : obj->m_slaveMessageOperations) {
-            operation.read_function(obj->m_fileDescriptor, operation.slave_address, nullptr, 0);
-        }
-
+    // Read all messages
+    for(I2C_Slave_Message& operation : obj->m_slaveMessageOperations) {
+        if (_timeIntervalPassed(operation.last_trigger, obj->io_event_data.time_count, operation.interval_ms))
+            printf("Test!\n");
+            //operation.read_function(obj->m_fileDescriptor, operation.slave_address, nullptr, 0);
     }
+
 }
