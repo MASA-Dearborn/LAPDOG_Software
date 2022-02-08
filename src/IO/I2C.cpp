@@ -25,7 +25,7 @@ I2C_Interface::~I2C_Interface()
 void I2C_Interface::_init()
 {
     /* Registration Functions */
-    _registerMessageOperation(0x30, READ_TEST_MESSAGE);
+    _registerMessageOperation(0x30, 100, READ_TEST_MESSAGE);
 
     _openDevice();
     
@@ -62,7 +62,7 @@ void I2C_Interface::_closeDevice()
     close(m_fileDescriptor);
 }
 
-void I2C_Interface::_registerMessageOperation(long slave_address, void (*read_function)(int, int, char*, int))
+void I2C_Interface::_registerMessageOperation(long slave_address, int interval_ms, void (*read_function)(int, int, char*, int))
 {
     if(read_function == nullptr)
         return;
@@ -70,6 +70,7 @@ void I2C_Interface::_registerMessageOperation(long slave_address, void (*read_fu
     I2C_Slave_Message temp;
     temp.read_function = read_function;
     temp.slave_address = slave_address;
+    temp.interval_ms = interval_ms;
 
     m_slaveMessageOperations.push_back(temp);
 }

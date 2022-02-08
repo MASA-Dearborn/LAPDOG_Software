@@ -43,7 +43,7 @@ namespace IO
             void _init();
             void _openDevice();
             void _closeDevice();
-            void _registerMessageOperation(long slave_address, void (*read_function)(int, int, char*, int));
+            void _registerMessageOperation(long slave_address, int interval_ms, void (*read_function)(int, int, char*, int));
 
             /* IO Handling Data */
             Timer io_timer;
