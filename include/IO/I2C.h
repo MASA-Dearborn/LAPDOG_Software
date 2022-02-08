@@ -25,8 +25,8 @@ namespace IO
     {
         uint64_t interval_ms = 0;
         uint64_t last_trigger = 0;
-        long slave_address;
-        void (*read_function)(int, int, char*, int); // file_id, slave_address, data_buffer, size_of_buffer
+        msg::id::MessageType msg_type = msg::id::UNDEFINED_MESSAGE;
+        void (*function)(int, int, msg::GENERIC_MESSAGE*) = nullptr; // file_id, slave_address 
     };
 
     struct i2c_device
@@ -34,10 +34,11 @@ namespace IO
         char name[64];
         char device_file[64];
         int file_descriptor = -1;
+        int slave_address = 0;
         uint8_t num_read_operations = 0;
         uint8_t num_write_operations = 0;
-        std::array<SPI_Slave_Message, MAX_I2C_OPERATIONS> read_operations;
-        std::array<SPI_Slave_Message, MAX_I2C_OPERATIONS> write_operations;
+        std::array<I2C_Slave_Message, MAX_I2C_OPERATIONS> read_operations;
+        std::array<I2C_Slave_Message, MAX_I2C_OPERATIONS> write_operations;
     };
 
     struct i2c_timer_data
@@ -62,14 +63,14 @@ namespace IO
             void _openDevice(i2c_device& device);
             void _closeDevice(i2c_device& device);
             void _registerDevice(const char* name, const char* device_file, int slave_address);
-            void _registerOperation(const char* device_name, I2C_OperationType type, int interval_ms, int (*func)(int, msg::GENERIC_MESSAGE*));
+            void _registerOperation(const char* device_name, I2C_OperationType type, msg::id::MessageType msg_id, int interval_ms, void (*func)(int, int, msg::GENERIC_MESSAGE*));
 
             /* IO Handling Data */
             Timer io_timer;
             i2c_timer_data io_event_data;
 
             int device_count = 0;
-            std::array<spi_device, MAX_I2C_DEVICES> devices;
+            std::array<i2c_device, MAX_I2C_DEVICES> devices;
     };
 
 };
