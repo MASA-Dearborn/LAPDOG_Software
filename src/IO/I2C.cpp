@@ -19,8 +19,6 @@ I2C_Interface::I2C_Interface(const char* dev_name)
 
 I2C_Interface::~I2C_Interface()
 {
-    m_threadActive = false;
-    m_threadObj.join();
     _closeDevice();
 }
 
@@ -30,7 +28,14 @@ void I2C_Interface::_init()
     _registerMessageOperation(0x30, READ_TEST_MESSAGE);
 
     _openDevice();
-    m_threadObj = std::thread(&I2C_Interface::_thread, this);
+    
+    /* Start Timer */
+    io_timer.setHandler((void (*)(union sigval))&_i2c_io_handler);
+    io_timer.setHandlerDataPointer(&io_event_data);
+    io_timer.setIntervalMilliseconds(I2C_IO_INTERVAL_BASE_MS);
+    io_timer.setStartDelayMilliseconds(I2C_IO_INTERVAL_BASE_MS);
+    io_timer.startTimer();
+
 }
 
 int I2C_Interface::readMessage(uint8_t* dest, const int num)
@@ -62,22 +67,25 @@ void I2C_Interface::_registerMessageOperation(long slave_address, void (*read_fu
     if(read_function == nullptr)
         return;
 
-    I2C_Slave_Message temp = {  .slave_address = slave_address,
-                                .read_function = read_function  };
+    I2C_Slave_Message temp;
+    temp.read_function = read_function;
+    temp.slave_address = slave_address;
 
     m_slaveMessageOperations.push_back(temp);
 }
 
-void I2C_Interface::_thread()
+void IO::_i2c_io_handler(union sigval data)
 {
-    // TODO: Create an approach that lets messages read at different intervals
+    /* Get the needed references from data */
+    i2c_timer_data* args = (i2c_timer_data*)data.sival_ptr;
+    I2C_Interface* obj = (I2C_Interface*)args->ref;
+    static uint8_t data_buffer[1024];
+
     while (true) {
 
-        usleep(100000);
-
         // Read all messages
-        for(I2C_Slave_Message operation : m_slaveMessageOperations) {
-            operation.read_function(m_fileDescriptor, operation.slave_address, nullptr, 0);
+        for(I2C_Slave_Message operation : obj->m_slaveMessageOperations) {
+            operation.read_function(obj->m_fileDescriptor, operation.slave_address, nullptr, 0);
         }
 
     }

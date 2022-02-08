@@ -37,7 +37,7 @@ namespace IO
 
     struct SPI_Slave_Message
     {
-        uint64_t interval_ms = 0; // unused
+        uint64_t interval_ms = 0;
         uint64_t last_trigger = 0;
         msg::id::MessageType msg_type = msg::id::UNDEFINED_MESSAGE;
         int (*function)(int, msg::GENERIC_MESSAGE*) = nullptr; // file_id, generic_message
