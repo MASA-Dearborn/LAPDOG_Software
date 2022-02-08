@@ -13,7 +13,7 @@ static bool _timeIntervalPassed(uint64_t& last_trigger, uint64_t& current_time, 
 SPI_Interface::SPI_Interface()
 {
     io_event_data.ref = this;
-    io_event_data.time_count = 50;
+    io_event_data.time_count = 0;
     _init();
 }
 
@@ -104,7 +104,7 @@ void SPI_Interface::_registerDevice(const char* name, const char* device_file)
  * @param interval_ms   The period the function should be called at
  * @param func          Pointer to the operation function
  */
-void SPI_Interface::_registerOperation(const char* device_name, SPI_OperationType type, int interval_ms, int (*func)(int, msg::GENERIC_MESSAGE*))
+void SPI_Interface::_registerOperation(const char* device_name, SPI_OperationType type, msg::id::MessageType msg_id, int interval_ms, int (*func)(int, msg::GENERIC_MESSAGE*))
 {
     // Find device with matching name
     int dev_idx;
@@ -117,6 +117,7 @@ void SPI_Interface::_registerOperation(const char* device_name, SPI_OperationTyp
     SPI_Slave_Message temp;
     temp.interval_ms = interval_ms;
     temp.function = func;
+    temp.msg_type = msg_id;
 
     spi_device& dev = (devices[dev_idx]);
 
