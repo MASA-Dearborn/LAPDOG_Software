@@ -6,7 +6,7 @@
 #include "../StaticQueue.h"
 #include "../messageTypes.h"
 
-#define BUFFER_SIZE 16777216
+#define BUFFER_SIZE 1024*4
 
 namespace IO
 {
