@@ -22,6 +22,8 @@ void UART_Interface::_init()
 
     /* Register Devices */
 
+    /* Register Writeable Messages to Devices */
+
     /* Setup the Timer */
     io_event_data.ref = this;
     io_event_data.time_count = 0;
@@ -43,6 +45,20 @@ void UART_Interface::_registerDevice(const char* name, const char* device_file, 
     _openDevice(devices[device_count]);
     _configDevice(devices[device_count], baud);
     device_count++;
+}
+
+void UART_Interface::_deviceAddWriteableMessage(const char* device_name, msg::id::MessageType type)
+{
+    int dev_idx;
+
+    /* Find device with matching name */
+    for (dev_idx = 0; dev_idx < device_count; dev_idx++) {
+        if (strcmp(device_name, devices[dev_idx].name) == 0)
+            break;
+    }
+
+    /* Set msg table index to true */
+    devices[dev_idx].writeable_messages[type] = true;
 }
 
 void UART_Interface::_openDevice(uart_device& device)
@@ -129,6 +145,26 @@ void IO::_uart_io_handler(union sigval data)
     int ret = 0;
 
     /* Write available messages to specific devices */
+    if (obj->TX_BUFFER_PTR.get()->getDataSize() > 0)
+    {
+        /* Read message into the buffer */
+        msg::GENERIC_MESSAGE* temp = (msg::GENERIC_MESSAGE*)obj->TX_BUFFER_PTR.get()->peek();
+        obj->TX_BUFFER_PTR.get()->dequeue(buffer, temp->size);
+        temp = (msg::GENERIC_MESSAGE*)buffer;
+
+        /* Check to see which devices can write the message */
+        std::for_each (obj->devices.begin(), obj->devices.begin() + obj->device_count, [&](uart_device& device)
+        {
+            if (device.file_descriptor == -1)
+                return;
+
+            /* Device can write this message */
+            if (true == device.writeable_messages[temp->id])
+            {
+                _uart_write(device, buffer, temp->size);
+            }
+        });
+    }
 
     /* Read message from devices */
     std::for_each (obj->devices.begin(), obj->devices.begin() + obj->device_count, [&](uart_device& device)

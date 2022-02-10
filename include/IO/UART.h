@@ -24,6 +24,7 @@ namespace IO
         int file_descriptor = -1;
         speed_t baud_rate;
         struct termios tty;
+        std::array<bool, msg::id::META_NUM_MESSAGES> writeable_messages = {false}; 
     };
 
     struct uart_timer_data
@@ -46,6 +47,7 @@ namespace IO
 
             void _init();
             void _registerDevice(const char* name, const char* device_file, speed_t baud);
+            void _deviceAddWriteableMessage(const char* device_name, msg::id::MessageType type);
             void _openDevice(uart_device& device);
             void _closeDevice(uart_device& device);
             void _configDevice(uart_device& device, speed_t baud);
