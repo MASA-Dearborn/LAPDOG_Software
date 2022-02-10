@@ -1,144 +1,145 @@
 #include "IO/UART.h"
 #include <poll.h>
+#include <algorithm>
 
 using namespace IO;
 
 UART_Interface::UART_Interface()
 {
-
-}
-
-UART_Interface::UART_Interface(const char* dev_name, speed_t baud_rate)
-{
-    this->device_name = dev_name;
-    this->baud_rate = baud_rate;
-
-    _openDevice();
-    _configDevice();
-
-    this->thread_active = true;
-    std::thread(&UART_Interface::_thread, this);
+    _init();
 }
 
 UART_Interface::~UART_Interface()
 {
-    _closeDevice();
+    
 }
 
-int UART_Interface::_read(uint8_t* dest, const int num)
+void UART_Interface::_init()
+{
+    /* Initialize Buffers */
+    if (initBuffers() < 0)
+		return;
+
+    /* Register Devices */
+
+    /* Setup the Timer */
+    io_event_data.ref = this;
+    io_event_data.time_count = 0;
+    io_timer.setHandler((void (*)(union sigval))&_uart_io_handler);
+    io_timer.setHandlerDataPointer(&io_event_data);
+    io_timer.setIntervalMilliseconds(UART_IO_INTERVAL_BASE_MS);
+    io_timer.setStartDelayMilliseconds(UART_IO_INTERVAL_BASE_MS);
+    io_timer.startTimer();
+}
+
+void UART_Interface::_registerDevice(const char* name, const char* device_file, speed_t baud)
+{
+    if (device_count >= MAX_UART_DEVICES)
+        return;
+
+    strcpy(devices[device_count].name, name);
+    strcpy(devices[device_count].device_file, device_file);
+
+    _openDevice(devices[device_count]);
+    _configDevice(devices[device_count], baud);
+    device_count++;
+}
+
+void UART_Interface::_openDevice(uart_device& device)
+{
+    device.file_descriptor = open(device.device_file, O_RDWR);
+    if(device.file_descriptor < 0)
+    {
+        printf("Error serial port cannot be opened at: %s\n", device.name);
+    }
+}
+
+void UART_Interface::_closeDevice(uart_device& device)
+{
+    close(device.file_descriptor);
+}
+
+void UART_Interface::_configDevice(uart_device& device, speed_t baud)
+{
+    // Following https://blog.mbedded.ninja/programming/operating-systems/linux/linux-serial-ports-using-c-cpp/
+    // Control Modes
+    device.tty.c_cflag &= ~PARENB;         // Disable Parity
+    device.tty.c_cflag &= ~CSTOPB;         // Use 1 stop bit
+    device.tty.c_cflag &= ~CSIZE;          // Clear all size bits
+    device.tty.c_cflag |= CS8;             // Use 8 bit data
+    device.tty.c_cflag &= ~CRTSCTS;        // Disable RTS/CTS 
+    device.tty.c_cflag |= CREAD | CLOCAL;  // Turn on READ & ignore ctrl lines (CLOCAL = 1)
+
+    // Local Modes
+    device.tty.c_lflag &= ~ICANON;         // Set Canonical
+    device.tty.c_lflag &= ~ECHO;           // Disable echo
+    device.tty.c_lflag &= ~ECHOE;          // Disable erasure
+    device.tty.c_lflag &= ~ECHONL;         // Disable new-line echo
+    device.tty.c_lflag &= ~ISIG;           // Disable interpretation of INTR, QUIT and SUSP
+
+    // Input Modes
+    device.tty.c_iflag &= ~(IXON | IXOFF | IXANY);                             // Turn off s/w flow ctrl
+    device.tty.c_iflag &= ~(IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL);    // Disable any special handling of received bytes
+
+    // Output Modes
+    device.tty.c_oflag &= ~OPOST; // Prevent special interpretation of output bytes (e.g. newline chars)
+    device.tty.c_oflag &= ~ONLCR; // Prevent conversion of newline to carriage return/line feed
+
+    // Set Timeouts
+    device.tty.c_cc[VTIME] = 0;    // Min timeout
+    device.tty.c_cc[VMIN] = 0;     // Min number to read
+
+    // Set Baudrate
+    device.baud_rate = baud;
+    cfsetispeed(&(device.tty), baud);
+    cfsetospeed(&(device.tty), baud);
+
+    int errno;
+    if (tcsetattr(device.file_descriptor, TCSANOW, &device.tty) != 0) 
+    {
+        printf("Error %i from tcsetattr: %s\n", errno, strerror(errno));
+    }
+}
+
+int _uart_read(uart_device& device, uint8_t* dest, const int num)
 {
     if(dest == nullptr)
         return -1;
 
-    return read(serial_port, dest, num);
+    return read(device.file_descriptor, dest, num);
 }
 
-int UART_Interface::_write(uint8_t* src, const int num)
+int _uart_write(uart_device& device, uint8_t* src, const int num)
 {
     if(src == nullptr)
         return -1;
 
-    int retVal = write(serial_port, src, num);
+    int retVal = write(device.file_descriptor, src, num);
     if(retVal < 0)
         return -1;
 
     return retVal;
 }
 
-void UART_Interface::_openDevice()
+void IO::_uart_io_handler(union sigval data)
 {
-    serial_port = open(device_name, O_RDWR);
-    if(serial_port < 0)
+    static uint8_t buffer[BUFFER_SIZE];
+    uart_timer_data* args = (uart_timer_data*)data.sival_ptr;
+    UART_Interface* obj = (UART_Interface*)args->ref;
+    int ret = 0;
+
+    /* Write available messages to specific devices */
+
+    /* Read message from devices */
+    std::for_each (obj->devices.begin(), obj->devices.begin() + obj->device_count, [&](uart_device& device)
     {
-        printf("Error serial port cannot be opened at: %s\n", device_name);
-    }
-}
+        if (device.file_descriptor == -1)
+            return;
 
-void UART_Interface::_closeDevice()
-{
-    close(serial_port);
-}
+        ret = _uart_read(device, buffer, BUFFER_SIZE);
+        if (ret > 0)
+            obj->RX_BUFFER_PTR.get()->enqueue(buffer, ret);
+    });
 
-void UART_Interface::_configDevice()
-{
-    // Following https://blog.mbedded.ninja/programming/operating-systems/linux/linux-serial-ports-using-c-cpp/
-    // Control Modes
-    tty.c_cflag &= ~PARENB;         // Disable Parity
-    tty.c_cflag &= ~CSTOPB;         // Use 1 stop bit
-    tty.c_cflag &= ~CSIZE;          // Clear all size bits
-    tty.c_cflag |= CS8;             // Use 8 bit data
-    tty.c_cflag &= ~CRTSCTS;        // Disable RTS/CTS 
-    tty.c_cflag |= CREAD | CLOCAL;  // Turn on READ & ignore ctrl lines (CLOCAL = 1)
-
-    // Local Modes
-    tty.c_lflag &= ~ICANON;         // Set Canonical
-    tty.c_lflag &= ~ECHO;           // Disable echo
-    tty.c_lflag &= ~ECHOE;          // Disable erasure
-    tty.c_lflag &= ~ECHONL;         // Disable new-line echo
-    tty.c_lflag &= ~ISIG;           // Disable interpretation of INTR, QUIT and SUSP
-
-    // Input Modes
-    tty.c_iflag &= ~(IXON | IXOFF | IXANY);                             // Turn off s/w flow ctrl
-    tty.c_iflag &= ~(IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL);    // Disable any special handling of received bytes
-
-    // Output Modes
-    tty.c_oflag &= ~OPOST; // Prevent special interpretation of output bytes (e.g. newline chars)
-    tty.c_oflag &= ~ONLCR; // Prevent conversion of newline to carriage return/line feed
-
-    // Set Timeouts
-    tty.c_cc[VTIME] = 0;    // Min timeout
-    tty.c_cc[VMIN] = 0;     // Min number to read
-
-    // Set Baudrate
-    cfsetispeed(&tty, baud_rate);
-    cfsetospeed(&tty, baud_rate);
-
-    int errno;
-    if (tcsetattr(serial_port, TCSANOW, &tty) != 0) 
-    {
-        printf("Error %i from tcsetattr: %s\n", errno, strerror(errno));
-    }
-}
-
-void UART_Interface::_thread()
-{
-    uint8_t* data = new uint8_t[BUFFER_SIZE];
-    pollfd pollObject;
-    pollObject.fd = serial_port;
-    pollObject.events = POLLIN | POLLOUT | POLLERR;
-
-	while(thread_active)
-	{
-
-		// Poll for actions required
-		if (poll(&(pollObject), 1, 0) < 0)
-			perror("Poll");
-
-		// Socket Error Occured
-		if (pollObject.revents & POLLERR)
-		{
-			pollObject.revents -= POLLERR;
-			_closeDevice();
-        }
-		
-		// Socket ready to read
-		if(pollObject.revents & POLLIN)
-		{
-			pollObject.revents -= POLLIN;
-			int retVal = _read(data, BUFFER_SIZE);
-            if (retVal > 0)
-                RX_BUFFER_PTR.get()->enqueue(data, retVal);
-		}
-
-        // Socket ready for write
-        int numToWrite = TX_BUFFER_PTR.get()->getDataSize();
-        if(numToWrite > 0 && pollObject.revents & POLLOUT)
-        {
-            TX_BUFFER_PTR.get()->dequeue(data, numToWrite);
-            _write(data, numToWrite);
-        }
-    }
-
-	delete data;
-    
+    args->time_count += UART_IO_INTERVAL_BASE_MS;
 }
