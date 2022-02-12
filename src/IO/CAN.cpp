@@ -25,7 +25,7 @@ CAN_Interface::CAN_Interface()
 
 CAN_Interface::~CAN_Interface()
 {
-
+    shutdown(can_socket_id, SHUT_RDWR);
 }
 
 int CAN_Interface::readMessage(uint8_t* dest, const int num)
