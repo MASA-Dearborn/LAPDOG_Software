@@ -11,15 +11,26 @@
 #pragma once
 
 #include "IOInterface.h"
+#include "timer.h"
+
 #include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <net/if.h>
 #include <linux/can.h>
 #include <poll.h>
 
+#define CAN_IO_INTERVAL_BASE_MS 10
 
 namespace IO
 {
+
+    void _can_io_handler(union sigval data);
+
+    struct can_timer_data
+    {
+        uint64_t time_count = 0;
+        IOInterface* ref = nullptr;
+    };
 
     class CAN_Interface : public IOInterface
     {
@@ -34,7 +45,13 @@ namespace IO
             int _can_read();
             int _can_write();
             void _openSocketCAN();
+            friend void _can_io_handler(union sigval data);
 
+            /* IO Handling Data */
+            Timer io_timer;
+            can_timer_data io_event_data;
+
+            /* CAN Data */
             int can_socket_id;
             struct sockaddr_can address;
     };

@@ -9,7 +9,18 @@ using namespace IO;
 
 CAN_Interface::CAN_Interface()
 {
+    /* Initialize Buffers */
+    if (initBuffers() < 0)
+		return;
 
+    /* Setup the Timer */
+    io_event_data.ref = this;
+    io_event_data.time_count = 0;
+    io_timer.setHandler((void (*)(union sigval))&_can_io_handler);
+    io_timer.setHandlerDataPointer(&io_event_data);
+    io_timer.setIntervalMilliseconds(CAN_IO_INTERVAL_BASE_MS);
+    io_timer.setStartDelayMilliseconds(CAN_IO_INTERVAL_BASE_MS);
+    io_timer.startTimer();
 }
 
 CAN_Interface::~CAN_Interface()
@@ -90,4 +101,39 @@ void CAN_Interface::_openSocketCAN()
     address.can_ifindex = ifr.ifr_ifindex;
 
     bind(can_socket_id, (struct sockaddr*)&address, sizeof(address));
+}
+
+void IO::_can_io_handler(union sigval data)
+{
+    can_timer_data* args = (can_timer_data*)data.sival_ptr;
+    CAN_Interface* obj = (CAN_Interface*)args->ref;
+    static uint8_t data_buffer[1024];
+    
+    struct pollfd pollObject { .fd = obj->can_socket_id,
+                               .events = POLLIN | POLLOUT | POLLERR, };
+
+    poll(&pollObject, 1, 0);
+
+    /* Handle Errors */
+    if (pollObject.revents & POLLERR)
+	{
+		pollObject.revents -= POLLERR;
+		printf("CAN Socket Error\n");
+        return;
+	}
+
+    /* Write Message if one is available */
+    if ((pollObject.revents & POLLOUT) && (obj->TX_BUFFER_PTR.get()->getDataSize() > 0)) 
+    {
+        obj->_can_write();
+        pollObject.revents -= POLLOUT;
+    }
+
+    /* Read Message */
+    if (pollObject.revents & POLLIN) 
+    {
+        obj->_can_read();
+        pollObject.revents -= POLLIN;
+    }
+
 }
