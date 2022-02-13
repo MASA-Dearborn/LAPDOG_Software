@@ -9,12 +9,14 @@ class FileWriter {
         ~FileWriter();
         
         int write(void* data, int size);
-        
+        void setBaseName(const char* name);
+        void setIntervalMilliseconds(uint64_t file_length_ms);
+        void openFile();
+        void closeFile();
+
     protected:
         /* File Interaction Methods */
         void _createNewIncrementedFile();
-        void _openFile();
-        void _closeFile();
 
         /* Time Interaction Methods */
         bool _hasTimeIntervalPassed();
