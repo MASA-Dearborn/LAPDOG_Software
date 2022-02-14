@@ -17,6 +17,11 @@ FileWriter::FileWriter(const char* name, uint64_t file_length_ms)
     _createNewIncrementedFile();
 }
 
+FileWriter::~FileWriter()
+{
+    
+}
+
 int FileWriter::write(void* data, int size)
 {
     file_obj.write((const char*)data, size);

@@ -30,4 +30,4 @@ add_library(
     datalogger/dataLogger.cpp
     datalogger/fileWriter.cpp
 )
-target_link_libraries(DataLogger PUBLIC pubsub)
+target_link_libraries(DataLogger PUBLIC pubsub Timer)
