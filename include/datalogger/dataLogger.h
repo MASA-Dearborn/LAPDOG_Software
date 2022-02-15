@@ -2,6 +2,8 @@
 #include "broker/broker.h"
 #include "timer.h"
 
+#define LOGGER_INTERVAL_BASE_MS 10
+
 struct Logger
 {
     FileWriter* log;
@@ -10,7 +12,7 @@ struct Logger
 
 struct data_logger_timer_data
 {
-
+    DataLogger* obj;
 };
 
 void _data_logger_handler(union sigval data);
@@ -22,8 +24,8 @@ class DataLogger
         ~DataLogger();
 
     private:
+        friend _data_logger_handler(union sigval data);
         void _createLogFolder();
-        void _createLogger();
         void _init();
 
         /* IO Handling Data */
