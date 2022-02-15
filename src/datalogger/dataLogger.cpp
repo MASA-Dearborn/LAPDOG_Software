@@ -48,11 +48,11 @@ void _data_logger_handler(union sigval data)
     data_logger_timer_data* args = (data_logger_timer_data*)data.sival_ptr;
     DataLogger* obj = args->obj;
 
-    for(Logger* logger : obj->loggers)
+    for(Logger& logger : obj->loggers)
     {
-        if (logger->subscriber->isDataAvailable()) {
-            msg::conv::stringifyRealMessage(string_buffer, logger->subscriber->getGenericPointer());
-            logger->log->writeToFile(string_buffer, strlen(string_buffer));
+        if (logger.subscriber->isDataAvailable()) {
+            msg::conv::stringifyRealMessage(string_buffer, logger.subscriber->getGenericPointer());
+            logger.log->writeToFile(string_buffer, strlen(string_buffer));
         }
     }
 }

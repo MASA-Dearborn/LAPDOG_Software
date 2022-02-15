@@ -4,6 +4,8 @@
 
 #define LOGGER_INTERVAL_BASE_MS 10
 
+class DataLogger;
+
 struct Logger
 {
     FileWriter* log;
@@ -24,7 +26,7 @@ class DataLogger
         ~DataLogger();
 
     private:
-        friend _data_logger_handler(union sigval data);
+        friend void _data_logger_handler(union sigval data);
         void _createLogFolder();
         void _init();
 
