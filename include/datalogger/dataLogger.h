@@ -25,8 +25,9 @@ class DataLogger
         DataLogger();
         ~DataLogger();
 
-    private:
+    protected:
         friend void _data_logger_handler(union sigval data);
+        friend class DataLoggerFixture;
         void _createLogFolder();
         void _init();
 
