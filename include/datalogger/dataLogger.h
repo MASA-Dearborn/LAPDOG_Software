@@ -2,12 +2,9 @@
 #include "broker/broker.h"
 #include "timer.h"
 
-#define CREATE_LOGGER(base_name, interval, message_type) loggers[msg::id::message_type] = {.log = FileWriter(base_name, interval), \
-                                                                                           .subscriber = new pubsub::Subscriber<message_type>(msg::id::message_type)}
-
 struct Logger
 {
-    FileWriter log;
+    FileWriter* log;
     pubsub::GenericSubscriber* subscriber;
 };
 
@@ -27,7 +24,7 @@ class DataLogger
     private:
         void _createLogFolder();
         void _createLogger();
-        void _initFileWriters();
+        void _init();
 
         /* IO Handling Data */
         Timer io_timer;
