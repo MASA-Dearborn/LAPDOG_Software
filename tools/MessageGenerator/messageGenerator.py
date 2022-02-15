@@ -19,6 +19,7 @@ ids_enum = ''
 collection_case_statements = ''
 raw_to_real_converter = ''
 real_to_raw_converter = ''
+stringify_function = ''
 
 def signalToRawString(signal):
     return 'int ' + signal['name'] + ' : ' + str(signal['bits']) + ';\n'
@@ -77,6 +78,31 @@ def addMessageToTypes(message):
     '''
     raw_struct_strings.append(createRawStructStr(message))
     real_struct_strings.append(createRealStructStr(message))
+    return
+
+def addMessageToStringify(message):
+    global stringify_function
+
+    type_dict = {
+        'double' : '%.3f',
+        'float' : '%.3f',
+        'int' : '%d'
+    }
+
+    stringify_function += '    case msg::id::' + message['name'] + ':\n'
+    stringify_function += '        sprintf(dest, "'
+    for signal in message['signals']: 
+        stringify_function += type_dict.get(signal['ctype']) + ' '
+
+    stringify_function += '", '
+    for idx, signal in enumerate(message['signals']): 
+        stringify_function += '\n' + (' '*16) + '((msg::real::' + message['name'] + '*)message)->' + signal['name'] 
+        if idx != len(message['signals']) - 1:
+            stringify_function += ', '
+
+    stringify_function += ');\n'
+    stringify_function += '        break;\n'
+
     return
 
 def addMessageToCollectionStruct(message):
@@ -156,6 +182,7 @@ def addMessage(message, id):
     '''
     addMessageToIds(message, id)
     addMessageToTypes(message)
+    addMessageToStringify(message)
     addMessageToCollectionStruct(message)
     addMessageToCollectionUnion(message)
     addMessageToCollectionCaseStatement(message)
@@ -170,7 +197,7 @@ def initGlobalStrings():
         Prefixes global strings to ensure valid C code
         Called before string creation section
     '''
-    global ids_enum, message_collection_struct, collection_case_statements, real_message_union, raw_message_union, raw_to_real_converter, real_to_raw_converter
+    global ids_enum, message_collection_struct, collection_case_statements, real_message_union, raw_message_union, raw_to_real_converter, real_to_raw_converter, stringify_function
 
     message_collection_struct += 'struct MessageCollection {\n'
 
@@ -191,6 +218,9 @@ def initGlobalStrings():
     real_to_raw_converter += 'inline msg::id::MessageType convertRealToRaw(msg::RawMessageUnion* dest, GENERIC_MESSAGE* real) {\n'
     real_to_raw_converter += '    switch(real->id) {\n'
 
+    stringify_function += 'inline void stringifyRealMessage(char* dest, msg::GENERIC_MESSAGE* message) {\n'
+    stringify_function += '    switch(message->id) {\n'
+
     return
 
 def finishGlobalStrings():
@@ -198,7 +228,7 @@ def finishGlobalStrings():
         Appends endings to global strings to make valid C code
         Called at end of string creation section
     '''
-    global ids_enum, message_collection_struct, collection_case_statements, real_message_union, raw_message_union, raw_to_real_converter, real_to_raw_converter
+    global ids_enum, message_collection_struct, collection_case_statements, real_message_union, raw_message_union, raw_to_real_converter, real_to_raw_converter, stringify_function
 
     message_collection_struct += '};\n'
     real_message_union += '};\n'
@@ -215,6 +245,8 @@ def finishGlobalStrings():
 
     raw_to_real_converter += '    }\n    return raw->id;\n}\n'
     real_to_raw_converter += '    }\n    return real->id;\n}\n'
+
+    stringify_function += '    }\n}\n'
 
     return
 
@@ -270,7 +302,7 @@ def writeNamespaceConv(file):
     '''
         Writes the namespace for conversion functions
     '''
-    global realToRaw_conversions, rawToReal_conversions, raw_to_real_converter, real_to_raw_converter
+    global realToRaw_conversions, rawToReal_conversions, raw_to_real_converter, real_to_raw_converter, stringify_function
 
     file.write('namespace msg::conv {\n')
 
@@ -293,6 +325,10 @@ def writeNamespaceConv(file):
     real_to_raw_converter = '\n' + real_to_raw_converter
     real_to_raw_converter = real_to_raw_converter.replace('\n', '\n    ')
     file.write(real_to_raw_converter)
+
+    stringify_function = '\n' + stringify_function
+    stringify_function = stringify_function.replace('\n', '\n    ')
+    file.write(stringify_function)
 
     file.write('\n}\n\n')
     return
@@ -350,7 +386,7 @@ if __name__ == "__main__":
 
     with open('messageTypes.h', 'w') as outputFile:
         outputFile.write('/* Auto-generated Code from messageGenerator.py */\n\n')
-        outputFile.write('#pragma once\n#include "string.h"\n\n')
+        outputFile.write('#pragma once\n#include <string.h>\n#include <stdio.h>\n\n')
         outputFile.write('#define MAX_RAW_MESSAGE_SIZE sizeof(msg::RawMessageUnion)\n')
         outputFile.write('#define MAX_REAL_MESSAGE_SIZE sizeof(msg::RealMessageUnion)\n\n')
         writeNamespaceIds(outputFile)
