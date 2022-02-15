@@ -1,7 +1,8 @@
 /* Auto-generated Code from messageGenerator.py */
 
 #pragma once
-#include "string.h"
+#include <string.h>
+#include <stdio.h>
 
 #define MAX_RAW_MESSAGE_SIZE sizeof(msg::RawMessageUnion)
 #define MAX_REAL_MESSAGE_SIZE sizeof(msg::RealMessageUnion)
@@ -142,6 +143,21 @@ namespace msg::conv {
                 break;
         }
         return real->id;
+    }
+    
+    inline void stringifyRealMessage(char* dest, msg::GENERIC_MESSAGE* message) {
+        switch(message->id) {
+        case msg::id::TEST_MESSAGE:
+            sprintf(dest, "%d %.3f ", 
+                    ((msg::real::TEST_MESSAGE*)message)->test, 
+                    ((msg::real::TEST_MESSAGE*)message)->VAR2);
+            break;
+        case msg::id::TEST_MESSAGE_2:
+            sprintf(dest, "%d %.3f ", 
+                    ((msg::real::TEST_MESSAGE_2*)message)->VAR1, 
+                    ((msg::real::TEST_MESSAGE_2*)message)->VAR2);
+            break;
+        }
     }
     
 }
