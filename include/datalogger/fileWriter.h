@@ -1,4 +1,3 @@
-#include <fstream>
 #include <string>
 #include <chrono>
 
@@ -8,7 +7,7 @@ class FileWriter {
         FileWriter(const char* name, uint64_t file_length_ms);
         ~FileWriter();
         
-        int write(void* data, int size);
+        int writeToFile(void* data, int size);
         void setBaseName(const char* name);
         void setIntervalMilliseconds(uint64_t file_length_ms);
         void openFile();
@@ -27,7 +26,7 @@ class FileWriter {
         bool opened_file_written = false;
 
         /* File Member Variables */
-        std::fstream file_obj;
+        int file_descriptor = -1;
         char file_name[128] = {0};
         int file_index = 0;
 };
