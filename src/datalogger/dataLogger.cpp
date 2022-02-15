@@ -8,8 +8,8 @@ static char CREATE_LOGGER_NAME_BUFFER[512];
                                                                 strcat(CREATE_LOGGER_NAME_BUFFER, "/" #message_type); \
                                                                 mkdir(CREATE_LOGGER_NAME_BUFFER, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH); \
                                                                 strcat(CREATE_LOGGER_NAME_BUFFER, "/" #message_type); \
-                                                                loggers[msg::id::message_type] = { .log = new FileWriter(CREATE_LOGGER_NAME_BUFFER, interval), \
-                                                                                                   .subscriber = createNewSubscriber(message_type) };
+                                                                loggers[msg::id::message_type] = Logger(new FileWriter(CREATE_LOGGER_NAME_BUFFER, interval), \
+                                                                                                        createNewSubscriber(message_type));
 
 DataLogger::DataLogger()
 {
@@ -17,6 +17,7 @@ DataLogger::DataLogger()
     _init();
 
     /* Setup the Timer */
+    io_event_data.obj = this;
     io_timer.setHandler((void (*)(union sigval))&_data_logger_handler);
     io_timer.setHandlerDataPointer(&io_event_data);
     io_timer.setIntervalMilliseconds(LOGGER_INTERVAL_BASE_MS);
@@ -50,6 +51,9 @@ void _data_logger_handler(union sigval data)
 
     for(Logger& logger : obj->loggers)
     {
+        if (logger.log == nullptr || logger.subscriber == nullptr)
+            continue;
+
         if (logger.subscriber->isDataAvailable()) {
             msg::conv::stringifyRealMessage(string_buffer, logger.subscriber->getGenericPointer());
             logger.log->writeToFile(string_buffer, strlen(string_buffer));
