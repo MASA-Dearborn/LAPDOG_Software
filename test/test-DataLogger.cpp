@@ -7,7 +7,8 @@ void delete_file(const char* path)
 {
     char full_path[300];
     DIR* directory = opendir(path);
-    
+    int retval = 0;
+
     dirent* entry;
     while ((entry = readdir(directory)) != NULL)
     {
@@ -23,12 +24,14 @@ void delete_file(const char* path)
             break;
         case DT_REG:
             sprintf(full_path, "%s/%s", path, entry->d_name);
-            unlink(full_path);
+            retval = unlink(full_path);
+            if (retval < 0) perror("unlink");
             break;
         }
     }
 
-    unlink(path);
+    retval = rmdir(path);
+    if (retval < 0) perror("unlink");
 
 }
 

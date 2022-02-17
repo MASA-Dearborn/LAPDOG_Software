@@ -51,7 +51,7 @@ void FileWriter::openFile()
 {
     static char indexedFileNameBuffer[144];
     sprintf(indexedFileNameBuffer, "%s_%04d.log", file_name, file_index);
-    printf("Opening: %s\n", indexedFileNameBuffer);
+    // printf("Opening: %s\n", indexedFileNameBuffer);
     file_descriptor = open(indexedFileNameBuffer, O_RDWR | O_CREAT);
     if (file_descriptor < 0)
         perror("Open");
