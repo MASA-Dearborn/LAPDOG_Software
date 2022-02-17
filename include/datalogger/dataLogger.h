@@ -27,6 +27,9 @@ class DataLogger
         DataLogger();
         ~DataLogger();
 
+        const char* getLogFolderNamePtr() { return log_folder_name; }
+        const Logger* getLoggerPtr(msg::id::MessageType id) { return &loggers[id]; }
+
     protected:
         friend void _data_logger_handler(union sigval data);
         friend class DataLoggerFixture;
