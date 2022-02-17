@@ -94,7 +94,7 @@ def addMessageToStringify(message):
     for signal in message['signals']: 
         stringify_function += type_dict.get(signal['ctype']) + ' '
 
-    stringify_function += '", '
+    stringify_function += '\\n", '
     for idx, signal in enumerate(message['signals']): 
         stringify_function += '\n' + (' '*16) + '((msg::real::' + message['name'] + '*)message)->' + signal['name'] 
         if idx != len(message['signals']) - 1:

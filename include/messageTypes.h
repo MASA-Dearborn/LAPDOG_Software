@@ -148,12 +148,12 @@ namespace msg::conv {
     inline void stringifyRealMessage(char* dest, msg::GENERIC_MESSAGE* message) {
         switch(message->id) {
         case msg::id::TEST_MESSAGE:
-            sprintf(dest, "%d %.3f ", 
+            sprintf(dest, "%d %.3f \n", 
                     ((msg::real::TEST_MESSAGE*)message)->test, 
                     ((msg::real::TEST_MESSAGE*)message)->VAR2);
             break;
         case msg::id::TEST_MESSAGE_2:
-            sprintf(dest, "%d %.3f ", 
+            sprintf(dest, "%d %.3f \n", 
                     ((msg::real::TEST_MESSAGE_2*)message)->VAR1, 
                     ((msg::real::TEST_MESSAGE_2*)message)->VAR2);
             break;
