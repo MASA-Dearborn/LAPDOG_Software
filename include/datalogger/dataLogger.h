@@ -9,7 +9,6 @@ class DataLogger;
 struct Logger
 {
     Logger() { log = nullptr; subscriber == nullptr; }
-    Logger(FileWriter* log_ptr, pubsub::GenericSubscriber* subscriber_ptr) { log = log_ptr; subscriber == subscriber_ptr; }
     FileWriter* log;
     pubsub::GenericSubscriber* subscriber;
 };
