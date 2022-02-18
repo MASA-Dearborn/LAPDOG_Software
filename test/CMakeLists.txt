@@ -7,10 +7,13 @@ add_executable(
     test-PubSub.cpp
     test-StaticQueue.cpp
     test-Subscriber.cpp
+    test-DataLogger.cpp
 )
 
 target_link_libraries(
     tests 
+    Timer
+    DataLogger
     gtest_main 
     pubsub
     IO

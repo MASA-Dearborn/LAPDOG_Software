@@ -1,22 +1,31 @@
-#include <fstream>
 #include <string>
-
-using namespace std;
+#include <chrono>
 
 class FileWriter {
     public:
         FileWriter();
-        FileWriter(string name); // index defaults to 0
+        FileWriter(const char* name, uint64_t file_length_ms);
+        ~FileWriter();
         
-        void increment(int index);
-        int write(char* data, int size);
-        
-    protected:
-
+        int writeToFile(void* data, int size);
+        void setBaseName(const char* name);
+        void setIntervalMilliseconds(uint64_t file_length_ms);
         void openFile();
         void closeFile();
 
-        fstream file;
-        string fileName;
-        int index;
-}
+    protected:
+        /* File Interaction Methods */
+        void _createNewIncrementedFile();
+
+        /* Time Interaction Methods */
+        bool _hasTimeIntervalPassed();
+
+        /* Time Member Variables */
+        std::chrono::time_point<std::chrono::steady_clock> time_since_first_write;
+        uint64_t file_length_ms;
+
+        /* File Member Variables */
+        int file_descriptor = -1;
+        char file_name[128] = {0};
+        int file_index = 0;
+};

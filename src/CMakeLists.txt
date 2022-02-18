@@ -24,3 +24,10 @@ add_library(
     timer.cpp
 )
 target_link_libraries(Timer PUBLIC rt)
+
+add_library(
+    DataLogger
+    datalogger/dataLogger.cpp
+    datalogger/fileWriter.cpp
+)
+target_link_libraries(DataLogger PUBLIC pubsub Timer)
