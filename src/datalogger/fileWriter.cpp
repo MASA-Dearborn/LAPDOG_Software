@@ -17,6 +17,7 @@ FileWriter::FileWriter(const char* name, uint64_t file_length_ms)
     setBaseName(name);
     setIntervalMilliseconds(file_length_ms);
     _createNewIncrementedFile();
+    time_since_first_write = std::chrono::steady_clock::now();
 }
 
 FileWriter::~FileWriter()
@@ -26,6 +27,11 @@ FileWriter::~FileWriter()
 
 int FileWriter::writeToFile(void* data, int size)
 {
+    using namespace std::chrono;
+
+    if (_hasTimeIntervalPassed())
+        _createNewIncrementedFile();
+
     return write(file_descriptor, data, size);
 }
 
@@ -68,6 +74,13 @@ void FileWriter::closeFile()
 
 bool FileWriter::_hasTimeIntervalPassed()
 {
-    // TODO: implement
-    return false;
+    using namespace std::chrono;
+    time_point<steady_clock> current_time = steady_clock::now();
+    milliseconds interval_span = duration_cast<milliseconds>(current_time - time_since_first_write);
+
+    if (interval_span > milliseconds(this->file_length_ms)) {
+        return true;
+    } else {
+        return false;
+    }
 }

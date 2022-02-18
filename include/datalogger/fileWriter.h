@@ -23,7 +23,6 @@ class FileWriter {
         /* Time Member Variables */
         std::chrono::time_point<std::chrono::steady_clock> time_since_first_write;
         uint64_t file_length_ms;
-        bool opened_file_written = false;
 
         /* File Member Variables */
         int file_descriptor = -1;
