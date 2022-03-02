@@ -2,7 +2,7 @@
 
 using namespace i2c_operations;
 
-void runnable::READ_TEST_MESSAGE(int fileDescriptor, int slave_address, char* buffer, int buffer_size)
+void READ_TEST_MESSAGE(int fileDescriptor, int slave_address, char* buffer, int buffer_size)
 {
     _i2c_set_slave_address(fileDescriptor, slave_address);
 

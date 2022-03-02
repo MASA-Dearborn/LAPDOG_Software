@@ -13,6 +13,7 @@ add_library(
     IO/TCP.cpp
     IO/I2C.cpp
     IO/I2C_Operations.cpp
+    IO/I2C_UserOperations.cpp
     IO/SPI.cpp
     IO/SPI_Operations.cpp
     IO/UART.cpp
