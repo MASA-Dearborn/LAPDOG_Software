@@ -26,8 +26,10 @@ void I2C_Interface::_init()
 		return;
 
     /* Reigster Devices */
+    _registerDevice("device", "/dev/i2c-0", 0x50);
 
     /* Registration Functions */
+    _registerOperation("device", I2C_READ, msg::id::TEST_MESSAGE, 1000, i2c_operations::READ_TEST_MESSAGE);
 
     /* Start Timer */
     io_timer.setHandler((void (*)(union sigval))&_i2c_io_handler);
