@@ -86,7 +86,8 @@ def addMessageToStringify(message):
     type_dict = {
         'double' : '%.3f',
         'float' : '%.3f',
-        'int' : '%d'
+        'int' : '%d',
+        'unsigned int' : '%u',
     }
 
     stringify_function += '    case msg::id::' + message['name'] + ':\n'

@@ -42,7 +42,101 @@
                     "max" : 200
                 }
             ]
+        },
+        {
+            "name" : "ALTIMETER_COEFFS",
+            "signals" : [
+                {
+                    "name" : "coeff_1",
+                    "ctype" : "unsigned int",
+                    "init" : 0,
+                    "bits" : 16,
+                    "min"   : 0,
+                    "max" : 65565
+                },
+                {
+                    "name" : "coeff_2",
+                    "ctype" : "unsigned int",
+                    "init" : 0,
+                    "bits" : 16,
+                    "min"   : 0,
+                    "max" : 65565
+                },
+                {
+                    "name" : "coeff_3",
+                    "ctype" : "unsigned int",
+                    "init" : 0,
+                    "bits" : 16,
+                    "min"   : 0,
+                    "max" : 65565
+                },
+                {
+                    "name" : "coeff_4",
+                    "ctype" : "unsigned int",
+                    "init" : 0,
+                    "bits" : 16,
+                    "min"   : 0,
+                    "max" : 65565
+                },
+                {
+                    "name" : "coeff_5",
+                    "ctype" : "unsigned int",
+                    "init" : 0,
+                    "bits" : 16,
+                    "min"   : 0,
+                    "max" : 65565
+                },
+                {
+                    "name" : "coeff_6",
+                    "ctype" : "unsigned int",
+                    "init" : 0,
+                    "bits" : 16,
+                    "min"   : 0,
+                    "max" : 65565
+                }
+            ]
+        },
+        {
+            "name" : "ALTIMETER_DATA",
+            "signals" : [
+                {
+                    "name" : "pressure_bar",
+                    "ctype" : "float",
+                    "init" : 0,
+                    "bits" : 24,
+                    "min"   : 0,
+                    "max" : 5
+                },
+                {
+                    "name" : "temp_celcius",
+                    "ctype" : "float",
+                    "init" : 0,
+                    "bits" : 24,
+                    "min" : -40,
+                    "max" : 85
+                }
+            ]
+        },
+        {
+            "name" : "HUMIDITY_DATA",
+            "signals" : [
+                {
+                    "name" : "relative_humidity",
+                    "ctype" : "float",
+                    "init" : 0,
+                    "bits" : 10,
+                    "min"   : 0,
+                    "max" : 100
+                },
+                {
+                    "name" : "temp_celcius",
+                    "ctype" : "float",
+                    "init" : 0,
+                    "bits" : 12,
+                    "min" : -40,
+                    "max" : 125
+                }
+            ]
         }
-
     ]
 }
