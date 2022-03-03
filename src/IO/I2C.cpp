@@ -1,5 +1,5 @@
 #include "IO/I2C.h"
-#include "IO/I2C_Operations.h"
+#include "IO/I2C_UserOperations.h"
 
 #include <algorithm>
 #include <fcntl.h>
@@ -67,6 +67,7 @@ void I2C_Interface::_registerDevice(const char* name, const char* device_file, i
 
     strcpy(devices[device_count].name, name);
     strcpy(devices[device_count].device_file, device_file);
+    devices[device_count].slave_address = slave_address;
 
     _openDevice(devices[device_count]);
     device_count++;

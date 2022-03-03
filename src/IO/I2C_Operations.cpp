@@ -16,7 +16,7 @@ using namespace i2c_operations;
  * @param dest              the buffer to store the read data in
  * @param num               the amount of bytes to read
  */
-void _i2c_read(int fileDescriptor, char* dest, const uint32_t num)
+void i2c_operations::_i2c_read(int fileDescriptor, char* dest, const uint32_t num)
 {
     if (nullptr == dest)
         return;
@@ -32,7 +32,7 @@ void _i2c_read(int fileDescriptor, char* dest, const uint32_t num)
  * @param src               the data to write to the registe
  * @param num               the amount of bytes to write
  */
-void _i2c_write(int fileDescriptor, uint8_t reg, char* src, const uint32_t num)
+void i2c_operations::_i2c_write(int fileDescriptor, uint8_t reg, char* src, const uint32_t num)
 {
     static char data[4096]; 
 
@@ -51,7 +51,7 @@ void _i2c_write(int fileDescriptor, uint8_t reg, char* src, const uint32_t num)
  * @param fileDescriptor    an open i2c device file
  * @param slave_address     the i2c slave address to set
  */
-void _i2c_set_slave_address(int fileDescriptor, long slave_address)
+void i2c_operations::_i2c_set_slave_address(int fileDescriptor, long slave_address)
 {
     static long current_slave_address = 0;
 
