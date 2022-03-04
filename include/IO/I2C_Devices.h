@@ -171,3 +171,28 @@ enum class BNO055_OPERATION_MODE
     NDOF_FMC_OFF    = 0X0B,
     NDOF            = 0X0C
 };
+
+enum class BNO055
+{
+    /* Status registers */
+    CALIB_STAT = 0X35,
+    SELFTEST_RESULT = 0X36,
+    INTR_STAT = 0X37,
+
+    SYS_CLK_STAT = 0X38,
+    SYS_STAT = 0X39,
+    SYS_ERR = 0X3A,
+
+    /* Unit selection register */
+    UNIT_SEL = 0X3B,
+
+    /* Mode registers */
+    OPR_MODE = 0X3D,
+    PWR_MODE = 0X3E,
+    SYS_TRIGGER = 0X3F,
+    TEMP_SOURCE = 0X40,
+
+    /* Axis remap registers */
+    AXIS_MAP_CONFIG = 0X41,
+    AXIS_MAP_SIGN = 0X42,    
+};
