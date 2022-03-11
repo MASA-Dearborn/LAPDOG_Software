@@ -15,10 +15,40 @@ void i2c_operations::ALTIMETER_READ_ALTITUDE(int fileDescriptor, int slave_addre
 
 void i2c_operations::ALTIMETER_READ_CONFIG(int fileDescriptor, int slave_address, msg::GENERIC_MESSAGE* msg)
 {
-    msg::real::ALTIMETER_COEFFS* m = (msg::real::ALTIMETER_COEFFS*)msg; 
+    char buffer[16];
+    msg::raw::ALTIMETER_COEFFS* m = (msg::raw::ALTIMETER_COEFFS*)msg; 
     _i2c_set_slave_address(fileDescriptor, slave_address);
 
-    _i2c_write(fileDescriptor, MS5083_ALTIMETER_COMMANDS::PROM_READ_COEFF_1, NULL, 0);
+    // Read Coefficients
+    _i2c_write_one(fileDescriptor, (uint8_t)MS5083_ALTIMETER_COMMANDS::PROM_READ_COEFF_1);
+    _i2c_read(fileDescriptor, buffer, 2);
+    m->coeff_1 = *(uint16_t*)buffer;
+
+    _i2c_write_one(fileDescriptor, (uint8_t)MS5083_ALTIMETER_COMMANDS::PROM_READ_COEFF_2);
+    _i2c_read(fileDescriptor, buffer, 2);
+    m->coeff_2 = *(uint16_t*)buffer;
+
+    _i2c_write_one(fileDescriptor, (uint8_t)MS5083_ALTIMETER_COMMANDS::PROM_READ_COEFF_3);
+    _i2c_read(fileDescriptor, buffer, 2);
+    m->coeff_3 = *(uint16_t*)buffer;
+
+    _i2c_write_one(fileDescriptor, (uint8_t)MS5083_ALTIMETER_COMMANDS::PROM_READ_COEFF_4);
+    _i2c_read(fileDescriptor, buffer, 2);
+    m->coeff_4 = *(uint16_t*)buffer;
+
+    _i2c_write_one(fileDescriptor, (uint8_t)MS5083_ALTIMETER_COMMANDS::PROM_READ_COEFF_5);
+    _i2c_read(fileDescriptor, buffer, 2);
+    m->coeff_5 = *(uint16_t*)buffer;
+
+    _i2c_write_one(fileDescriptor, (uint8_t)MS5083_ALTIMETER_COMMANDS::PROM_READ_COEFF_6);
+    _i2c_read(fileDescriptor, buffer, 2);
+    m->coeff_6 = *(uint16_t*)buffer;
+
+    char string_buff[128];
+    msg::real::ALTIMETER_COEFFS temp;
+    temp = msg::conv::ALTIMETER_COEFFS_TO_REAL(m);
+    msg::conv::stringifyRealMessage(string_buff, &temp);
+    printf("Init: %s\n", string_buff);
 
 }
 

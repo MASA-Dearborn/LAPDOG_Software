@@ -29,7 +29,10 @@ void I2C_Interface::_init()
     _registerDevice("device", "/dev/i2c-0", 0x50);
 
     /* Registration Functions */
-    _registerOperation("device", I2C_READ, msg::id::ALTIMETER_COEFFS, 1000, i2c_operations::ALTIMETER_READ_CONFIG);
+    //_registerOperation("device", I2C_READ, msg::id::ALTIMETER_COEFFS, 1000, i2c_operations::ALTIMETER_READ_CONFIG);
+
+    /* Init I2C Functions */ 
+    _registerInitFunction("device", i2c_operations::ALTIMETER_READ_CONFIG);
 
     /* Start Timer */
     io_timer.setHandler((void (*)(union sigval))&_i2c_io_handler);
@@ -111,6 +114,17 @@ void I2C_Interface::_registerOperation(const char* device_name, I2C_OperationTyp
     }
 }
 
+void I2C_Interface::_registerInitFunction(const char* device_name, void (*func)(int, int, msg::GENERIC_MESSAGE*))
+{
+    static uint8_t data_buffer[MAX_RAW_MESSAGE_SIZE];
+    for (int i = 0; i < device_count; i++)
+    {
+        if (strcmp(devices[i].name, device_name) == 0)
+        {
+            func(devices[i].file_descriptor, devices[i].slave_address, (msg::GENERIC_MESSAGE*)data_buffer);
+        }
+    }
+}
 
 static bool _timeIntervalPassed(uint64_t& last_trigger, uint64_t& current_time, uint64_t& interval)
 {

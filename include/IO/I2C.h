@@ -64,6 +64,7 @@ namespace IO
             void _closeDevice(i2c_device& device);
             void _registerDevice(const char* name, const char* device_file, int slave_address);
             void _registerOperation(const char* device_name, I2C_OperationType type, msg::id::MessageType msg_id, int interval_ms, void (*func)(int, int, msg::GENERIC_MESSAGE*));
+            void _registerInitFunction(const char* device_name, void (*func)(int, int, msg::GENERIC_MESSAGE*));
 
             /* IO Handling Data */
             Timer io_timer;

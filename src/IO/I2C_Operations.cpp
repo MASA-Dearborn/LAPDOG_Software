@@ -34,7 +34,7 @@ char i2c_operations::_i2c_read_one(int fileDescriptor)
 {
     char temp;
     read(fileDescriptor, &temp, 1);
-    return temp
+    return temp;
 }
 
 /**
@@ -68,7 +68,7 @@ void i2c_operations::_i2c_write(int fileDescriptor, uint8_t reg, char* src, cons
  */
 void i2c_operations::_i2c_write_one(int fileDescriptor, uint8_t data)
 {
-    write(fileDescriptor, data, 1); 
+    write(fileDescriptor, &data, 1); 
 }
 
 /**

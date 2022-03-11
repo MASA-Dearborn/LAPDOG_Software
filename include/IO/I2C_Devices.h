@@ -1,7 +1,7 @@
 #pragma once
 
 /* Slave Addresses */
-#define MS5083-05BA_ALTIMETERESS   0x77
+#define MS5083_05BA_ALTIMETERESS   0x77
 #define HTU20DF_HUMIDITYESS        0x40
 
   
@@ -9,7 +9,7 @@
  *  MS5083 Altimeter Commands & Offsets
  *  URL: https://www.te.com/commerce/DocumentDelivery/DDEController?Action=showdoc&DocId=Data+Sheet%7FMS5803-05BA%7FB3%7Fpdf%7FEnglish%7FENG_DS_MS5803-05BA_B3.pdf%7FCAT-BLPS0011
  */
-enum class MS5083_ALTIMETER_COMMANDS
+enum class MS5083_ALTIMETER_COMMANDS : unsigned char
 {
     CONVERT_PRESSURE_256    = 0x40,
     CONVERT_PRESSURE_512    = 0x42,
