@@ -108,6 +108,22 @@ namespace msg::raw {
 
 namespace msg {
 
+    const int RAW_MESSAGE_SIZES[] = {
+        sizeof(msg::raw::TEST_MESSAGE),
+        sizeof(msg::raw::TEST_MESSAGE_2),
+        sizeof(msg::raw::ALTIMETER_COEFFS),
+        sizeof(msg::raw::ALTIMETER_DATA),
+        sizeof(msg::raw::HUMIDITY_DATA),
+    };
+    
+    const int REAL_MESSAGE_SIZES[] = {
+        sizeof(msg::real::TEST_MESSAGE),
+        sizeof(msg::real::TEST_MESSAGE_2),
+        sizeof(msg::real::ALTIMETER_COEFFS),
+        sizeof(msg::real::ALTIMETER_DATA),
+        sizeof(msg::real::HUMIDITY_DATA),
+    };
+    
     struct MessageCollection {
         real::TEST_MESSAGE TEST_MESSAGE;
         real::TEST_MESSAGE_2 TEST_MESSAGE_2;
