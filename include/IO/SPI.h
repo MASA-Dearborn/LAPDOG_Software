@@ -7,7 +7,7 @@
  * @copyright   Copyright (c) 2022
  * 
  * @note        To add a SPI device, use the _registerDevice() function inside the _init() function.
- *              To add a new read or write operation, use _registerOperation() in _init() and declare 
+ *              To add a new read or write operation, use registerOperation() in _init() and declare 
  *              the function in SPI_Operations.h and define  in SPI_Operations.cpp
  */
 
@@ -68,14 +68,15 @@ namespace IO
             // Inherited from IOInterface
             int readMessage(uint8_t* dest, const int num);
             int writeMessage(uint8_t* src, const int num);
-            friend void _spi_io_handler(union sigval data);
+            void registerDevice(const char* name, const char* device_file);
+            void registerOperation(const char* device_name, SPI_OperationType type, msg::id::MessageType msg_id, int interval_ms, int (*func)(int, msg::GENERIC_MESSAGE*));
+            void registerInitFunction(const char* device_name, void (*func)(int, int, msg::GENERIC_MESSAGE*));
 
         protected:
+            friend void _spi_io_handler(union sigval data);
             void _init();
             void _openDevice(spi_device& device);
             void _closeDevice(spi_device& device);
-            void _registerDevice(const char* name, const char* device_file);
-            void _registerOperation(const char* device_name, SPI_OperationType type, msg::id::MessageType msg_id, int interval_ms, int (*func)(int, msg::GENERIC_MESSAGE*));
 
             /* IO Handling Data */
             Timer io_timer;
