@@ -26,13 +26,13 @@ void I2C_Interface::_init()
 		return;
 
     /* Reigster Devices */
-    _registerDevice("device", "/dev/i2c-0", 0x50);
+    registerDevice("device", "/dev/i2c-0", 0x50);
 
     /* Registration Functions */
     //_registerOperation("device", I2C_READ, msg::id::ALTIMETER_COEFFS, 1000, i2c_operations::ALTIMETER_READ_CONFIG);
 
     /* Init I2C Functions */ 
-    _registerInitFunction("device", i2c_operations::ALTIMETER_READ_CONFIG);
+    registerInitFunction("device", i2c_operations::ALTIMETER_READ_CONFIG);
 
     /* Start Timer */
     io_timer.setHandler((void (*)(union sigval))&_i2c_io_handler);
@@ -65,7 +65,7 @@ void I2C_Interface::_closeDevice(i2c_device& device)
     close(device.file_descriptor);
 }
 
-void I2C_Interface::_registerDevice(const char* name, const char* device_file, int slave_address)
+void I2C_Interface::registerDevice(const char* name, const char* device_file, int slave_address)
 {
     if (device_count >= MAX_I2C_DEVICES)
         return;
@@ -78,7 +78,7 @@ void I2C_Interface::_registerDevice(const char* name, const char* device_file, i
     device_count++;
 }
 
-void I2C_Interface::_registerOperation(const char* device_name, I2C_OperationType type, msg::id::MessageType msg_id, int interval_ms, void (*func)(int, int, msg::GENERIC_MESSAGE*))
+void I2C_Interface::registerOperation(const char* device_name, I2C_OperationType type, msg::id::MessageType msg_id, int interval_ms, void (*func)(int, int, msg::GENERIC_MESSAGE*))
 {
     // Find device with matching name
     int dev_idx;
@@ -114,7 +114,7 @@ void I2C_Interface::_registerOperation(const char* device_name, I2C_OperationTyp
     }
 }
 
-void I2C_Interface::_registerInitFunction(const char* device_name, void (*func)(int, int, msg::GENERIC_MESSAGE*))
+void I2C_Interface::registerInitFunction(const char* device_name, void (*func)(int, int, msg::GENERIC_MESSAGE*))
 {
     static uint8_t data_buffer[MAX_RAW_MESSAGE_SIZE];
     for (int i = 0; i < device_count; i++)
@@ -122,8 +122,12 @@ void I2C_Interface::_registerInitFunction(const char* device_name, void (*func)(
         if (strcmp(devices[i].name, device_name) == 0)
         {
             func(devices[i].file_descriptor, devices[i].slave_address, (msg::GENERIC_MESSAGE*)data_buffer);
+            break;
         }
     }
+
+    printf("Debug: %d\n", ((msg::GENERIC_MESSAGE*)data_buffer)->size);
+    RX_BUFFER_PTR.get()->enqueue(data_buffer, ((msg::GENERIC_MESSAGE*)data_buffer)->size);
 }
 
 static bool _timeIntervalPassed(uint64_t& last_trigger, uint64_t& current_time, uint64_t& interval)

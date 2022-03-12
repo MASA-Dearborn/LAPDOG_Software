@@ -56,15 +56,15 @@ namespace IO
             // Inherited from IOInterface
             int readMessage(uint8_t* dest, const int num);
             int writeMessage(uint8_t* src, const int num);
-            friend void _i2c_io_handler(union sigval data);
+            void registerDevice(const char* name, const char* device_file, int slave_address);
+            void registerOperation(const char* device_name, I2C_OperationType type, msg::id::MessageType msg_id, int interval_ms, void (*func)(int, int, msg::GENERIC_MESSAGE*));
+            void registerInitFunction(const char* device_name, void (*func)(int, int, msg::GENERIC_MESSAGE*));
 
         protected:
             void _init();
             void _openDevice(i2c_device& device);
             void _closeDevice(i2c_device& device);
-            void _registerDevice(const char* name, const char* device_file, int slave_address);
-            void _registerOperation(const char* device_name, I2C_OperationType type, msg::id::MessageType msg_id, int interval_ms, void (*func)(int, int, msg::GENERIC_MESSAGE*));
-            void _registerInitFunction(const char* device_name, void (*func)(int, int, msg::GENERIC_MESSAGE*));
+            friend void _i2c_io_handler(union sigval data);
 
             /* IO Handling Data */
             Timer io_timer;
