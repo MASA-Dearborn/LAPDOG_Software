@@ -6,7 +6,7 @@
 
 using namespace pubsub;
 
-void GenericPublisher::registerSelf()
+void GenericPublisher::_registerSelf()
 {
     DataBroker.registerPublisher(this);
 }
@@ -18,7 +18,7 @@ void GenericPublisher::_pushDataToBroker(void* data, int size)
     DataBroker.setMessageUpdateFlag(m_type);
 }
 
-void GenericPublisher::unregisterSelf() 
+void GenericPublisher::_unregisterSelf() 
 { 
     DataBroker.unregisterPublisher(this); 
 }

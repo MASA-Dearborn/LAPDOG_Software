@@ -3,12 +3,12 @@
 
 using namespace pubsub;
 
-void GenericSubscriber::registerSelf()
+void GenericSubscriber::_registerSelf()
 {
     DataBroker.registerSubscriber(this);
 }
 
-void GenericSubscriber::unregisterSelf()
+void GenericSubscriber::_unregisterSelf()
 {
     DataBroker.unregisterSubscriber(this);
 }

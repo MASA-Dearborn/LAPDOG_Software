@@ -9,6 +9,9 @@
 
 namespace pubsub {
 
+    GenericSubscriber* generateSubscriber(msg::id::MessageType type);
+    GenericPublisher* generatePublisher(msg::id::MessageType type);
+
     class Broker
     {
     public:

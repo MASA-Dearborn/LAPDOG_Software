@@ -4,12 +4,12 @@
 
 namespace pubsub
 {
-
+ 
     class GenericSubscriber
     {
         public:
             GenericSubscriber() {}
-            ~GenericSubscriber() { unregisterSelf(); }
+            ~GenericSubscriber() { _unregisterSelf(); }
 
             bool isDataAvailable();
             void setDataAvailable();
@@ -23,8 +23,9 @@ namespace pubsub
         protected:
 
             friend class Broker;
-            void registerSelf();
-            void unregisterSelf();
+            friend GenericSubscriber* pubsub::generateSubscriber(msg::id::MessageType type);
+            void _registerSelf();
+            void _unregisterSelf();
 
             std::mutex m_lock;
             msg::id::MessageType m_type = msg::id::UNDEFINED_MESSAGE;
@@ -47,10 +48,10 @@ namespace pubsub
             {
                 m_type = type; 
                 m_isDataAvailable = false;
-                registerSelf();
+                _registerSelf();
             }
 
-            ~Subscriber() { unregisterSelf(); }
+            ~Subscriber() { _unregisterSelf(); }
             const T* getData() 
             {
                 clearDataAvailable(); 
