@@ -38,8 +38,22 @@ MessageHandler::~MessageHandler()
  */
 void MessageHandler::attachIOInterface(IO::IOInterface* interface)
 {
-    IOInterfaceList[interface->getType()].push_back(interface);
+    if (interface != NULL)
+        IOInterfaceList[interface->getType()].push_back(interface);
 }
+
+void MessageHandler::attachReceptionPublisher(GenericPublisher* publisher);
+{
+    if (publisher != NULL)
+        publishers[publisher->getType()] = publisher;
+}
+
+void MessageHandler::attachTransmitSubscriber(GenericSubscriber* subscriber);
+{
+    if (subscriber != NULL)
+        subscribers[subscriber->getType()] = subscriber;
+}
+
 
 /**
  * @brief   pushes a message directly to the broker
