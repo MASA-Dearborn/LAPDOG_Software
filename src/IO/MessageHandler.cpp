@@ -24,7 +24,8 @@ MessageHandler::~MessageHandler()
     {
         for(IO::IOInterface* IOInterface : IOInterfaceVector)
         {
-            delete IOInterface;
+            if (IOInterface->getType() != IO::TYPE_UNDEFINED)
+                delete IOInterface;
         }
     }
 }
@@ -54,7 +55,8 @@ void MessageHandler::publishRawMessageToBroker(msg::GENERIC_MESSAGE* message)
 
     msg::conv::convertRawToReal(&temp, message);
 
-    publishers[message->id]->publish((msg::GENERIC_MESSAGE*)(&temp));
+    if (publishers[message->id] != nullptr)
+        publishers[message->id]->publish((msg::GENERIC_MESSAGE*)(&temp));
 }
 
 static void __sendMessageToInterfaces(std::vector<IO::IOInterface*>& interfaceVector, msg::GENERIC_MESSAGE* message)
@@ -109,6 +111,7 @@ void MessageHandler::_initIOInterface()
 void MessageHandler::_initPublishers()
 {
     __ADD_PUBLISHER_TO_MESSAGE_HANDLER(TEST_MESSAGE);
+    __ADD_PUBLISHER_TO_MESSAGE_HANDLER(ALTIMETER_COEFFS);
 }
 
 /**
@@ -132,7 +135,7 @@ void MessageHandler::_messageHandlerThread()
         {
             for(IO::IOInterface* IOInterface : IOInterfaceVector)
             {
-                while(IOInterface->isMessageAvailable())
+                while(IOInterface->isMessageAvailable() && IOInterface->getType() != IO::TYPE_UNDEFINED)
                 {
                     int size = IOInterface->readMessage(buffer, IOInterface->getMessageSize());
                     publishRawMessageToBroker((msg::GENERIC_MESSAGE*)buffer);

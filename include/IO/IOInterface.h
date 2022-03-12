@@ -13,7 +13,8 @@ namespace IO
 
     enum IOInterfaceType
     {
-        TYPE_TCP = 0,
+        TYPE_UNDEFINED = 0,
+        TYPE_TCP = 1,
         TYPE_I2C,
         TYPE_SPI,
         TYPE_CAN,
@@ -27,7 +28,7 @@ namespace IO
     {
     public:
 
-        virtual ~IOInterface() {}
+        virtual ~IOInterface() { type = TYPE_UNDEFINED; }
 
         // IO Interaction Methods
         virtual int readMessage(uint8_t* dest, const int num) = 0;
@@ -52,7 +53,7 @@ namespace IO
     class GenericInterface : public IOInterface
     {
         public:
-            GenericInterface() { initBuffers(); }
+            GenericInterface() { initBuffers(); this->type = TYPE_GENERIC; }
 
             int readMessage(uint8_t* dest, const int num) { return RX_BUFFER_PTR.get()->dequeue(dest, num); }
             int writeMessage(uint8_t* src, const int num) { return TX_BUFFER_PTR.get()->enqueue(src, num); }

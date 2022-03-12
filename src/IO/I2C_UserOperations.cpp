@@ -17,6 +17,7 @@ void i2c_operations::ALTIMETER_READ_CONFIG(int fileDescriptor, int slave_address
 {
     char buffer[16];
     msg::raw::ALTIMETER_COEFFS* m = (msg::raw::ALTIMETER_COEFFS*)msg; 
+    *m = msg::raw::ALTIMETER_COEFFS();
     _i2c_set_slave_address(fileDescriptor, slave_address);
 
     // Read Coefficients
@@ -43,13 +44,6 @@ void i2c_operations::ALTIMETER_READ_CONFIG(int fileDescriptor, int slave_address
     _i2c_write_one(fileDescriptor, (uint8_t)MS5083_ALTIMETER_COMMANDS::PROM_READ_COEFF_6);
     _i2c_read(fileDescriptor, buffer, 2);
     m->coeff_6 = *(uint16_t*)buffer;
-
-    char string_buff[128];
-    msg::real::ALTIMETER_COEFFS temp;
-    temp = msg::conv::ALTIMETER_COEFFS_TO_REAL(m);
-    msg::conv::stringifyRealMessage(string_buff, &temp);
-    printf("Init: %s\n", string_buff);
-
 }
 
 void i2c_operations::ALTIMETER_READ_ALTITUDE_CALLBACK(sigval data)

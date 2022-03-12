@@ -8,6 +8,7 @@ add_executable(
     test-StaticQueue.cpp
     test-Subscriber.cpp
     test-DataLogger.cpp
+    test-I2C_Interface.cpp
 )
 
 target_link_libraries(

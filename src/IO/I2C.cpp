@@ -9,6 +9,7 @@ using namespace IO;
 
 I2C_Interface::I2C_Interface()
 {
+    this->type = TYPE_I2C;
     io_event_data.ref = this;
     io_event_data.time_count = 0;
     _init();
@@ -24,15 +25,6 @@ void I2C_Interface::_init()
     /* Initialize Buffers */
     if (initBuffers() < 0)
 		return;
-
-    /* Reigster Devices */
-    registerDevice("device", "/dev/i2c-0", 0x50);
-
-    /* Registration Functions */
-    //_registerOperation("device", I2C_READ, msg::id::ALTIMETER_COEFFS, 1000, i2c_operations::ALTIMETER_READ_CONFIG);
-
-    /* Init I2C Functions */ 
-    registerInitFunction("device", i2c_operations::ALTIMETER_READ_CONFIG);
 
     /* Start Timer */
     io_timer.setHandler((void (*)(union sigval))&_i2c_io_handler);
@@ -126,7 +118,6 @@ void I2C_Interface::registerInitFunction(const char* device_name, void (*func)(i
         }
     }
 
-    printf("Debug: %d\n", ((msg::GENERIC_MESSAGE*)data_buffer)->size);
     RX_BUFFER_PTR.get()->enqueue(data_buffer, ((msg::GENERIC_MESSAGE*)data_buffer)->size);
 }
 

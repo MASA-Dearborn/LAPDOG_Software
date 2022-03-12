@@ -25,7 +25,8 @@ TEST(MessageHandlerTest, PublishAndSendTest)
     output.VAR2 = 30.4992676;
     
     pub->publish(&output);
-    usleep(100);
+    sched_yield();
+    usleep(1000);
 
     returned_output = *((msg::raw::TEST_MESSAGE_2*)interface->getTXBuffer());
     msg::conv::convertRawToReal(&converted_message, &returned_output);
