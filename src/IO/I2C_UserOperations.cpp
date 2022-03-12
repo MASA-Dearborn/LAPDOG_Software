@@ -15,7 +15,7 @@ void i2c_operations::ALTIMETER_READ_ALTITUDE(int fileDescriptor, int slave_addre
 
 void i2c_operations::ALTIMETER_READ_CONFIG(int fileDescriptor, int slave_address, msg::GENERIC_MESSAGE* msg)
 {
-    char buffer[16];
+    char buffer[32];
     msg::raw::ALTIMETER_COEFFS* m = (msg::raw::ALTIMETER_COEFFS*)msg; 
     *m = msg::raw::ALTIMETER_COEFFS();
     _i2c_set_slave_address(fileDescriptor, slave_address);
