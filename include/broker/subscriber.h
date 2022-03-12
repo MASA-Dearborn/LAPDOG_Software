@@ -4,7 +4,7 @@
 
 namespace pubsub
 {
- 
+
     class GenericSubscriber
     {
         public:
@@ -23,7 +23,7 @@ namespace pubsub
         protected:
 
             friend class Broker;
-            friend GenericSubscriber* pubsub::generateSubscriber(msg::id::MessageType type);
+            friend GenericSubscriber* generateSubscriber(msg::id::MessageType type);
             void _registerSelf();
             void _unregisterSelf();
 
@@ -32,6 +32,8 @@ namespace pubsub
             bool m_isDataAvailable;
             void* m_dataPointer = nullptr;
     };
+
+    GenericSubscriber* generateSubscriber(msg::id::MessageType type);
 
     /**
      * @brief   A type specific implementation of a subscriber. Should be used for messaging system subscriptions

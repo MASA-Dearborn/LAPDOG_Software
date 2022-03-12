@@ -100,21 +100,3 @@ void Broker::setMessageUpdateFlag(msg::id::MessageType type)
         sub.get()->setDataAvailable();
     }
 }
-
-GenericSubscriber* pubsub::generateSubscriber(msg::id::MessageType type)
-{
-    GenericSubscriber* subscriber = new GenericSubscriber();
-    subscriber->m_type = type;
-    subscriber->m_isDataAvailable;
-    subscriber->_registerSelf();
-    return subscriber;
-}
-
-GenericPublisher* pubsub::generatePublisher(msg::id::MessageType type)
-{
-    GenericPublisher* publisher = new GenericPublisher();
-    publisher->m_type = type;
-    publisher->m_size = sizeof(T);
-    publisher->_registerSelf();
-    return publisher;
-}

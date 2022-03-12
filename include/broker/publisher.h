@@ -21,7 +21,7 @@ namespace pubsub
         protected:
 
             friend class Broker;
-            friend GenericPublisher* pubsub::generatePublisher(msg::id::MessageType type);
+            friend GenericPublisher* generatePublisher(msg::id::MessageType type);
             void _registerSelf();
             void _unregisterSelf();
             void _pushDataToBroker(void* data, int size);
@@ -29,6 +29,8 @@ namespace pubsub
             msg::id::MessageType m_type = msg::id::UNDEFINED_MESSAGE;
             unsigned int m_size;
     };
+
+    GenericPublisher* generatePublisher(msg::id::MessageType type);
 
     template <typename T>
     class Publisher : public GenericPublisher

@@ -39,3 +39,12 @@ void GenericSubscriber::unsubscribe()
 { 
     this->~GenericSubscriber(); 
 }
+
+GenericSubscriber* pubsub::generateSubscriber(msg::id::MessageType type)
+{
+    GenericSubscriber* subscriber = new GenericSubscriber();
+    subscriber->m_type = type;
+    subscriber->m_isDataAvailable;
+    subscriber->_registerSelf();
+    return subscriber;
+}
