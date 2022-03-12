@@ -42,13 +42,13 @@ void MessageHandler::attachIOInterface(IO::IOInterface* interface)
         IOInterfaceList[interface->getType()].push_back(interface);
 }
 
-void MessageHandler::attachReceptionPublisher(GenericPublisher* publisher);
+void MessageHandler::attachReceptionPublisher(pubsub::GenericPublisher* publisher)
 {
     if (publisher != NULL)
         publishers[publisher->getType()] = publisher;
 }
 
-void MessageHandler::attachTransmitSubscriber(GenericSubscriber* subscriber);
+void MessageHandler::attachTransmitSubscriber(pubsub::GenericSubscriber* subscriber)
 {
     if (subscriber != NULL)
         subscribers[subscriber->getType()] = subscriber;

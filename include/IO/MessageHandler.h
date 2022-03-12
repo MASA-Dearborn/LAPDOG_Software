@@ -16,8 +16,8 @@ class MessageHandler
         ~MessageHandler();
 
         void attachIOInterface(IO::IOInterface* interface);
-        void attachReceptionPublisher(GenericPublisher* publisher);
-        void attachTransmitSubscriber(GenericSubscriber* subscriber);
+        void attachReceptionPublisher(pubsub::GenericPublisher* publisher);
+        void attachTransmitSubscriber(pubsub::GenericSubscriber* subscriber);
 
     protected:
 
