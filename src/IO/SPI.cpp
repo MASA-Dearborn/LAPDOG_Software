@@ -139,14 +139,14 @@ void SPI_Interface::registerOperation(const char* device_name, SPI_OperationType
     }
 }
 
-void SPI_Interface::registerInitFunction(const char* device_name, void (*func)(int, int, msg::GENERIC_MESSAGE*))
+void SPI_Interface::registerInitFunction(const char* device_name, void (*func)(int, msg::GENERIC_MESSAGE*))
 {
     static uint8_t data_buffer[MAX_RAW_MESSAGE_SIZE];
     for (int i = 0; i < device_count; i++)
     {
         if (strcmp(devices[i].name, device_name) == 0)
         {
-            func(devices[i].file_descriptor, devices[i].slave_address, (msg::GENERIC_MESSAGE*)data_buffer);
+            func(devices[i].file_descriptor, (msg::GENERIC_MESSAGE*)data_buffer);
             break;
         }
     }

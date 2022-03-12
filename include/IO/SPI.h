@@ -70,7 +70,7 @@ namespace IO
             int writeMessage(uint8_t* src, const int num);
             void registerDevice(const char* name, const char* device_file);
             void registerOperation(const char* device_name, SPI_OperationType type, msg::id::MessageType msg_id, int interval_ms, int (*func)(int, msg::GENERIC_MESSAGE*));
-            void registerInitFunction(const char* device_name, void (*func)(int, int, msg::GENERIC_MESSAGE*));
+            void registerInitFunction(const char* device_name, void (*func)(int, msg::GENERIC_MESSAGE*));
 
         protected:
             friend void _spi_io_handler(union sigval data);
