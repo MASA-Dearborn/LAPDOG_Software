@@ -3,8 +3,18 @@
 
 #include <unistd.h>
 
-#define __ADD_PUBLISHER_TO_MESSAGE_HANDLER(name)     publishers[msg::id::name] = createNewPublisher(name)
-#define __ADD_SUBSCRIBER_TO_MESSAGE_HANDLER(name)    subscribers[msg::id::name] = createNewSubscriber(name)
+void defaultMessageHandlerSetup(MessageHandler& handler)
+{
+    using namespace pubsub;
+
+    /* Attach Publishers */
+    handler.attachReceptionPublisher(generatePublisher(msg::id::TEST_MESSAGE_READ));
+    handler.attachReceptionPublisher(generatePublisher(msg::id::ALTIMETER_COEFFS));
+
+    /* Attach Subscribers */
+    handler.attachTransmitSubscriber(generateSubscriber(msg::id::TEST_MESSAGE_WRITE));
+
+}
 
 MessageHandler::MessageHandler()
 {

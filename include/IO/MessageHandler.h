@@ -8,6 +8,7 @@
 #include "../broker/broker.h"
 #include "IOInterface.h"
 
+void defaultMessageHandlerSetup(MessageHandler& handler);
 
 class MessageHandler
 {
