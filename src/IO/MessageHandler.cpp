@@ -40,12 +40,22 @@ void MessageHandler::attachIOInterface(IO::IOInterface* interface)
         IOInterfaceList[interface->getType()].push_back(interface);
 }
 
+/**
+ * @brief   Attaches a publisher to publish any recieved messages from interfaces
+ * 
+ * @param publisher Pointer to a GenericPublisher to add to the MessageHandler
+ */
 void MessageHandler::attachReceptionPublisher(pubsub::GenericPublisher* publisher)
 {
     if (publisher != NULL)
         publishers[publisher->getType()] = publisher;
 }
 
+/**
+ * @brief   Attaches a subscriber to recieve messages to transmit to interfaces
+ * 
+ * @param subscriber Pointer to a GenericSubscriber to add to the MessageHandler
+ */
 void MessageHandler::attachTransmitSubscriber(pubsub::GenericSubscriber* subscriber)
 {
     if (subscriber != NULL)
@@ -71,6 +81,12 @@ void MessageHandler::publishRawMessageToBroker(msg::GENERIC_MESSAGE* message)
         publishers[message->id]->publish((msg::GENERIC_MESSAGE*)(&temp));
 }
 
+/**
+ * @brief   Transmits a message to all the interfaces contained in a vector
+ * 
+ * @param interfaceVector   The vector containting pointers to interfaces to transmit to
+ * @param message           The message to transmit
+ */
 static void __sendMessageToInterfaces(std::vector<IO::IOInterface*>& interfaceVector, msg::GENERIC_MESSAGE* message)
 {
     for (IO::IOInterface* interface : interfaceVector)
@@ -119,6 +135,10 @@ void MessageHandler::_initIOInterface()
     using namespace IO;
 }
 
+/**
+ * @brief   The main thread for a MessageHandler
+ * 
+ */
 void MessageHandler::_messageHandlerThread()
 {
     uint8_t* buffer = new uint8_t[2048];
