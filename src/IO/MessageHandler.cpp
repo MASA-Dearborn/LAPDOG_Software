@@ -105,6 +105,9 @@ void MessageHandler::sendSubscribedToIO(msg::GENERIC_MESSAGE* message)
         __sendMessageToInterfaces(this->IOInterfaceList[IO::TYPE_TCP], &converted_message.TEST_MESSAGE_2);
         __sendMessageToInterfaces(this->IOInterfaceList[IO::TYPE_GENERIC], &converted_message.TEST_MESSAGE_2);
         break;
+    default:
+        printf("MessageHandler: sendSubscribedToIO - message not defined\n");
+        break;
     }
 
 }
