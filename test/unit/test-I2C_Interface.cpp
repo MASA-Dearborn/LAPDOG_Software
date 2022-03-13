@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 #include <fcntl.h>
+#include <pthread.h>
+
 #include "IO/MessageHandler.h"
 #include "broker/broker.h"
 #include "IO/I2C.h"
@@ -9,22 +11,29 @@ using namespace IO;
 
 void init_func(int fileDescriptor, int slave_address, msg::GENERIC_MESSAGE* msg)
 {
-    msg::raw::ALTIMETER_COEFFS* m = (msg::raw::ALTIMETER_COEFFS*)msg;
-    m->coeff_1 = 1;
-    m->coeff_2 = 2;
-    m->coeff_3 = 3;
-    m->coeff_4 = 4;
-    m->coeff_5 = 5;
-    m->coeff_6 = 6;
-    m->size = msg::RAW_MESSAGE_SIZES[msg::id::ALTIMETER_COEFFS];
-    m->id = msg::id::ALTIMETER_COEFFS;
+    msg::raw::TEST_MESSAGE_READ* m = (msg::raw::TEST_MESSAGE_READ*)msg;
+    m->VAR1 = 10;
+    m->VAR2 = 10;
+    m->size = msg::RAW_MESSAGE_SIZES[msg::id::TEST_MESSAGE_READ];
+    m->id = msg::id::TEST_MESSAGE_READ;
+}
+
+pthread_cond_t data_ready = PTHREAD_COND_INITIALIZER;
+pthread_mutex_t data_mtx = PTHREAD_MUTEX_INITIALIZER;
+void periodic_func(int fileDescriptor, int slave_address, msg::GENERIC_MESSAGE* msg)
+{
+    msg::raw::TEST_MESSAGE_READ* m = (msg::raw::TEST_MESSAGE_READ*)msg;
+    m->VAR1 = 10;
+    m->VAR2 = 10;
+    m->size = msg::RAW_MESSAGE_SIZES[msg::id::TEST_MESSAGE_READ];
+    m->id = msg::id::TEST_MESSAGE_READ;
+    pthread_cond_signal(&data_ready);
 }
 
 TEST(I2CInterfaceTest, InitFunction)
 {
     using namespace pubsub;
-
-    Subscriber<msg::real::ALTIMETER_COEFFS>* sub = (Subscriber<msg::real::ALTIMETER_COEFFS>*)generateSubscriber(msg::id::ALTIMETER_COEFFS);
+    Subscriber<msg::real::TEST_MESSAGE_READ>* sub = (Subscriber<msg::real::TEST_MESSAGE_READ>*)generateSubscriber(msg::id::TEST_MESSAGE_READ);
     MessageHandler handler;
     I2C_Interface temp_i2c;
 
@@ -43,6 +52,39 @@ TEST(I2CInterfaceTest, InitFunction)
 
     // Read back message
     EXPECT_TRUE(sub->isDataAvailable());
+    EXPECT_EQ(sub->getData()->VAR1, 10);
+
+    // Cleanup
+    remove("device.temp");
+    sub->unsubscribe();
+}
+
+TEST(I2CInterfaceTest, PeriodicFunction)
+{
+    using namespace pubsub;
+    Subscriber<msg::real::TEST_MESSAGE_READ>* sub = (Subscriber<msg::real::TEST_MESSAGE_READ>*)generateSubscriber(msg::id::TEST_MESSAGE_READ);
+    MessageHandler handler;
+    I2C_Interface temp_i2c;
+
+    // Create temporary device file
+    close(open("device.temp", O_RDWR|O_CREAT));
+
+    // Setup Interface
+    defaultMessageHandlerSetup(handler);
+    handler.attachIOInterface(&temp_i2c);
+    temp_i2c.registerDevice("device", "device.temp", 0x50);
+    temp_i2c.registerOperation("device", I2C_READ, msg::id::TEST_MESSAGE_READ, 50, periodic_func);
+
+    // Test Execution
+    pthread_cond_wait(&data_ready, &data_mtx);
+    usleep(1000);
+    EXPECT_TRUE(sub->isDataAvailable()) << "First";
+    EXPECT_EQ(sub->getData()->VAR1, 10);
+
+    pthread_cond_wait(&data_ready, &data_mtx);
+    usleep(1000);
+    EXPECT_TRUE(sub->isDataAvailable()) << "Second";
+    EXPECT_EQ(sub->getData()->VAR1, 10);
 
     // Cleanup
     remove("device.temp");
