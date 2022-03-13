@@ -2,10 +2,10 @@
     "MessageCollection" : [
 
         {
-            "name" : "TEST_MESSAGE",
+            "name" : "TEST_MESSAGE_READ",
             "signals" : [
                 {
-                    "name" : "test",
+                    "name" : "VAR1",
                     "ctype" : "int",
                     "init" : 0,
                     "bits" : 10,
@@ -23,7 +23,7 @@
             ]
         },
         {
-            "name" : "TEST_MESSAGE_2",
+            "name" : "TEST_MESSAGE_WRITE",
             "signals" : [
                 {
                     "name" : "VAR1",

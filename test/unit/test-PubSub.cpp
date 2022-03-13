@@ -6,16 +6,16 @@ using namespace pubsub;
 TEST(PubSub, PublisherSingleDataTransfer)
 {
 
-    msg::real::TEST_MESSAGE message;
-    message.test = 5;
+    msg::real::TEST_MESSAGE_READ message;
+    message.VAR1 = 5;
 
-    Subscriber<msg::real::TEST_MESSAGE>* sub = createNewSubscriber(TEST_MESSAGE);
-    Publisher<msg::real::TEST_MESSAGE>* pub = createNewPublisher(TEST_MESSAGE);
+    Subscriber<msg::real::TEST_MESSAGE_READ>* sub = createNewSubscriber(TEST_MESSAGE_READ);
+    Publisher<msg::real::TEST_MESSAGE_READ>* pub = createNewPublisher(TEST_MESSAGE_READ);
 
     pub->publish(&message);
 
     EXPECT_TRUE(sub->isDataAvailable());
-    EXPECT_EQ(sub->getData()->test, 5);
+    EXPECT_EQ(sub->getData()->VAR1, 5);
     EXPECT_FALSE(sub->isDataAvailable());
 
     sub->unsubscribe();
@@ -26,23 +26,23 @@ TEST(PubSub, PublisherSingleDataTransfer)
 TEST(PubSub, PublisherRepeatedDataTransfer)
 {
 
-    msg::real::TEST_MESSAGE message;
-    message.test = 5;
+    msg::real::TEST_MESSAGE_READ message;
+    message.VAR1 = 5;
 
-    Subscriber<msg::real::TEST_MESSAGE>* sub = createNewSubscriber(TEST_MESSAGE);
-    Publisher<msg::real::TEST_MESSAGE>* pub = createNewPublisher(TEST_MESSAGE);
+    Subscriber<msg::real::TEST_MESSAGE_READ>* sub = createNewSubscriber(TEST_MESSAGE_READ);
+    Publisher<msg::real::TEST_MESSAGE_READ>* pub = createNewPublisher(TEST_MESSAGE_READ);
 
     pub->publish(&message);
 
     EXPECT_TRUE(sub->isDataAvailable());
-    EXPECT_EQ(sub->getData()->test, 5);
+    EXPECT_EQ(sub->getData()->VAR1, 5);
     EXPECT_FALSE(sub->isDataAvailable());
 
-    message.test = 10;
+    message.VAR1 = 10;
     pub->publish(&message);
 
     EXPECT_TRUE(sub->isDataAvailable());
-    EXPECT_EQ(sub->getData()->test, 10);
+    EXPECT_EQ(sub->getData()->VAR1, 10);
     EXPECT_FALSE(sub->isDataAvailable());
 
     sub->unsubscribe();
@@ -53,21 +53,21 @@ TEST(PubSub, PublisherRepeatedDataTransfer)
 TEST(PubSub, PublisherMultipleDataTransfer)
 {
 
-    msg::real::TEST_MESSAGE message;
-    message.test = 5;
+    msg::real::TEST_MESSAGE_READ message;
+    message.VAR1 = 5;
 
-    Subscriber<msg::real::TEST_MESSAGE>* sub1 = createNewSubscriber(TEST_MESSAGE);
-    Subscriber<msg::real::TEST_MESSAGE>* sub2 = createNewSubscriber(TEST_MESSAGE);
-    Publisher<msg::real::TEST_MESSAGE>* pub = createNewPublisher(TEST_MESSAGE);
+    Subscriber<msg::real::TEST_MESSAGE_READ>* sub1 = createNewSubscriber(TEST_MESSAGE_READ);
+    Subscriber<msg::real::TEST_MESSAGE_READ>* sub2 = createNewSubscriber(TEST_MESSAGE_READ);
+    Publisher<msg::real::TEST_MESSAGE_READ>* pub = createNewPublisher(TEST_MESSAGE_READ);
 
     pub->publish(&message);
 
     EXPECT_TRUE(sub1->isDataAvailable());
-    EXPECT_EQ(sub1->getData()->test, 5);
+    EXPECT_EQ(sub1->getData()->VAR1, 5);
     EXPECT_FALSE(sub1->isDataAvailable());
 
     EXPECT_TRUE(sub2->isDataAvailable());
-    EXPECT_EQ(sub2->getData()->test, 5);
+    EXPECT_EQ(sub2->getData()->VAR1, 5);
     EXPECT_FALSE(sub2->isDataAvailable());
 
     sub1->unsubscribe();
@@ -79,24 +79,24 @@ TEST(PubSub, PublisherMultipleDataTransfer)
 TEST(PubSub, MultiplePublishers)
 {
 
-    msg::real::TEST_MESSAGE message;
-    message.test = 5;
+    msg::real::TEST_MESSAGE_READ message;
+    message.VAR1 = 5;
 
-    Publisher<msg::real::TEST_MESSAGE>* pub1 = createNewPublisher(TEST_MESSAGE);
-    Publisher<msg::real::TEST_MESSAGE>* pub2 = createNewPublisher(TEST_MESSAGE);
-    Subscriber<msg::real::TEST_MESSAGE>* sub = createNewSubscriber(TEST_MESSAGE);
+    Publisher<msg::real::TEST_MESSAGE_READ>* pub1 = createNewPublisher(TEST_MESSAGE_READ);
+    Publisher<msg::real::TEST_MESSAGE_READ>* pub2 = createNewPublisher(TEST_MESSAGE_READ);
+    Subscriber<msg::real::TEST_MESSAGE_READ>* sub = createNewSubscriber(TEST_MESSAGE_READ);
 
     pub1->publish(&message);
 
     EXPECT_TRUE(sub->isDataAvailable());
-    EXPECT_EQ(sub->getData()->test, 5);
+    EXPECT_EQ(sub->getData()->VAR1, 5);
     EXPECT_FALSE(sub->isDataAvailable());
 
-    message.test = 10;
+    message.VAR1 = 10;
     pub2->publish(&message);
 
     EXPECT_TRUE(sub->isDataAvailable());
-    EXPECT_EQ(sub->getData()->test, 10);
+    EXPECT_EQ(sub->getData()->VAR1, 10);
     EXPECT_FALSE(sub->isDataAvailable());
 
     sub->unsubscribe();

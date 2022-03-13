@@ -5,8 +5,8 @@ using namespace IO;
 
 TEST(IOInterfaceTest, GenericInterfaceWrite)
 {
-    msg::real::TEST_MESSAGE msg;
-    msg.test = 10;
+    msg::real::TEST_MESSAGE_READ msg;
+    msg.VAR1 = 10;
     msg.VAR2 = 25.0f;
 
     uint8_t buffer[32];
@@ -17,7 +17,7 @@ TEST(IOInterfaceTest, GenericInterfaceWrite)
     interface.writeMessage((uint8_t*)(&msg), msg.size);
     queue->dequeue(buffer, msg.size);
 
-    EXPECT_EQ(((msg::real::TEST_MESSAGE*)buffer)->test, msg.test);
-    EXPECT_EQ(((msg::real::TEST_MESSAGE*)buffer)->VAR2, msg.VAR2);
+    EXPECT_EQ(((msg::real::TEST_MESSAGE_READ*)buffer)->VAR1, msg.VAR1);
+    EXPECT_EQ(((msg::real::TEST_MESSAGE_READ*)buffer)->VAR2, msg.VAR2);
 
 }

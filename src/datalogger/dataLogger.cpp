@@ -44,7 +44,7 @@ void DataLogger::_createLogFolder()
 
 void DataLogger::_init()
 {
-    CREATE_LOGGER(log_folder_name, 5000, TEST_MESSAGE)
+    CREATE_LOGGER(log_folder_name, 5000, TEST_MESSAGE_READ)
 }
 
 void _data_logger_handler(union sigval data)

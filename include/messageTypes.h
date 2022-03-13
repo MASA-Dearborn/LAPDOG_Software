@@ -10,8 +10,8 @@
 namespace msg::id {
 
     enum MessageType {
-        TEST_MESSAGE = 0,
-        TEST_MESSAGE_2 = 1,
+        TEST_MESSAGE_READ = 0,
+        TEST_MESSAGE_WRITE = 1,
         ALTIMETER_COEFFS = 2,
         ALTIMETER_DATA = 3,
         HUMIDITY_DATA = 4,
@@ -32,14 +32,14 @@ namespace msg {
 
 namespace msg::real {
 
-    struct TEST_MESSAGE : GENERIC_MESSAGE {
-        TEST_MESSAGE() { id = msg::id::TEST_MESSAGE; size = sizeof(TEST_MESSAGE); }
-        int test;
+    struct TEST_MESSAGE_READ : GENERIC_MESSAGE {
+        TEST_MESSAGE_READ() { id = msg::id::TEST_MESSAGE_READ; size = sizeof(TEST_MESSAGE_READ); }
+        int VAR1;
         float VAR2 = 5.2;
     };
     
-    struct TEST_MESSAGE_2 : GENERIC_MESSAGE {
-        TEST_MESSAGE_2() { id = msg::id::TEST_MESSAGE_2; size = sizeof(TEST_MESSAGE_2); }
+    struct TEST_MESSAGE_WRITE : GENERIC_MESSAGE {
+        TEST_MESSAGE_WRITE() { id = msg::id::TEST_MESSAGE_WRITE; size = sizeof(TEST_MESSAGE_WRITE); }
         int VAR1;
         float VAR2 = 0.23;
     };
@@ -70,14 +70,14 @@ namespace msg::real {
 
 namespace msg::raw {
 
-    struct TEST_MESSAGE : GENERIC_MESSAGE {
-        TEST_MESSAGE() { id = msg::id::TEST_MESSAGE; size = sizeof(TEST_MESSAGE); }
-        int test : 10;
+    struct TEST_MESSAGE_READ : GENERIC_MESSAGE {
+        TEST_MESSAGE_READ() { id = msg::id::TEST_MESSAGE_READ; size = sizeof(TEST_MESSAGE_READ); }
+        int VAR1 : 10;
         int VAR2 : 16;
     };
     
-    struct TEST_MESSAGE_2 : GENERIC_MESSAGE {
-        TEST_MESSAGE_2() { id = msg::id::TEST_MESSAGE_2; size = sizeof(TEST_MESSAGE_2); }
+    struct TEST_MESSAGE_WRITE : GENERIC_MESSAGE {
+        TEST_MESSAGE_WRITE() { id = msg::id::TEST_MESSAGE_WRITE; size = sizeof(TEST_MESSAGE_WRITE); }
         int VAR1 : 10;
         int VAR2 : 16;
     };
@@ -109,24 +109,24 @@ namespace msg::raw {
 namespace msg {
 
     const int RAW_MESSAGE_SIZES[] = {
-        sizeof(msg::raw::TEST_MESSAGE),
-        sizeof(msg::raw::TEST_MESSAGE_2),
+        sizeof(msg::raw::TEST_MESSAGE_READ),
+        sizeof(msg::raw::TEST_MESSAGE_WRITE),
         sizeof(msg::raw::ALTIMETER_COEFFS),
         sizeof(msg::raw::ALTIMETER_DATA),
         sizeof(msg::raw::HUMIDITY_DATA),
     };
     
     const int REAL_MESSAGE_SIZES[] = {
-        sizeof(msg::real::TEST_MESSAGE),
-        sizeof(msg::real::TEST_MESSAGE_2),
+        sizeof(msg::real::TEST_MESSAGE_READ),
+        sizeof(msg::real::TEST_MESSAGE_WRITE),
         sizeof(msg::real::ALTIMETER_COEFFS),
         sizeof(msg::real::ALTIMETER_DATA),
         sizeof(msg::real::HUMIDITY_DATA),
     };
     
     struct MessageCollection {
-        real::TEST_MESSAGE TEST_MESSAGE;
-        real::TEST_MESSAGE_2 TEST_MESSAGE_2;
+        real::TEST_MESSAGE_READ TEST_MESSAGE_READ;
+        real::TEST_MESSAGE_WRITE TEST_MESSAGE_WRITE;
         real::ALTIMETER_COEFFS ALTIMETER_COEFFS;
         real::ALTIMETER_DATA ALTIMETER_DATA;
         real::HUMIDITY_DATA HUMIDITY_DATA;
@@ -134,8 +134,8 @@ namespace msg {
     
     union RealMessageUnion {
         RealMessageUnion() { memset( this, 0, sizeof( RealMessageUnion ) ); }
-        real::TEST_MESSAGE TEST_MESSAGE;
-        real::TEST_MESSAGE_2 TEST_MESSAGE_2;
+        real::TEST_MESSAGE_READ TEST_MESSAGE_READ;
+        real::TEST_MESSAGE_WRITE TEST_MESSAGE_WRITE;
         real::ALTIMETER_COEFFS ALTIMETER_COEFFS;
         real::ALTIMETER_DATA ALTIMETER_DATA;
         real::HUMIDITY_DATA HUMIDITY_DATA;
@@ -143,8 +143,8 @@ namespace msg {
     
     union RawMessageUnion {
         RawMessageUnion() { memset( this, 0, sizeof( RawMessageUnion ) ); }
-        raw::TEST_MESSAGE TEST_MESSAGE;
-        raw::TEST_MESSAGE_2 TEST_MESSAGE_2;
+        raw::TEST_MESSAGE_READ TEST_MESSAGE_READ;
+        raw::TEST_MESSAGE_WRITE TEST_MESSAGE_WRITE;
         raw::ALTIMETER_COEFFS ALTIMETER_COEFFS;
         raw::ALTIMETER_DATA ALTIMETER_DATA;
         raw::HUMIDITY_DATA HUMIDITY_DATA;
@@ -152,10 +152,10 @@ namespace msg {
     
     inline void* getMessageAddressFromCollection(MessageCollection& collection, const id::MessageType type) {
         switch (type) {
-            case msg::id::TEST_MESSAGE:
-                return &collection.TEST_MESSAGE;
-            case msg::id::TEST_MESSAGE_2:
-                return &collection.TEST_MESSAGE_2;
+            case msg::id::TEST_MESSAGE_READ:
+                return &collection.TEST_MESSAGE_READ;
+            case msg::id::TEST_MESSAGE_WRITE:
+                return &collection.TEST_MESSAGE_WRITE;
             case msg::id::ALTIMETER_COEFFS:
                 return &collection.ALTIMETER_COEFFS;
             case msg::id::ALTIMETER_DATA:
@@ -171,15 +171,15 @@ namespace msg {
 
 namespace msg::conv {
 
-    inline msg::real::TEST_MESSAGE TEST_MESSAGE_TO_REAL(msg::raw::TEST_MESSAGE* raw) {
-        msg::real::TEST_MESSAGE real;
-        real.test = (raw->test * 1) + 0;
+    inline msg::real::TEST_MESSAGE_READ TEST_MESSAGE_READ_TO_REAL(msg::raw::TEST_MESSAGE_READ* raw) {
+        msg::real::TEST_MESSAGE_READ real;
+        real.VAR1 = (raw->VAR1 * 1) + 0;
         real.VAR2 = (raw->VAR2 * 0.00152587890625) + 0;
         return real;
     }
     
-    inline msg::real::TEST_MESSAGE_2 TEST_MESSAGE_2_TO_REAL(msg::raw::TEST_MESSAGE_2* raw) {
-        msg::real::TEST_MESSAGE_2 real;
+    inline msg::real::TEST_MESSAGE_WRITE TEST_MESSAGE_WRITE_TO_REAL(msg::raw::TEST_MESSAGE_WRITE* raw) {
+        msg::real::TEST_MESSAGE_WRITE real;
         real.VAR1 = (raw->VAR1 * 1) + 0;
         real.VAR2 = (raw->VAR2 * 0.0030517578125) + 0;
         return real;
@@ -210,15 +210,15 @@ namespace msg::conv {
         return real;
     }
     
-    inline msg::raw::TEST_MESSAGE TEST_MESSAGE_TO_RAW(msg::real::TEST_MESSAGE* real) {
-        msg::raw::TEST_MESSAGE raw;
-        raw.test = (real->test - 0) / 1;
+    inline msg::raw::TEST_MESSAGE_READ TEST_MESSAGE_READ_TO_RAW(msg::real::TEST_MESSAGE_READ* real) {
+        msg::raw::TEST_MESSAGE_READ raw;
+        raw.VAR1 = (real->VAR1 - 0) / 1;
         raw.VAR2 = (real->VAR2 - 0) / 0.00152587890625;
         return raw;
     }
     
-    inline msg::raw::TEST_MESSAGE_2 TEST_MESSAGE_2_TO_RAW(msg::real::TEST_MESSAGE_2* real) {
-        msg::raw::TEST_MESSAGE_2 raw;
+    inline msg::raw::TEST_MESSAGE_WRITE TEST_MESSAGE_WRITE_TO_RAW(msg::real::TEST_MESSAGE_WRITE* real) {
+        msg::raw::TEST_MESSAGE_WRITE raw;
         raw.VAR1 = (real->VAR1 - 0) / 1;
         raw.VAR2 = (real->VAR2 - 0) / 0.0030517578125;
         return raw;
@@ -251,11 +251,11 @@ namespace msg::conv {
     
     inline msg::id::MessageType convertRawToReal(msg::RealMessageUnion* dest, GENERIC_MESSAGE* raw) {
         switch(raw->id) {
-            case msg::id::TEST_MESSAGE:
-                dest->TEST_MESSAGE = msg::conv::TEST_MESSAGE_TO_REAL((msg::raw::TEST_MESSAGE*)(raw));
+            case msg::id::TEST_MESSAGE_READ:
+                dest->TEST_MESSAGE_READ = msg::conv::TEST_MESSAGE_READ_TO_REAL((msg::raw::TEST_MESSAGE_READ*)(raw));
                 break;
-            case msg::id::TEST_MESSAGE_2:
-                dest->TEST_MESSAGE_2 = msg::conv::TEST_MESSAGE_2_TO_REAL((msg::raw::TEST_MESSAGE_2*)(raw));
+            case msg::id::TEST_MESSAGE_WRITE:
+                dest->TEST_MESSAGE_WRITE = msg::conv::TEST_MESSAGE_WRITE_TO_REAL((msg::raw::TEST_MESSAGE_WRITE*)(raw));
                 break;
             case msg::id::ALTIMETER_COEFFS:
                 dest->ALTIMETER_COEFFS = msg::conv::ALTIMETER_COEFFS_TO_REAL((msg::raw::ALTIMETER_COEFFS*)(raw));
@@ -272,11 +272,11 @@ namespace msg::conv {
     
     inline msg::id::MessageType convertRealToRaw(msg::RawMessageUnion* dest, GENERIC_MESSAGE* real) {
         switch(real->id) {
-            case msg::id::TEST_MESSAGE:
-                dest->TEST_MESSAGE = msg::conv::TEST_MESSAGE_TO_RAW((msg::real::TEST_MESSAGE*)(real));
+            case msg::id::TEST_MESSAGE_READ:
+                dest->TEST_MESSAGE_READ = msg::conv::TEST_MESSAGE_READ_TO_RAW((msg::real::TEST_MESSAGE_READ*)(real));
                 break;
-            case msg::id::TEST_MESSAGE_2:
-                dest->TEST_MESSAGE_2 = msg::conv::TEST_MESSAGE_2_TO_RAW((msg::real::TEST_MESSAGE_2*)(real));
+            case msg::id::TEST_MESSAGE_WRITE:
+                dest->TEST_MESSAGE_WRITE = msg::conv::TEST_MESSAGE_WRITE_TO_RAW((msg::real::TEST_MESSAGE_WRITE*)(real));
                 break;
             case msg::id::ALTIMETER_COEFFS:
                 dest->ALTIMETER_COEFFS = msg::conv::ALTIMETER_COEFFS_TO_RAW((msg::real::ALTIMETER_COEFFS*)(real));
@@ -293,15 +293,15 @@ namespace msg::conv {
     
     inline void stringifyRealMessage(char* dest, msg::GENERIC_MESSAGE* message) {
         switch(message->id) {
-        case msg::id::TEST_MESSAGE:
+        case msg::id::TEST_MESSAGE_READ:
             sprintf(dest, "%d %.3f \n", 
-                    ((msg::real::TEST_MESSAGE*)message)->test, 
-                    ((msg::real::TEST_MESSAGE*)message)->VAR2);
+                    ((msg::real::TEST_MESSAGE_READ*)message)->VAR1, 
+                    ((msg::real::TEST_MESSAGE_READ*)message)->VAR2);
             break;
-        case msg::id::TEST_MESSAGE_2:
+        case msg::id::TEST_MESSAGE_WRITE:
             sprintf(dest, "%d %.3f \n", 
-                    ((msg::real::TEST_MESSAGE_2*)message)->VAR1, 
-                    ((msg::real::TEST_MESSAGE_2*)message)->VAR2);
+                    ((msg::real::TEST_MESSAGE_WRITE*)message)->VAR1, 
+                    ((msg::real::TEST_MESSAGE_WRITE*)message)->VAR2);
             break;
         case msg::id::ALTIMETER_COEFFS:
             sprintf(dest, "%u %u %u %u %u %u \n", 

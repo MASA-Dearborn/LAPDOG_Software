@@ -8,8 +8,6 @@
 
 MessageHandler::MessageHandler()
 {
-    _initPublishers();
-    _initSubscribers();
     _initIOInterface();
     messageHandlerThreadObj = std::thread(&MessageHandler::_messageHandlerThread, this);
 }
@@ -97,13 +95,13 @@ void MessageHandler::sendSubscribedToIO(msg::GENERIC_MESSAGE* message)
     // Send message to different Interface depending on the type
     switch ( message->id )
     {
-    case msg::id::TEST_MESSAGE:
-        __sendMessageToInterfaces(this->IOInterfaceList[IO::TYPE_TCP], &converted_message.TEST_MESSAGE);
-        __sendMessageToInterfaces(this->IOInterfaceList[IO::TYPE_GENERIC], &converted_message.TEST_MESSAGE);
+    case msg::id::TEST_MESSAGE_READ:
+        __sendMessageToInterfaces(this->IOInterfaceList[IO::TYPE_TCP], &converted_message.TEST_MESSAGE_READ);
+        __sendMessageToInterfaces(this->IOInterfaceList[IO::TYPE_GENERIC], &converted_message.TEST_MESSAGE_READ);
         break;
-    case msg::id::TEST_MESSAGE_2:
-        __sendMessageToInterfaces(this->IOInterfaceList[IO::TYPE_TCP], &converted_message.TEST_MESSAGE_2);
-        __sendMessageToInterfaces(this->IOInterfaceList[IO::TYPE_GENERIC], &converted_message.TEST_MESSAGE_2);
+    case msg::id::TEST_MESSAGE_WRITE:
+        __sendMessageToInterfaces(this->IOInterfaceList[IO::TYPE_TCP], &converted_message.TEST_MESSAGE_WRITE);
+        __sendMessageToInterfaces(this->IOInterfaceList[IO::TYPE_GENERIC], &converted_message.TEST_MESSAGE_WRITE);
         break;
     default:
         printf("MessageHandler: sendSubscribedToIO - message not defined\n");
@@ -119,25 +117,6 @@ void MessageHandler::sendSubscribedToIO(msg::GENERIC_MESSAGE* message)
 void MessageHandler::_initIOInterface()
 {
     using namespace IO;
-}
-
-/**
- * @brief   Initializes the IO publishers required by the MessageHandler
- * 
- */
-void MessageHandler::_initPublishers()
-{
-    __ADD_PUBLISHER_TO_MESSAGE_HANDLER(TEST_MESSAGE);
-    __ADD_PUBLISHER_TO_MESSAGE_HANDLER(ALTIMETER_COEFFS);
-}
-
-/**
- * @brief   Initializes the IO Subscribers required by the MessageHandler
- * 
- */
-void MessageHandler::_initSubscribers()
-{
-    __ADD_SUBSCRIBER_TO_MESSAGE_HANDLER(TEST_MESSAGE_2);
 }
 
 void MessageHandler::_messageHandlerThread()

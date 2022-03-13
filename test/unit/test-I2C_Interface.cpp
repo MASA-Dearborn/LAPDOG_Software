@@ -9,12 +9,14 @@ using namespace IO;
 
 void init_func(int fileDescriptor, int slave_address, msg::GENERIC_MESSAGE* msg)
 {
-
+    
 }
 
 TEST(I2CInterfaceTest, InitFunction)
 {
-    pubsub::Subscriber<msg::real::ALTIMETER_COEFFS>* sub = createNewSubscriber(ALTIMETER_COEFFS);
+    using namespace pubsub;
+
+    Subscriber<msg::real::ALTIMETER_COEFFS>* sub = (Subscriber<msg::real::ALTIMETER_COEFFS>*)generateSubscriber(msg::id::ALTIMETER_COEFFS);
     MessageHandler handler;
     I2C_Interface temp_i2c;
 
