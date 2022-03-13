@@ -64,7 +64,7 @@ TEST_F(DataLoggerFixture, TestDataLoggerWrite)
     int retval = 0;
 
     strcpy(file_path, dl->getLogFolderNamePtr());
-    strcat(file_path, "/TEST_MESSAGE_READ/TEST_MESSAGE_0001.log");
+    strcat(file_path, "/TEST_MESSAGE_READ/TEST_MESSAGE_READ_0001.log");
 
     // Send a message for logging
     pubsub::Publisher<msg::real::TEST_MESSAGE_READ>* pub = createNewPublisher(TEST_MESSAGE_READ);

@@ -16,6 +16,7 @@ TEST(MessageHandlerTest, PublishAndSendTest)
     pubsub::Publisher<msg::real::TEST_MESSAGE_WRITE>* pub = createNewPublisher(TEST_MESSAGE_WRITE);
     IO::GenericInterface* interface = new IO::GenericInterface();
 
+    defaultMessageHandlerSetup(handler);
     handler.attachIOInterface(interface);
 
     msg::real::TEST_MESSAGE_WRITE output;
@@ -41,9 +42,9 @@ TEST(MessageHandlerTest, PublishAndSendTest)
 
 TEST(MessageHandlerTest, TCPInterfaceTest)
 {
-
     MessageHandler handler;
     IO::TCPClient tcpClient;
+    defaultMessageHandlerSetup(handler);
     handler.attachIOInterface(new IO::TCP_Interface());
 
     usleep(100);
@@ -73,5 +74,4 @@ TEST(MessageHandlerTest, TCPInterfaceTest)
 
     sub->unsubscribe();
     tcpClient.disconnect();
-
 }

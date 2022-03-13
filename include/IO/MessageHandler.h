@@ -8,8 +8,6 @@
 #include "../broker/broker.h"
 #include "IOInterface.h"
 
-void defaultMessageHandlerSetup(MessageHandler& handler);
-
 class MessageHandler
 {
     public:
@@ -39,3 +37,5 @@ class MessageHandler
         std::thread messageHandlerThreadObj;
         bool messageHandlerThreadActive = true;
 };
+
+void defaultMessageHandlerSetup(MessageHandler& handler);

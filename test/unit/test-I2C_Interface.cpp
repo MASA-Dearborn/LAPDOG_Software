@@ -9,7 +9,15 @@ using namespace IO;
 
 void init_func(int fileDescriptor, int slave_address, msg::GENERIC_MESSAGE* msg)
 {
-    
+    msg::raw::ALTIMETER_COEFFS* m = (msg::raw::ALTIMETER_COEFFS*)msg;
+    m->coeff_1 = 1;
+    m->coeff_2 = 2;
+    m->coeff_3 = 3;
+    m->coeff_4 = 4;
+    m->coeff_5 = 5;
+    m->coeff_6 = 6;
+    m->size = msg::RAW_MESSAGE_SIZES[msg::id::ALTIMETER_COEFFS];
+    m->id = msg::id::ALTIMETER_COEFFS;
 }
 
 TEST(I2CInterfaceTest, InitFunction)
@@ -24,9 +32,10 @@ TEST(I2CInterfaceTest, InitFunction)
     close(open("device.temp", O_RDWR|O_CREAT));
 
     // Setup Interface
-    temp_i2c.registerDevice("device", "device.temp", 0x50);
-    temp_i2c.registerInitFunction("device", i2c_operations::ALTIMETER_READ_CONFIG);
+    defaultMessageHandlerSetup(handler);
     handler.attachIOInterface(&temp_i2c);
+    temp_i2c.registerDevice("device", "device.temp", 0x50);
+    temp_i2c.registerInitFunction("device", init_func);
 
     // Wait for handler to get message
     sched_yield();
