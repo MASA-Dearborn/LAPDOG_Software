@@ -59,6 +59,14 @@ namespace pubsub
                 clearDataAvailable(); 
                 return (T*)m_dataPointer; 
             }
+            T getDataCopy()
+            {
+                clearDataAvailable();
+                m_lock.lock();
+                T temp = *(T*)m_dataPointer;
+                m_lock.unlock();
+                return temp;
+            }
     };
 
 
