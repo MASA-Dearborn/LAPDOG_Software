@@ -137,6 +137,320 @@
                     "max" : 125
                 }
             ]
+        },
+        {
+            "name" : "BNO055_ACCEL_CONFIG",
+            "signals" : [
+                {
+                    "name" : "G_RANGE",
+                    "ctype" : "char",
+                    "init" : 0,
+                    "bits" : 2,
+                    "min"   : 0,
+                    "max" : 4
+                },
+                {
+                    "name" : "SAMPLE_RATE",
+                    "ctype" : "char",
+                    "init" : 0,
+                    "bits" : 3,
+                    "min"   : 0,
+                    "max" : 8
+                },
+                {
+                    "name" : "OPERATION_MODE",
+                    "ctype" : "char",
+                    "init" : 0,
+                    "bits" : 3,
+                    "min"   : 0,
+                    "max" : 8
+                }
+            ]
+        },
+        {
+            "name" : "BNO055_GYRO_CONFIG",
+            "signals" : [
+                {
+                    "name" : "RANGE",
+                    "ctype" : "char",
+                    "init" : 0,
+                    "bits" : 3,
+                    "min"   : 0,
+                    "max" : 5
+                },
+                {
+                    "name" : "SAMPLE_RATE",
+                    "ctype" : "char",
+                    "init" : 0,
+                    "bits" : 3,
+                    "min"   : 0,
+                    "max" : 8
+                },
+                {
+                    "name" : "OPERATION_MODE",
+                    "ctype" : "char",
+                    "init" : 0,
+                    "bits" : 3,
+                    "min"   : 0,
+                    "max" : 8
+                }
+            ]
+        },
+        {
+            "name" : "BNO055_MAG_CONFIG",
+            "signals" : [
+                {
+                    "name" : "SAMPLE_RATE",
+                    "ctype" : "char",
+                    "init" : 0,
+                    "bits" : 3,
+                    "min"   : 0,
+                    "max" : 8
+                },
+                {
+                    "name" : "OPERATION_MODE",
+                    "ctype" : "char",
+                    "init" : 0,
+                    "bits" : 2,
+                    "min"   : 0,
+                    "max" : 4
+                }
+            ]
+        },
+        {
+            "name" : "BNO055_UNIT_SELECTION",
+            "signals" : [
+                {
+                    "name" : "ACCELERATION",
+                    "ctype" : "char",
+                    "init" : 0,
+                    "bits" : 1,
+                    "min"   : 0,
+                    "max" : 1
+                },
+                {
+                    "name" : "ANGULAR_RATE",
+                    "ctype" : "char",
+                    "init" : 0,
+                    "bits" : 1,
+                    "min"   : 0,
+                    "max" : 1
+                },
+                {
+                    "name" : "EULER_ANGLES",
+                    "ctype" : "char",
+                    "init" : 0,
+                    "bits" : 1,
+                    "min"   : 0,
+                    "max" : 1
+                },
+                {
+                    "name" : "TEMPERATURE",
+                    "ctype" : "char",
+                    "init" : 0,
+                    "bits" : 1,
+                    "min"   : 0,
+                    "max" : 1
+                },
+                {
+                    "name" : "FUSION_OUTPUT_FORMAT",
+                    "ctype" : "char",
+                    "init" : 0,
+                    "bits" : 1,
+                    "min"   : 0,
+                    "max" : 1
+                }
+            ]
+        },
+        {
+            "name" : "BNO055_CAL_ACCEL",
+            "signals" : [
+                {
+                    "name" : "RADIUS",
+                    "ctype" : "int",
+                    "init" : 0,
+                    "bits" : 16,
+                    "min"   : -32768,
+                    "max" : 32767
+                },
+                {
+                    "name" : "OFFSET_X",
+                    "ctype" : "int",
+                    "init" : 0,
+                    "bits" : 16,
+                    "min"   : -32768,
+                    "max" : 32767
+                },
+                {
+                    "name" : "OFFSET_Y",
+                    "ctype" : "int",
+                    "init" : 0,
+                    "bits" : 16,
+                    "min"   : -32768,
+                    "max" : 32767
+                },
+                {
+                    "name" : "OFFSET_Z",
+                    "ctype" : "int",
+                    "init" : 0,
+                    "bits" : 16,
+                    "min"   : -32768,
+                    "max" : 32767
+                }
+            ]
+        },
+        {
+            "name" : "BNO055_CAL_MAG",
+            "signals" : [
+                {
+                    "name" : "RADIUS",
+                    "ctype" : "int",
+                    "init" : 0,
+                    "bits" : 16,
+                    "min"   : -32768,
+                    "max" : 32767
+                },
+                {
+                    "name" : "OFFSET_X",
+                    "ctype" : "int",
+                    "init" : 0,
+                    "bits" : 16,
+                    "min"   : -32768,
+                    "max" : 32767
+                },
+                {
+                    "name" : "OFFSET_Y",
+                    "ctype" : "int",
+                    "init" : 0,
+                    "bits" : 16,
+                    "min"   : -32768,
+                    "max" : 32767
+                },
+                {
+                    "name" : "OFFSET_Z",
+                    "ctype" : "int",
+                    "init" : 0,
+                    "bits" : 16,
+                    "min"   : -32768,
+                    "max" : 32767
+                }
+            ]
+        },
+        {
+            "name" : "BNO055_CAL_GYRO",
+            "signals" : [
+                {
+                    "name" : "OFFSET_X",
+                    "ctype" : "int",
+                    "init" : 0,
+                    "bits" : 16,
+                    "min"   : -32768,
+                    "max" : 32767
+                },
+                {
+                    "name" : "OFFSET_Y",
+                    "ctype" : "int",
+                    "init" : 0,
+                    "bits" : 16,
+                    "min"   : -32768,
+                    "max" : 32767
+                },
+                {
+                    "name" : "OFFSET_Z",
+                    "ctype" : "int",
+                    "init" : 0,
+                    "bits" : 16,
+                    "min"   : -32768,
+                    "max" : 32767
+                }
+            ]
+        },
+        {
+            "name" : "BNO055_DATA_ACCEL",
+            "signals" : [
+                {
+                    "name" : "X",
+                    "ctype" : "int",
+                    "init" : 0,
+                    "bits" : 16,
+                    "min"   : -32768,
+                    "max" : 32767
+                },
+                {
+                    "name" : "Y",
+                    "ctype" : "int",
+                    "init" : 0,
+                    "bits" : 16,
+                    "min"   : -32768,
+                    "max" : 32767
+                },
+                {
+                    "name" : "Z",
+                    "ctype" : "int",
+                    "init" : 0,
+                    "bits" : 16,
+                    "min"   : -32768,
+                    "max" : 32767
+                }
+            ]
+        },
+        {
+            "name" : "BNO055_DATA_GYRO",
+            "signals" : [
+                {
+                    "name" : "X",
+                    "ctype" : "int",
+                    "init" : 0,
+                    "bits" : 16,
+                    "min"   : -32768,
+                    "max" : 32767
+                },
+                {
+                    "name" : "Y",
+                    "ctype" : "int",
+                    "init" : 0,
+                    "bits" : 16,
+                    "min"   : -32768,
+                    "max" : 32767
+                },
+                {
+                    "name" : "Z",
+                    "ctype" : "int",
+                    "init" : 0,
+                    "bits" : 16,
+                    "min"   : -32768,
+                    "max" : 32767
+                }
+            ]
+        },
+        {
+            "name" : "BNO055_DATA_MAG",
+            "signals" : [
+                {
+                    "name" : "X",
+                    "ctype" : "int",
+                    "init" : 0,
+                    "bits" : 16,
+                    "min"   : -32768,
+                    "max" : 32767
+                },
+                {
+                    "name" : "Y",
+                    "ctype" : "int",
+                    "init" : 0,
+                    "bits" : 16,
+                    "min"   : -32768,
+                    "max" : 32767
+                },
+                {
+                    "name" : "Z",
+                    "ctype" : "int",
+                    "init" : 0,
+                    "bits" : 16,
+                    "min"   : -32768,
+                    "max" : 32767
+                }
+            ]
         }
     ]
 }

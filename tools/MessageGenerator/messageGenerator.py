@@ -91,6 +91,8 @@ def addMessageToStringify(message):
         'double' : '%.3f',
         'float' : '%.3f',
         'int' : '%d',
+        'char' : '%d',
+        'bool' : '%d',
         'unsigned int' : '%u',
     }
 
