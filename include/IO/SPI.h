@@ -39,7 +39,7 @@ namespace IO
         uint64_t interval_ms = 0;
         uint64_t last_trigger = 0;
         msg::id::MessageType msg_type = msg::id::UNDEFINED_MESSAGE;
-        int (*function)(int, msg::GENERIC_MESSAGE*) = nullptr; // file_id, generic_message
+        int (*function)(int, IOInterface*) = nullptr; // file_id, generic_message
     };
 
     struct spi_device
@@ -69,8 +69,8 @@ namespace IO
             int readMessage(uint8_t* dest, const int num);
             int writeMessage(uint8_t* src, const int num);
             void registerDevice(const char* name, const char* device_file);
-            void registerOperation(const char* device_name, SPI_OperationType type, msg::id::MessageType msg_id, int interval_ms, int (*func)(int, msg::GENERIC_MESSAGE*));
-            void registerInitFunction(const char* device_name, void (*func)(int, msg::GENERIC_MESSAGE*));
+            void registerOperation(const char* device_name, SPI_OperationType type, msg::id::MessageType msg_id, int interval_ms, int (*func)(int, IOInterface*));
+            void registerInitFunction(const char* device_name, void (*func)(int, IOInterface*));
 
         protected:
             friend void _spi_io_handler(union sigval data);
