@@ -15,7 +15,7 @@ TEST(PubSub, PublisherSingleDataTransfer)
     pub->publish(&message);
 
     EXPECT_TRUE(sub->isDataAvailable());
-    EXPECT_EQ(sub->getData()->VAR1, 5);
+    EXPECT_EQ(sub->getDataRef()->VAR1, 5);
     EXPECT_FALSE(sub->isDataAvailable());
 
     sub->unsubscribe();
@@ -35,14 +35,14 @@ TEST(PubSub, PublisherRepeatedDataTransfer)
     pub->publish(&message);
 
     EXPECT_TRUE(sub->isDataAvailable());
-    EXPECT_EQ(sub->getData()->VAR1, 5);
+    EXPECT_EQ(sub->getDataRef()->VAR1, 5);
     EXPECT_FALSE(sub->isDataAvailable());
 
     message.VAR1 = 10;
     pub->publish(&message);
 
     EXPECT_TRUE(sub->isDataAvailable());
-    EXPECT_EQ(sub->getData()->VAR1, 10);
+    EXPECT_EQ(sub->getDataRef()->VAR1, 10);
     EXPECT_FALSE(sub->isDataAvailable());
 
     sub->unsubscribe();
@@ -63,11 +63,11 @@ TEST(PubSub, PublisherMultipleDataTransfer)
     pub->publish(&message);
 
     EXPECT_TRUE(sub1->isDataAvailable());
-    EXPECT_EQ(sub1->getData()->VAR1, 5);
+    EXPECT_EQ(sub1->getDataRef()->VAR1, 5);
     EXPECT_FALSE(sub1->isDataAvailable());
 
     EXPECT_TRUE(sub2->isDataAvailable());
-    EXPECT_EQ(sub2->getData()->VAR1, 5);
+    EXPECT_EQ(sub2->getDataRef()->VAR1, 5);
     EXPECT_FALSE(sub2->isDataAvailable());
 
     sub1->unsubscribe();
@@ -89,14 +89,14 @@ TEST(PubSub, MultiplePublishers)
     pub1->publish(&message);
 
     EXPECT_TRUE(sub->isDataAvailable());
-    EXPECT_EQ(sub->getData()->VAR1, 5);
+    EXPECT_EQ(sub->getDataRef()->VAR1, 5);
     EXPECT_FALSE(sub->isDataAvailable());
 
     message.VAR1 = 10;
     pub2->publish(&message);
 
     EXPECT_TRUE(sub->isDataAvailable());
-    EXPECT_EQ(sub->getData()->VAR1, 10);
+    EXPECT_EQ(sub->getDataRef()->VAR1, 10);
     EXPECT_FALSE(sub->isDataAvailable());
 
     sub->unsubscribe();

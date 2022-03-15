@@ -65,7 +65,7 @@ TEST(MessageHandlerTest, TCPInterfaceTest)
 
     EXPECT_TRUE(sub->isDataAvailable());
     
-    msg::real::TEST_MESSAGE_READ retVal = *(sub->getData());
+    msg::real::TEST_MESSAGE_READ retVal = *(sub->getDataRef());
 
     EXPECT_EQ(tempReal.id, retVal.id);
     EXPECT_EQ(tempReal.size, retVal.size);

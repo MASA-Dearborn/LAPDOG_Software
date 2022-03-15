@@ -52,7 +52,7 @@ TEST(I2CInterfaceTest, InitFunction)
 
     // Read back message
     EXPECT_TRUE(sub->isDataAvailable());
-    EXPECT_EQ(sub->getData()->VAR1, 10);
+    EXPECT_EQ(sub->getDataRef()->VAR1, 10);
 
     // Cleanup
     remove("device.temp");
@@ -79,12 +79,12 @@ TEST(I2CInterfaceTest, PeriodicFunction)
     pthread_cond_wait(&data_ready, &data_mtx);
     usleep(1000);
     EXPECT_TRUE(sub->isDataAvailable()) << "First";
-    EXPECT_EQ(sub->getData()->VAR1, 10);
+    EXPECT_EQ(sub->getDataRef()->VAR1, 10);
 
     pthread_cond_wait(&data_ready, &data_mtx);
     usleep(1000);
     EXPECT_TRUE(sub->isDataAvailable()) << "Second";
-    EXPECT_EQ(sub->getData()->VAR1, 10);
+    EXPECT_EQ(sub->getDataRef()->VAR1, 10);
 
     // Cleanup
     remove("device.temp");

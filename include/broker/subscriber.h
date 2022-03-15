@@ -54,7 +54,7 @@ namespace pubsub
             }
 
             ~Subscriber() { _unregisterSelf(); }
-            const T* getData() 
+            const T* getDataRef() 
             {
                 clearDataAvailable(); 
                 return (T*)m_dataPointer; 

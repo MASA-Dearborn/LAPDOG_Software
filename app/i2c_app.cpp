@@ -26,7 +26,7 @@ int main()
         usleep(1000000);
         if (sub->isDataAvailable())
         {
-            msg::conv::stringifyRealMessage(string_buf, (msg::GENERIC_MESSAGE*)sub->getData());
+            msg::conv::stringifyRealMessage(string_buf, (msg::GENERIC_MESSAGE*)sub->getDataRef());
             printf("%s", string_buf);
         }
     }
