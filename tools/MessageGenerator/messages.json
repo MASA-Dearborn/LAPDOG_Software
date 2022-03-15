@@ -144,18 +144,18 @@
                 {
                     "name" : "G_RANGE",
                     "ctype" : "char",
-                    "init" : 0,
+                    "init" : 1,
                     "bits" : 2,
                     "min"   : 0,
-                    "max" : 4
+                    "max" : 3
                 },
                 {
                     "name" : "SAMPLE_RATE",
                     "ctype" : "char",
-                    "init" : 0,
+                    "init" : 3,
                     "bits" : 3,
                     "min"   : 0,
-                    "max" : 8
+                    "max" : 7
                 },
                 {
                     "name" : "OPERATION_MODE",
@@ -163,7 +163,7 @@
                     "init" : 0,
                     "bits" : 3,
                     "min"   : 0,
-                    "max" : 8
+                    "max" : 7
                 }
             ]
         },
@@ -181,10 +181,10 @@
                 {
                     "name" : "SAMPLE_RATE",
                     "ctype" : "char",
-                    "init" : 0,
+                    "init" : 7,
                     "bits" : 3,
                     "min"   : 0,
-                    "max" : 8
+                    "max" : 7
                 },
                 {
                     "name" : "OPERATION_MODE",
@@ -192,7 +192,7 @@
                     "init" : 0,
                     "bits" : 3,
                     "min"   : 0,
-                    "max" : 8
+                    "max" : 7
                 }
             ]
         },
@@ -202,10 +202,10 @@
                 {
                     "name" : "SAMPLE_RATE",
                     "ctype" : "char",
-                    "init" : 0,
+                    "init" : 3,
                     "bits" : 3,
                     "min"   : 0,
-                    "max" : 8
+                    "max" : 7
                 },
                 {
                     "name" : "OPERATION_MODE",
@@ -213,7 +213,73 @@
                     "init" : 0,
                     "bits" : 2,
                     "min"   : 0,
-                    "max" : 4
+                    "max" : 3
+                }
+            ]
+        },
+        {
+            "name" : "BNO055_OPR_MODE",
+            "signals" : [
+                {
+                    "name" : "MODE",
+                    "ctype" : "char",
+                    "init" : 8,
+                    "bits" : 4,
+                    "min"   : 0,
+                    "max" : 15
+                }
+            ]
+        },
+        {
+            "name" : "BNO055_AXIS_CONFIG",
+            "signals" : [
+                {
+                    "name" : "X_MAP",
+                    "ctype" : "char",
+                    "init" : 0,
+                    "bits" : 2,
+                    "min"   : 0,
+                    "max" : 3
+                },
+                {
+                    "name" : "Y_MAP",
+                    "ctype" : "char",
+                    "init" : 1,
+                    "bits" : 2,
+                    "min"   : 0,
+                    "max" : 3
+                },
+                {
+                    "name" : "Z_MAP",
+                    "ctype" : "char",
+                    "init" : 2,
+                    "bits" : 2,
+                    "min"   : 0,
+                    "max" : 3
+                },
+                {
+                    "name" : "X_SIGN_INVERT",
+                    "ctype" : "bool",
+                    "init" : 0,
+                    "bits" : 1,
+                    "min"   : 0,
+                    "max" : 1
+                },
+                {
+                    "name" : "Y_SIGN_INVERT",
+                    "ctype" : "bool",
+                    "init" : 0,
+                    "bits" : 1,
+                    "min"   : 0,
+                    "max" : 1
+                },
+                {
+                    "name" : "Z_SIGN_INVERT",
+                    "ctype" : "bool",
+                    "init" : 0,
+                    "bits" : 1,
+                    "min"   : 0,
+                    "max" : 1
                 }
             ]
         },

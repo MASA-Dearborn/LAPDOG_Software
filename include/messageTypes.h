@@ -18,13 +18,15 @@ namespace msg::id {
         BNO055_ACCEL_CONFIG = 5,
         BNO055_GYRO_CONFIG = 6,
         BNO055_MAG_CONFIG = 7,
-        BNO055_UNIT_SELECTION = 8,
-        BNO055_CAL_ACCEL = 9,
-        BNO055_CAL_MAG = 10,
-        BNO055_CAL_GYRO = 11,
-        BNO055_DATA_ACCEL = 12,
-        BNO055_DATA_GYRO = 13,
-        BNO055_DATA_MAG = 14,
+        BNO055_OPR_MODE = 8,
+        BNO055_AXIS_CONFIG = 9,
+        BNO055_UNIT_SELECTION = 10,
+        BNO055_CAL_ACCEL = 11,
+        BNO055_CAL_MAG = 12,
+        BNO055_CAL_GYRO = 13,
+        BNO055_DATA_ACCEL = 14,
+        BNO055_DATA_GYRO = 15,
+        BNO055_DATA_MAG = 16,
         META_NUM_MESSAGES,
         UNDEFINED_MESSAGE,
     };
@@ -78,22 +80,37 @@ namespace msg::real {
     
     struct BNO055_ACCEL_CONFIG : GENERIC_MESSAGE {
         BNO055_ACCEL_CONFIG() { id = msg::id::BNO055_ACCEL_CONFIG; size = sizeof(BNO055_ACCEL_CONFIG); }
-        char G_RANGE;
-        char SAMPLE_RATE;
+        char G_RANGE = 1;
+        char SAMPLE_RATE = 3;
         char OPERATION_MODE;
     };
     
     struct BNO055_GYRO_CONFIG : GENERIC_MESSAGE {
         BNO055_GYRO_CONFIG() { id = msg::id::BNO055_GYRO_CONFIG; size = sizeof(BNO055_GYRO_CONFIG); }
         char RANGE;
-        char SAMPLE_RATE;
+        char SAMPLE_RATE = 7;
         char OPERATION_MODE;
     };
     
     struct BNO055_MAG_CONFIG : GENERIC_MESSAGE {
         BNO055_MAG_CONFIG() { id = msg::id::BNO055_MAG_CONFIG; size = sizeof(BNO055_MAG_CONFIG); }
-        char SAMPLE_RATE;
+        char SAMPLE_RATE = 3;
         char OPERATION_MODE;
+    };
+    
+    struct BNO055_OPR_MODE : GENERIC_MESSAGE {
+        BNO055_OPR_MODE() { id = msg::id::BNO055_OPR_MODE; size = sizeof(BNO055_OPR_MODE); }
+        char MODE = 8;
+    };
+    
+    struct BNO055_AXIS_CONFIG : GENERIC_MESSAGE {
+        BNO055_AXIS_CONFIG() { id = msg::id::BNO055_AXIS_CONFIG; size = sizeof(BNO055_AXIS_CONFIG); }
+        char X_MAP;
+        char Y_MAP = 1;
+        char Z_MAP = 2;
+        bool X_SIGN_INVERT;
+        bool Y_SIGN_INVERT;
+        bool Z_SIGN_INVERT;
     };
     
     struct BNO055_UNIT_SELECTION : GENERIC_MESSAGE {
@@ -207,6 +224,21 @@ namespace msg::raw {
         int OPERATION_MODE : 2;
     };
     
+    struct BNO055_OPR_MODE : GENERIC_MESSAGE {
+        BNO055_OPR_MODE() { id = msg::id::BNO055_OPR_MODE; size = sizeof(BNO055_OPR_MODE); }
+        int MODE : 4;
+    };
+    
+    struct BNO055_AXIS_CONFIG : GENERIC_MESSAGE {
+        BNO055_AXIS_CONFIG() { id = msg::id::BNO055_AXIS_CONFIG; size = sizeof(BNO055_AXIS_CONFIG); }
+        int X_MAP : 2;
+        int Y_MAP : 2;
+        int Z_MAP : 2;
+        int X_SIGN_INVERT : 1;
+        int Y_SIGN_INVERT : 1;
+        int Z_SIGN_INVERT : 1;
+    };
+    
     struct BNO055_UNIT_SELECTION : GENERIC_MESSAGE {
         BNO055_UNIT_SELECTION() { id = msg::id::BNO055_UNIT_SELECTION; size = sizeof(BNO055_UNIT_SELECTION); }
         int ACCELERATION : 1;
@@ -273,6 +305,8 @@ namespace msg {
         sizeof(msg::raw::BNO055_ACCEL_CONFIG),
         sizeof(msg::raw::BNO055_GYRO_CONFIG),
         sizeof(msg::raw::BNO055_MAG_CONFIG),
+        sizeof(msg::raw::BNO055_OPR_MODE),
+        sizeof(msg::raw::BNO055_AXIS_CONFIG),
         sizeof(msg::raw::BNO055_UNIT_SELECTION),
         sizeof(msg::raw::BNO055_CAL_ACCEL),
         sizeof(msg::raw::BNO055_CAL_MAG),
@@ -291,6 +325,8 @@ namespace msg {
         sizeof(msg::real::BNO055_ACCEL_CONFIG),
         sizeof(msg::real::BNO055_GYRO_CONFIG),
         sizeof(msg::real::BNO055_MAG_CONFIG),
+        sizeof(msg::real::BNO055_OPR_MODE),
+        sizeof(msg::real::BNO055_AXIS_CONFIG),
         sizeof(msg::real::BNO055_UNIT_SELECTION),
         sizeof(msg::real::BNO055_CAL_ACCEL),
         sizeof(msg::real::BNO055_CAL_MAG),
@@ -309,6 +345,8 @@ namespace msg {
         real::BNO055_ACCEL_CONFIG BNO055_ACCEL_CONFIG;
         real::BNO055_GYRO_CONFIG BNO055_GYRO_CONFIG;
         real::BNO055_MAG_CONFIG BNO055_MAG_CONFIG;
+        real::BNO055_OPR_MODE BNO055_OPR_MODE;
+        real::BNO055_AXIS_CONFIG BNO055_AXIS_CONFIG;
         real::BNO055_UNIT_SELECTION BNO055_UNIT_SELECTION;
         real::BNO055_CAL_ACCEL BNO055_CAL_ACCEL;
         real::BNO055_CAL_MAG BNO055_CAL_MAG;
@@ -328,6 +366,8 @@ namespace msg {
         real::BNO055_ACCEL_CONFIG BNO055_ACCEL_CONFIG;
         real::BNO055_GYRO_CONFIG BNO055_GYRO_CONFIG;
         real::BNO055_MAG_CONFIG BNO055_MAG_CONFIG;
+        real::BNO055_OPR_MODE BNO055_OPR_MODE;
+        real::BNO055_AXIS_CONFIG BNO055_AXIS_CONFIG;
         real::BNO055_UNIT_SELECTION BNO055_UNIT_SELECTION;
         real::BNO055_CAL_ACCEL BNO055_CAL_ACCEL;
         real::BNO055_CAL_MAG BNO055_CAL_MAG;
@@ -347,6 +387,8 @@ namespace msg {
         raw::BNO055_ACCEL_CONFIG BNO055_ACCEL_CONFIG;
         raw::BNO055_GYRO_CONFIG BNO055_GYRO_CONFIG;
         raw::BNO055_MAG_CONFIG BNO055_MAG_CONFIG;
+        raw::BNO055_OPR_MODE BNO055_OPR_MODE;
+        raw::BNO055_AXIS_CONFIG BNO055_AXIS_CONFIG;
         raw::BNO055_UNIT_SELECTION BNO055_UNIT_SELECTION;
         raw::BNO055_CAL_ACCEL BNO055_CAL_ACCEL;
         raw::BNO055_CAL_MAG BNO055_CAL_MAG;
@@ -374,6 +416,10 @@ namespace msg {
                 return &collection.BNO055_GYRO_CONFIG;
             case msg::id::BNO055_MAG_CONFIG:
                 return &collection.BNO055_MAG_CONFIG;
+            case msg::id::BNO055_OPR_MODE:
+                return &collection.BNO055_OPR_MODE;
+            case msg::id::BNO055_AXIS_CONFIG:
+                return &collection.BNO055_AXIS_CONFIG;
             case msg::id::BNO055_UNIT_SELECTION:
                 return &collection.BNO055_UNIT_SELECTION;
             case msg::id::BNO055_CAL_ACCEL:
@@ -456,6 +502,23 @@ namespace msg::conv {
         msg::real::BNO055_MAG_CONFIG real;
         real.SAMPLE_RATE = (raw->SAMPLE_RATE * 1) + 0;
         real.OPERATION_MODE = (raw->OPERATION_MODE * 1) + 0;
+        return real;
+    }
+    
+    inline msg::real::BNO055_OPR_MODE BNO055_OPR_MODE_TO_REAL(msg::raw::BNO055_OPR_MODE* raw) {
+        msg::real::BNO055_OPR_MODE real;
+        real.MODE = (raw->MODE * 1) + 0;
+        return real;
+    }
+    
+    inline msg::real::BNO055_AXIS_CONFIG BNO055_AXIS_CONFIG_TO_REAL(msg::raw::BNO055_AXIS_CONFIG* raw) {
+        msg::real::BNO055_AXIS_CONFIG real;
+        real.X_MAP = (raw->X_MAP * 1) + 0;
+        real.Y_MAP = (raw->Y_MAP * 1) + 0;
+        real.Z_MAP = (raw->Z_MAP * 1) + 0;
+        real.X_SIGN_INVERT = (raw->X_SIGN_INVERT * 1) + 0;
+        real.Y_SIGN_INVERT = (raw->Y_SIGN_INVERT * 1) + 0;
+        real.Z_SIGN_INVERT = (raw->Z_SIGN_INVERT * 1) + 0;
         return real;
     }
     
@@ -581,6 +644,23 @@ namespace msg::conv {
         return raw;
     }
     
+    inline msg::raw::BNO055_OPR_MODE BNO055_OPR_MODE_TO_RAW(msg::real::BNO055_OPR_MODE* real) {
+        msg::raw::BNO055_OPR_MODE raw;
+        raw.MODE = (real->MODE - 0) / 1;
+        return raw;
+    }
+    
+    inline msg::raw::BNO055_AXIS_CONFIG BNO055_AXIS_CONFIG_TO_RAW(msg::real::BNO055_AXIS_CONFIG* real) {
+        msg::raw::BNO055_AXIS_CONFIG raw;
+        raw.X_MAP = (real->X_MAP - 0) / 1;
+        raw.Y_MAP = (real->Y_MAP - 0) / 1;
+        raw.Z_MAP = (real->Z_MAP - 0) / 1;
+        raw.X_SIGN_INVERT = (real->X_SIGN_INVERT - 0) / 1;
+        raw.Y_SIGN_INVERT = (real->Y_SIGN_INVERT - 0) / 1;
+        raw.Z_SIGN_INVERT = (real->Z_SIGN_INVERT - 0) / 1;
+        return raw;
+    }
+    
     inline msg::raw::BNO055_UNIT_SELECTION BNO055_UNIT_SELECTION_TO_RAW(msg::real::BNO055_UNIT_SELECTION* real) {
         msg::raw::BNO055_UNIT_SELECTION raw;
         raw.ACCELERATION = (real->ACCELERATION - 0) / 1;
@@ -667,6 +747,12 @@ namespace msg::conv {
             case msg::id::BNO055_MAG_CONFIG:
                 dest->BNO055_MAG_CONFIG = msg::conv::BNO055_MAG_CONFIG_TO_REAL((msg::raw::BNO055_MAG_CONFIG*)(raw));
                 break;
+            case msg::id::BNO055_OPR_MODE:
+                dest->BNO055_OPR_MODE = msg::conv::BNO055_OPR_MODE_TO_REAL((msg::raw::BNO055_OPR_MODE*)(raw));
+                break;
+            case msg::id::BNO055_AXIS_CONFIG:
+                dest->BNO055_AXIS_CONFIG = msg::conv::BNO055_AXIS_CONFIG_TO_REAL((msg::raw::BNO055_AXIS_CONFIG*)(raw));
+                break;
             case msg::id::BNO055_UNIT_SELECTION:
                 dest->BNO055_UNIT_SELECTION = msg::conv::BNO055_UNIT_SELECTION_TO_REAL((msg::raw::BNO055_UNIT_SELECTION*)(raw));
                 break;
@@ -717,6 +803,12 @@ namespace msg::conv {
                 break;
             case msg::id::BNO055_MAG_CONFIG:
                 dest->BNO055_MAG_CONFIG = msg::conv::BNO055_MAG_CONFIG_TO_RAW((msg::real::BNO055_MAG_CONFIG*)(real));
+                break;
+            case msg::id::BNO055_OPR_MODE:
+                dest->BNO055_OPR_MODE = msg::conv::BNO055_OPR_MODE_TO_RAW((msg::real::BNO055_OPR_MODE*)(real));
+                break;
+            case msg::id::BNO055_AXIS_CONFIG:
+                dest->BNO055_AXIS_CONFIG = msg::conv::BNO055_AXIS_CONFIG_TO_RAW((msg::real::BNO055_AXIS_CONFIG*)(real));
                 break;
             case msg::id::BNO055_UNIT_SELECTION:
                 dest->BNO055_UNIT_SELECTION = msg::conv::BNO055_UNIT_SELECTION_TO_RAW((msg::real::BNO055_UNIT_SELECTION*)(real));
@@ -790,6 +882,19 @@ namespace msg::conv {
             sprintf(dest, "%d %d \n", 
                     ((msg::real::BNO055_MAG_CONFIG*)message)->SAMPLE_RATE, 
                     ((msg::real::BNO055_MAG_CONFIG*)message)->OPERATION_MODE);
+            break;
+        case msg::id::BNO055_OPR_MODE:
+            sprintf(dest, "%d \n", 
+                    ((msg::real::BNO055_OPR_MODE*)message)->MODE);
+            break;
+        case msg::id::BNO055_AXIS_CONFIG:
+            sprintf(dest, "%d %d %d %d %d %d \n", 
+                    ((msg::real::BNO055_AXIS_CONFIG*)message)->X_MAP, 
+                    ((msg::real::BNO055_AXIS_CONFIG*)message)->Y_MAP, 
+                    ((msg::real::BNO055_AXIS_CONFIG*)message)->Z_MAP, 
+                    ((msg::real::BNO055_AXIS_CONFIG*)message)->X_SIGN_INVERT, 
+                    ((msg::real::BNO055_AXIS_CONFIG*)message)->Y_SIGN_INVERT, 
+                    ((msg::real::BNO055_AXIS_CONFIG*)message)->Z_SIGN_INVERT);
             break;
         case msg::id::BNO055_UNIT_SELECTION:
             sprintf(dest, "%d %d %d %d %d \n", 
