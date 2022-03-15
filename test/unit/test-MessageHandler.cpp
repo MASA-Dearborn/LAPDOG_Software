@@ -40,6 +40,7 @@ TEST(MessageHandlerTest, PublishAndSendTest)
     pub->unregister();
 }
 
+/*
 TEST(MessageHandlerTest, TCPInterfaceTest)
 {
     MessageHandler handler;
@@ -75,3 +76,4 @@ TEST(MessageHandlerTest, TCPInterfaceTest)
     sub->unsubscribe();
     tcpClient.disconnect();
 }
+*/

@@ -45,6 +45,8 @@ void Broker::registerPublisher(GenericPublisher* publisher)
  */
 void Broker::unregisterSubscriber(GenericSubscriber* subscriber)
 {
+    if (subscriber == nullptr)
+        return;
 
     msg::id::MessageType type = subscriber->getType();
 

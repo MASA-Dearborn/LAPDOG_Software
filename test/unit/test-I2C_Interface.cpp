@@ -9,24 +9,31 @@
 
 using namespace IO;
 
-void init_func(int fileDescriptor, int slave_address, msg::GENERIC_MESSAGE* msg)
+void queueMessageToInterfaceRX(IOInterface* obj, msg::GENERIC_MESSAGE* m)
 {
-    msg::raw::TEST_MESSAGE_READ* m = (msg::raw::TEST_MESSAGE_READ*)msg;
-    m->VAR1 = 10;
-    m->VAR2 = 10;
-    m->size = msg::RAW_MESSAGE_SIZES[msg::id::TEST_MESSAGE_READ];
-    m->id = msg::id::TEST_MESSAGE_READ;
+    obj->getRXBuffer()->enqueue((uint8_t*)m, m->size);
+}
+
+void init_func(int fileDescriptor, int slave_address, IOInterface* obj)
+{
+    static msg::raw::TEST_MESSAGE_READ m;
+    m.VAR1 = 10;
+    m.VAR2 = 10;
+    m.size = msg::RAW_MESSAGE_SIZES[msg::id::TEST_MESSAGE_READ];
+    m.id = msg::id::TEST_MESSAGE_READ;
+    queueMessageToInterfaceRX(obj, &m);
 }
 
 pthread_cond_t data_ready = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t data_mtx = PTHREAD_MUTEX_INITIALIZER;
-void periodic_func(int fileDescriptor, int slave_address, msg::GENERIC_MESSAGE* msg)
+void periodic_func(int fileDescriptor, int slave_address, IOInterface* obj)
 {
-    msg::raw::TEST_MESSAGE_READ* m = (msg::raw::TEST_MESSAGE_READ*)msg;
-    m->VAR1 = 10;
-    m->VAR2 = 10;
-    m->size = msg::RAW_MESSAGE_SIZES[msg::id::TEST_MESSAGE_READ];
-    m->id = msg::id::TEST_MESSAGE_READ;
+    static msg::raw::TEST_MESSAGE_READ m;
+    m.VAR1 = 10;
+    m.VAR2 = 10;
+    m.size = msg::RAW_MESSAGE_SIZES[msg::id::TEST_MESSAGE_READ];
+    m.id = msg::id::TEST_MESSAGE_READ;
+    queueMessageToInterfaceRX(obj, &m);
     pthread_cond_signal(&data_ready);
 }
 
@@ -56,7 +63,6 @@ TEST(I2CInterfaceTest, InitFunction)
 
     // Cleanup
     remove("device.temp");
-    sub->unsubscribe();
 }
 
 TEST(I2CInterfaceTest, PeriodicFunction)

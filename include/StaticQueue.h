@@ -193,7 +193,10 @@ int StaticQueue<T, buffer_size>::dequeue(T* dest, const unsigned int amount)
 template<typename T, const int buffer_size>
 const T* StaticQueue<T, buffer_size>::peek()
 {
-    return &data[bottom];
+    if (this != NULL)
+        return &data[bottom];
+    else
+        return NULL;
 }
 
 /**

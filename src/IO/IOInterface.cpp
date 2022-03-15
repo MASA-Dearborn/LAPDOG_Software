@@ -33,7 +33,9 @@ bool IOInterface::isMessageAvailable()
 
 msg::GENERIC_MESSAGE* IOInterface::getMessagePtr()
 {
-    return (msg::GENERIC_MESSAGE*)RX_BUFFER_PTR.get()->peek();
+    msg::GENERIC_MESSAGE* message  = (msg::GENERIC_MESSAGE*)RX_BUFFER_PTR.get()->peek();
+    if (message != nullptr)
+        return message;
 }
 
 /**

@@ -23,7 +23,7 @@ namespace IO
         NUM_TYPES,
     };
 
-    // Pure Virtual interface class
+    // Virtual interface class
     class IOInterface
     {
     public:
@@ -40,6 +40,8 @@ namespace IO
         bool isMessageAvailable();
         IOInterfaceType getType() { return type; }
         msg::GENERIC_MESSAGE* getMessagePtr();
+        StaticQueue<uint8_t, BUFFER_SIZE>* getRXBuffer() { return RX_BUFFER_PTR.get(); }
+        StaticQueue<uint8_t, BUFFER_SIZE>* getTXBuffer() { return TX_BUFFER_PTR.get(); }
 
     protected:
         int initBuffers();
@@ -57,9 +59,6 @@ namespace IO
 
             int readMessage(uint8_t* dest, const int num) { return RX_BUFFER_PTR.get()->dequeue(dest, num); }
             int writeMessage(uint8_t* src, const int num) { return TX_BUFFER_PTR.get()->enqueue(src, num); }
-
-            StaticQueue<uint8_t, BUFFER_SIZE>* getRXBuffer() { return RX_BUFFER_PTR.get(); }
-            StaticQueue<uint8_t, BUFFER_SIZE>* getTXBuffer() { return TX_BUFFER_PTR.get(); }
     
     };
 
