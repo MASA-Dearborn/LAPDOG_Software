@@ -8,7 +8,7 @@ namespace pubsub
     {
         public:
             GenericPublisher() {}
-            ~GenericPublisher() {}
+            ~GenericPublisher() { _unregisterSelf(); }
 
             void unregister() { this->~GenericPublisher(); }
             msg::id::MessageType getType() const { return m_type; }

@@ -36,6 +36,19 @@ MessageHandler::~MessageHandler()
                 delete IOInterface;
         }
     }
+
+    for (pubsub::GenericSubscriber* sub : subscribers)
+    {
+        if (sub != nullptr)
+            sub->unsubscribe();
+    }
+
+    for (pubsub::GenericPublisher* pub : publishers)
+    {
+        if (pub != nullptr)
+            pub->unregister();
+    }
+
 }
 
 /**
@@ -126,7 +139,7 @@ void MessageHandler::sendSubscribedToIO(msg::GENERIC_MESSAGE* message)
         __sendMessageToInterfaces(this->IOInterfaceList[IO::TYPE_GENERIC], &converted_message.TEST_MESSAGE_READ);
         break;
     case msg::id::TEST_MESSAGE_WRITE:
-        __sendMessageToInterfaces(this->IOInterfaceList[IO::TYPE_TCP], &converted_message.TEST_MESSAGE_WRITE);
+        __sendMessageToInterfaces(this->IOInterfaceList[IO::TYPE_I2C], &converted_message.TEST_MESSAGE_WRITE);
         __sendMessageToInterfaces(this->IOInterfaceList[IO::TYPE_GENERIC], &converted_message.TEST_MESSAGE_WRITE);
         break;
     default:
@@ -177,11 +190,8 @@ void MessageHandler::_messageHandlerThread()
             
             if(sub->isDataAvailable())
             {
-                // TODO: How to get data from generic subscriber without breaking architecture
-                // Maybe get the data pointer using a generic message cast and send that?
                 sendSubscribedToIO(sub->getGenericPointer());
             }
-            
         }
 
         usleep(1000);
