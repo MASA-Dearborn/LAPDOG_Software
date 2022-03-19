@@ -36,18 +36,27 @@ protected:
 template<typename T, const int buffer_size>
 bool StaticQueue<T, buffer_size>::isEmpty() const
 {
+    if (this == nullptr)
+        return 0;
+
     return top == bottom;
 }
 
 template<typename T, const int buffer_size>
 unsigned int StaticQueue<T, buffer_size>::getBufferSize() const
 {
+    if (this == nullptr)
+        return 0;
+
     return size;
 }
 
 template<typename T, const int buffer_size>
 unsigned int StaticQueue<T, buffer_size>::getDataSize() const
 {
+    if (this == nullptr)
+        return 0;
+
     if (top > bottom)
         return top - bottom;
     else if (top < bottom)
@@ -208,6 +217,9 @@ const T* StaticQueue<T, buffer_size>::peek()
 template<typename T, const int buffer_size>
 inline bool StaticQueue<T, buffer_size>::willOverflow(const int amount)
 {
+    if (this == nullptr)
+        return 0;
+        
     return (top < bottom) && (top + amount > bottom) || (top > bottom) && ((top + amount % size) > bottom) || (top == bottom) && (amount > size);
 }
 
