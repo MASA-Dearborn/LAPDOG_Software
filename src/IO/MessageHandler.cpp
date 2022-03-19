@@ -32,7 +32,7 @@ MessageHandler::~MessageHandler()
     {
         for(IO::IOInterface* IOInterface : IOInterfaceVector)
         {
-            if (IOInterface->getType() != IO::TYPE_UNDEFINED)
+            if (IOInterface->isInterfaceValid())
                 delete IOInterface;
         }
     }
@@ -140,6 +140,7 @@ void MessageHandler::sendSubscribedToIO(msg::GENERIC_MESSAGE* message)
         break;
     case msg::id::TEST_MESSAGE_WRITE:
         __sendMessageToInterfaces(this->IOInterfaceList[IO::TYPE_I2C], &converted_message.TEST_MESSAGE_WRITE);
+        __sendMessageToInterfaces(this->IOInterfaceList[IO::TYPE_SPI], &converted_message.TEST_MESSAGE_WRITE);
         __sendMessageToInterfaces(this->IOInterfaceList[IO::TYPE_GENERIC], &converted_message.TEST_MESSAGE_WRITE);
         break;
     default:

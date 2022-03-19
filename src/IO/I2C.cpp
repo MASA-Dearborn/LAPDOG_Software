@@ -7,9 +7,8 @@
 
 using namespace IO;
 
-I2C_Interface::I2C_Interface()
+I2C_Interface::I2C_Interface() : IOInterface(TYPE_I2C)
 {
-    this->type = TYPE_I2C;
     io_event_data.ref = this;
     io_event_data.time_count = 0;
     _init();

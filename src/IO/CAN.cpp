@@ -7,7 +7,7 @@
 
 using namespace IO;
 
-CAN_Interface::CAN_Interface()
+CAN_Interface::CAN_Interface() : IOInterface(TYPE_CAN)
 {
     /* Initialize Buffers */
     if (initBuffers() < 0)

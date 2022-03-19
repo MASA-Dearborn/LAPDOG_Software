@@ -2,6 +2,12 @@
 
 using namespace IO;
 
+IOInterface::IOInterface() : type(TYPE_GENERIC)
+{}
+
+IOInterface::IOInterface(IOInterfaceType type) : type(type)
+{}
+
 int IOInterface::getMessageSize() 
 { 
     if (getMessagePtr() == nullptr) 

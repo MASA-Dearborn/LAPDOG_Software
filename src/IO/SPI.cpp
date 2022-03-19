@@ -10,9 +10,8 @@ using namespace IO;
 
 static bool _timeIntervalPassed(uint64_t& last_trigger, uint64_t& current_time, uint64_t& interval);
 
-SPI_Interface::SPI_Interface() : IOInterface()
+SPI_Interface::SPI_Interface() : IOInterface(TYPE_SPI)
 {
-    this->type = TYPE_SPI;
     io_event_data.ref = this;
     io_event_data.time_count = 0;
     _init();
