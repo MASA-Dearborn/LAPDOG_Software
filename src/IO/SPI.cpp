@@ -10,7 +10,7 @@ using namespace IO;
 
 static bool _timeIntervalPassed(uint64_t& last_trigger, uint64_t& current_time, uint64_t& interval);
 
-SPI_Interface::SPI_Interface()
+SPI_Interface::SPI_Interface() : IOInterface()
 {
     this->type = TYPE_SPI;
     io_event_data.ref = this;
@@ -103,7 +103,7 @@ void SPI_Interface::registerDevice(const char* name, const char* device_file)
  * @param interval_ms   The period the function should be called at
  * @param func          Pointer to the operation function
  */
-void SPI_Interface::registerOperation(const char* device_name, SPI_OperationType type, msg::id::MessageType msg_id, int interval_ms, int (*func)(int, IOInterface*))
+void SPI_Interface::registerOperation(const char* device_name, SPI_OperationType op_type, msg::id::MessageType msg_id, int interval_ms, void (*func)(int, IOInterface*))
 {
     // Find device with matching name
     int dev_idx;
@@ -120,7 +120,7 @@ void SPI_Interface::registerOperation(const char* device_name, SPI_OperationType
 
     spi_device& dev = (devices[dev_idx]);
 
-    switch (type) {
+    switch (op_type) {
         case SPI_WRITE:
             if (dev.num_write_operations > MAX_SPI_OPERATIONS)
                 break;

@@ -70,7 +70,7 @@ void I2C_Interface::registerDevice(const char* name, const char* device_file, in
     device_count++;
 }
 
-void I2C_Interface::registerOperation(const char* device_name, I2C_OperationType type, msg::id::MessageType msg_id, int interval_ms, void (*func)(int, int, IOInterface*))
+void I2C_Interface::registerOperation(const char* device_name, I2C_OperationType op_type, msg::id::MessageType msg_id, int interval_ms, void (*func)(int, int, IOInterface*))
 {
     // Find device with matching name
     int dev_idx;
@@ -87,7 +87,7 @@ void I2C_Interface::registerOperation(const char* device_name, I2C_OperationType
 
     i2c_device& dev = (devices[dev_idx]);
 
-    switch (type) {
+    switch (op_type) {
         case I2C_WRITE:
             if (dev.num_write_operations > MAX_I2C_OPERATIONS)
                 break;
@@ -135,6 +135,9 @@ void IO::_i2c_io_handler(union sigval data)
     i2c_timer_data* args = (i2c_timer_data*)data.sival_ptr;
     I2C_Interface* obj = (I2C_Interface*)args->ref;
     static uint8_t data_buffer[1024];
+
+    if (obj == nullptr)
+        return;
 
     /* Write message to devices */
     while (obj->TX_BUFFER_PTR.get()->getDataSize() > 0)

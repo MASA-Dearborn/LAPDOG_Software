@@ -9,6 +9,7 @@ add_executable(
     test-Subscriber.cpp
     test-DataLogger.cpp
     test-I2C_Interface.cpp
+    test-SPI_Interface.cpp
 )
 
 target_link_libraries(

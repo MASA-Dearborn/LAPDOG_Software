@@ -57,7 +57,7 @@ namespace IO
             int readMessage(uint8_t* dest, const int num);
             int writeMessage(uint8_t* src, const int num);
             void registerDevice(const char* name, const char* device_file, int slave_address);
-            void registerOperation(const char* device_name, I2C_OperationType type, msg::id::MessageType msg_id, int interval_ms, void (*func)(int, int, IOInterface*));
+            void registerOperation(const char* device_name, I2C_OperationType op_type, msg::id::MessageType msg_id, int interval_ms, void (*func)(int, int, IOInterface*));
             void registerInitFunction(const char* device_name, void (*func)(int, int, IOInterface*));
 
         protected:

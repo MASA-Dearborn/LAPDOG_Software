@@ -15,6 +15,7 @@ add_library(
     IO/I2C_UserOperations.cpp
     IO/I2C.cpp
     IO/SPI_Operations.cpp
+    IO/SPI_UserOperations.cpp
     IO/SPI.cpp
     IO/UART.cpp
 )
