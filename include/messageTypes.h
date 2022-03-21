@@ -12,21 +12,22 @@ namespace msg::id {
     enum MessageType {
         TEST_MESSAGE_READ = 0,
         TEST_MESSAGE_WRITE = 1,
-        ALTIMETER_COEFFS = 2,
-        ALTIMETER_DATA = 3,
-        HUMIDITY_DATA = 4,
-        BNO055_ACCEL_CONFIG = 5,
-        BNO055_GYRO_CONFIG = 6,
-        BNO055_MAG_CONFIG = 7,
-        BNO055_OPR_MODE = 8,
-        BNO055_AXIS_CONFIG = 9,
-        BNO055_UNIT_SELECTION = 10,
-        BNO055_CAL_ACCEL = 11,
-        BNO055_CAL_MAG = 12,
-        BNO055_CAL_GYRO = 13,
-        BNO055_DATA_ACCEL = 14,
-        BNO055_DATA_GYRO = 15,
-        BNO055_DATA_MAG = 16,
+        BNO055_PAGE = 2,
+        ALTIMETER_COEFFS = 3,
+        ALTIMETER_DATA = 4,
+        HUMIDITY_DATA = 5,
+        BNO055_ACCEL_CONFIG = 6,
+        BNO055_GYRO_CONFIG = 7,
+        BNO055_MAG_CONFIG = 8,
+        BNO055_OPR_MODE = 9,
+        BNO055_AXIS_CONFIG = 10,
+        BNO055_UNIT_SELECTION = 11,
+        BNO055_CAL_ACCEL = 12,
+        BNO055_CAL_MAG = 13,
+        BNO055_CAL_GYRO = 14,
+        BNO055_DATA_ACCEL = 15,
+        BNO055_DATA_GYRO = 16,
+        BNO055_DATA_MAG = 17,
         META_NUM_MESSAGES,
         UNDEFINED_MESSAGE,
     };
@@ -54,6 +55,11 @@ namespace msg::real {
         TEST_MESSAGE_WRITE() { id = msg::id::TEST_MESSAGE_WRITE; size = sizeof(TEST_MESSAGE_WRITE); }
         int VAR1;
         float VAR2 = 0.23;
+    };
+    
+    struct BNO055_PAGE : GENERIC_MESSAGE {
+        BNO055_PAGE() { id = msg::id::BNO055_PAGE; size = sizeof(BNO055_PAGE); }
+        int page;
     };
     
     struct ALTIMETER_COEFFS : GENERIC_MESSAGE {
@@ -182,6 +188,11 @@ namespace msg::raw {
         int VAR2 : 16;
     };
     
+    struct BNO055_PAGE : GENERIC_MESSAGE {
+        BNO055_PAGE() { id = msg::id::BNO055_PAGE; size = sizeof(BNO055_PAGE); }
+        int page : 1;
+    };
+    
     struct ALTIMETER_COEFFS : GENERIC_MESSAGE {
         ALTIMETER_COEFFS() { id = msg::id::ALTIMETER_COEFFS; size = sizeof(ALTIMETER_COEFFS); }
         int coeff_1 : 16;
@@ -299,6 +310,7 @@ namespace msg {
     const int RAW_MESSAGE_SIZES[] = {
         sizeof(msg::raw::TEST_MESSAGE_READ),
         sizeof(msg::raw::TEST_MESSAGE_WRITE),
+        sizeof(msg::raw::BNO055_PAGE),
         sizeof(msg::raw::ALTIMETER_COEFFS),
         sizeof(msg::raw::ALTIMETER_DATA),
         sizeof(msg::raw::HUMIDITY_DATA),
@@ -319,6 +331,7 @@ namespace msg {
     const int REAL_MESSAGE_SIZES[] = {
         sizeof(msg::real::TEST_MESSAGE_READ),
         sizeof(msg::real::TEST_MESSAGE_WRITE),
+        sizeof(msg::real::BNO055_PAGE),
         sizeof(msg::real::ALTIMETER_COEFFS),
         sizeof(msg::real::ALTIMETER_DATA),
         sizeof(msg::real::HUMIDITY_DATA),
@@ -339,6 +352,7 @@ namespace msg {
     struct MessageCollection {
         real::TEST_MESSAGE_READ TEST_MESSAGE_READ;
         real::TEST_MESSAGE_WRITE TEST_MESSAGE_WRITE;
+        real::BNO055_PAGE BNO055_PAGE;
         real::ALTIMETER_COEFFS ALTIMETER_COEFFS;
         real::ALTIMETER_DATA ALTIMETER_DATA;
         real::HUMIDITY_DATA HUMIDITY_DATA;
@@ -360,6 +374,7 @@ namespace msg {
         RealMessageUnion() { memset( this, 0, sizeof( RealMessageUnion ) ); }
         real::TEST_MESSAGE_READ TEST_MESSAGE_READ;
         real::TEST_MESSAGE_WRITE TEST_MESSAGE_WRITE;
+        real::BNO055_PAGE BNO055_PAGE;
         real::ALTIMETER_COEFFS ALTIMETER_COEFFS;
         real::ALTIMETER_DATA ALTIMETER_DATA;
         real::HUMIDITY_DATA HUMIDITY_DATA;
@@ -381,6 +396,7 @@ namespace msg {
         RawMessageUnion() { memset( this, 0, sizeof( RawMessageUnion ) ); }
         raw::TEST_MESSAGE_READ TEST_MESSAGE_READ;
         raw::TEST_MESSAGE_WRITE TEST_MESSAGE_WRITE;
+        raw::BNO055_PAGE BNO055_PAGE;
         raw::ALTIMETER_COEFFS ALTIMETER_COEFFS;
         raw::ALTIMETER_DATA ALTIMETER_DATA;
         raw::HUMIDITY_DATA HUMIDITY_DATA;
@@ -404,6 +420,8 @@ namespace msg {
                 return &collection.TEST_MESSAGE_READ;
             case msg::id::TEST_MESSAGE_WRITE:
                 return &collection.TEST_MESSAGE_WRITE;
+            case msg::id::BNO055_PAGE:
+                return &collection.BNO055_PAGE;
             case msg::id::ALTIMETER_COEFFS:
                 return &collection.ALTIMETER_COEFFS;
             case msg::id::ALTIMETER_DATA:
@@ -454,6 +472,12 @@ namespace msg::conv {
         msg::real::TEST_MESSAGE_WRITE real;
         real.VAR1 = (raw->VAR1 * 1) + 0;
         real.VAR2 = (raw->VAR2 * 0.0030517578125) + 0;
+        return real;
+    }
+    
+    inline msg::real::BNO055_PAGE BNO055_PAGE_TO_REAL(msg::raw::BNO055_PAGE* raw) {
+        msg::real::BNO055_PAGE real;
+        real.page = (raw->page * 1) + 0;
         return real;
     }
     
@@ -596,6 +620,12 @@ namespace msg::conv {
         return raw;
     }
     
+    inline msg::raw::BNO055_PAGE BNO055_PAGE_TO_RAW(msg::real::BNO055_PAGE* real) {
+        msg::raw::BNO055_PAGE raw;
+        raw.page = (real->page - 0) / 1;
+        return raw;
+    }
+    
     inline msg::raw::ALTIMETER_COEFFS ALTIMETER_COEFFS_TO_RAW(msg::real::ALTIMETER_COEFFS* real) {
         msg::raw::ALTIMETER_COEFFS raw;
         raw.coeff_1 = (real->coeff_1 - 0) / 1;
@@ -729,6 +759,9 @@ namespace msg::conv {
             case msg::id::TEST_MESSAGE_WRITE:
                 dest->TEST_MESSAGE_WRITE = msg::conv::TEST_MESSAGE_WRITE_TO_REAL((msg::raw::TEST_MESSAGE_WRITE*)(raw));
                 break;
+            case msg::id::BNO055_PAGE:
+                dest->BNO055_PAGE = msg::conv::BNO055_PAGE_TO_REAL((msg::raw::BNO055_PAGE*)(raw));
+                break;
             case msg::id::ALTIMETER_COEFFS:
                 dest->ALTIMETER_COEFFS = msg::conv::ALTIMETER_COEFFS_TO_REAL((msg::raw::ALTIMETER_COEFFS*)(raw));
                 break;
@@ -785,6 +818,9 @@ namespace msg::conv {
                 break;
             case msg::id::TEST_MESSAGE_WRITE:
                 dest->TEST_MESSAGE_WRITE = msg::conv::TEST_MESSAGE_WRITE_TO_RAW((msg::real::TEST_MESSAGE_WRITE*)(real));
+                break;
+            case msg::id::BNO055_PAGE:
+                dest->BNO055_PAGE = msg::conv::BNO055_PAGE_TO_RAW((msg::real::BNO055_PAGE*)(real));
                 break;
             case msg::id::ALTIMETER_COEFFS:
                 dest->ALTIMETER_COEFFS = msg::conv::ALTIMETER_COEFFS_TO_RAW((msg::real::ALTIMETER_COEFFS*)(real));
@@ -846,6 +882,10 @@ namespace msg::conv {
             sprintf(dest, "%d %.3f \n", 
                     ((msg::real::TEST_MESSAGE_WRITE*)message)->VAR1, 
                     ((msg::real::TEST_MESSAGE_WRITE*)message)->VAR2);
+            break;
+        case msg::id::BNO055_PAGE:
+            sprintf(dest, "%d \n", 
+                    ((msg::real::BNO055_PAGE*)message)->page);
             break;
         case msg::id::ALTIMETER_COEFFS:
             sprintf(dest, "%u %u %u %u %u %u \n", 

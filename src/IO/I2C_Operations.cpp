@@ -16,7 +16,7 @@ using namespace i2c_operations;
  * @param dest              the buffer to store the read data in
  * @param num               the amount of bytes to read
  */
-void i2c_operations::_i2c_read(int fileDescriptor, char* dest, const uint32_t num)
+void i2c_operations::_i2c_read(int fileDescriptor, uint8_t* dest, const uint32_t num)
 {
     if (nullptr == dest)
         return;
@@ -45,9 +45,9 @@ char i2c_operations::_i2c_read_one(int fileDescriptor)
  * @param src               the data to write to the registe
  * @param num               the amount of bytes to write
  */
-void i2c_operations::_i2c_write(int fileDescriptor, uint8_t reg, char* src, const uint32_t num)
+void i2c_operations::_i2c_write(int fileDescriptor, uint8_t reg, uint8_t* src, const uint32_t num)
 {
-    static char data[4096]; 
+    static char data[64]; 
 
     if (nullptr == src && 0 != num)
         return;
@@ -58,6 +58,21 @@ void i2c_operations::_i2c_write(int fileDescriptor, uint8_t reg, char* src, cons
         memcpy(&data[1], src, num);
 
     write(fileDescriptor, data, num + 1);    
+}
+
+/**
+ * @brief   writes to the I2C device
+ * 
+ * @param fileDescriptor    an open i2c device file
+ * @param data              bytes to write over I2C
+ * @param num               the amount of bytes to write
+ */
+void i2c_operations::_i2c_write(int fileDescriptor, uint8_t* data, const uint32_t num)
+{
+    if (nullptr == data && 0 != num)
+        return;
+
+    write(fileDescriptor, data, num);    
 }
 
 /**

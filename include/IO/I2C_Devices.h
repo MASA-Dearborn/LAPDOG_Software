@@ -172,27 +172,47 @@ enum class BNO055_OPERATION_MODE
     NDOF            = 0X0C
 };
 
+enum class BNO055_UNITS
+{
+    ACCEL_METERS_PER_SECOND = 0x01,
+    ACCEL_MICRO_GS          = 0x00,
+    ANGULAR_RATE_DPS        = 0x00,
+    ANGULAR_RATE_RPS        = 0x02,
+    EULER_DEGREES           = 0x00,
+    EULER_RADS              = 0x04,
+    TEMP_CEL                = 0x00,
+    TEMP_FAR                = 0x10,
+};
+
 enum class BNO055
 {
     /* Status registers */
-    CALIB_STAT = 0X35,
-    SELFTEST_RESULT = 0X36,
-    INTR_STAT = 0X37,
+    CALIB_STAT = 0x35,
+    SELFTEST_RESULT = 0x36,
+    INTR_STAT = 0x37,
+    PAGE_REG = 0x07,
 
-    SYS_CLK_STAT = 0X38,
-    SYS_STAT = 0X39,
-    SYS_ERR = 0X3A,
+    SYS_CLK_STAT = 0x38,
+    SYS_STAT = 0x39,
+    SYS_ERR = 0x3a,
 
     /* Unit selection register */
-    UNIT_SEL = 0X3B,
+    UNIT_SEL = 0x3B,
 
     /* Mode registers */
-    OPR_MODE = 0X3D,
-    PWR_MODE = 0X3E,
-    SYS_TRIGGER = 0X3F,
-    TEMP_SOURCE = 0X40,
+    OPR_MODE = 0x3D,
+    PWR_MODE = 0x3E,
+    SYS_TRIGGER = 0x3F,
+    TEMP_SOURCE = 0x40,
 
     /* Axis remap registers */
-    AXIS_MAP_CONFIG = 0X41,
-    AXIS_MAP_SIGN = 0X42,    
+    AXIS_MAP_CONFIG = 0x41,
+    AXIS_MAP_SIGN = 0x42,    
+
+    /* Config Registers */
+    ACC_CONFIG  = 0x08,
+    MAG_CONFIG  = 0x09,
+    GYR_CONFIG_0  = 0x0A,
+    GYR_CONFIG_1  = 0x0B,
+
 };

@@ -15,7 +15,9 @@ namespace pubsub {
         Broker() {}
         ~Broker();
 
+        msg::GENERIC_MESSAGE* getCurrentMessagePtr(msg::id::MessageType type) { return (msg::GENERIC_MESSAGE*)msg::getMessageAddressFromCollection(MessageCollection, type); }
         int getNumSubscribers(msg::id::MessageType type) { return subscribers[type].size(); }
+        int getNumPublishers(msg::id::MessageType type) { return publishers[type].size(); }
 
     protected:
 

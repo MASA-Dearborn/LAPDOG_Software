@@ -44,6 +44,19 @@
             ]
         },
         {
+            "name" : "BNO055_PAGE",
+            "signals" : [
+                {
+                    "name" : "page",
+                    "ctype" : "int",
+                    "init" : 0,
+                    "bits" : 1,
+                    "min"   : 0,
+                    "max" : 1
+                }
+            ]
+        },
+        {
             "name" : "ALTIMETER_COEFFS",
             "signals" : [
                 {

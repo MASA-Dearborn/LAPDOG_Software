@@ -16,6 +16,7 @@ namespace i2c_operations
     void ALTIMETER_READ_CONFIG(int fileDescriptor, int slave_address, IO::IOInterface* obj);
     void ALTIMETER_READ_ALTITUDE(int fileDescriptor, int slave_address, IO::IOInterface* obj);
 
+    void HTU20D_SET_USER_REG(int fileDescriptor, int slave_address, IO::IOInterface* obj);
     void HTU20D_READ_HUMIDITY(int fileDescriptor, int slave_address, IO::IOInterface* obj);
     void HTU20D_READ_TEMPERATURE(int fileDescriptor, int slave_address, IO::IOInterface* obj);
 
@@ -31,4 +32,6 @@ namespace i2c_operations
 
     /* Callback Functions */
     void ALTIMETER_READ_ALTITUDE_CALLBACK(sigval data);
+    void HTU20D_READ_HUMIDITY_CALLBACK(sigval data);
+    void HTU20D_READ_TEMPERATURE_CALLBACK(sigval data);
 }
