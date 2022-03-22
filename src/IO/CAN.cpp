@@ -13,6 +13,8 @@ CAN_Interface::CAN_Interface() : IOInterface(TYPE_CAN)
     if (initBuffers() < 0)
 		return;
 
+    _openSocketCAN();
+
     /* Setup the Timer */
     io_event_data.ref = this;
     io_event_data.time_count = 0;
@@ -90,17 +92,33 @@ int CAN_Interface::_can_write()
 
 void CAN_Interface::_openSocketCAN()
 {
+    int retval = 0;
     struct ifreq ifr;
 
     can_socket_id = socket(PF_CAN, SOCK_RAW, CAN_RAW);
+    if (can_socket_id < 0)
+    {
+        perror("CAN");
+        exit(0);
+    }
 
     strcpy(ifr.ifr_name, "can0");
-    ioctl(can_socket_id, SIOCGIFINDEX, &ifr);
+    retval = ioctl(can_socket_id, SIOCGIFINDEX, &ifr);
+    if (retval < 0)
+    {
+        perror("CAN");
+        exit(0);
+    }
 
     address.can_family = AF_CAN;
     address.can_ifindex = ifr.ifr_ifindex;
 
-    bind(can_socket_id, (struct sockaddr*)&address, sizeof(address));
+    retval = bind(can_socket_id, (struct sockaddr*)&address, sizeof(address));
+    if (retval < 0)
+    {
+        perror("CAN");
+        exit(0);
+    }
 }
 
 void IO::_can_io_handler(union sigval data)
@@ -118,7 +136,7 @@ void IO::_can_io_handler(union sigval data)
     if (pollObject.revents & POLLERR)
 	{
 		pollObject.revents -= POLLERR;
-		printf("CAN Socket Error\n");
+		printf("CAN: Error Event\n");
         return;
 	}
 
@@ -133,6 +151,7 @@ void IO::_can_io_handler(union sigval data)
     if (pollObject.revents & POLLIN) 
     {
         obj->_can_read();
+        printf("CAN_Recv\n");
         pollObject.revents -= POLLIN;
     }
 
