@@ -7,3 +7,6 @@ target_link_libraries(i2c_app PUBLIC pubsub IO pthread DataLogger)
 
 add_executable(can_app can_app.cpp)
 target_link_libraries(can_app PUBLIC pubsub IO pthread DataLogger)
+
+add_executable(spi_app spi_app.cpp)
+target_link_libraries(spi_app PUBLIC pubsub IO pthread DataLogger)
