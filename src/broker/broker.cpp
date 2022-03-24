@@ -14,8 +14,20 @@ Broker::~Broker()
     for(int i = 0; i < (int)msg::id::META_NUM_MESSAGES; i++)
     {
         clearSubscribers((msg::id::MessageType)i);
+        clearPublishers((msg::id::MessageType)i);
     }
 }
+
+void Broker::clearSubscribers(msg::id::MessageType type) 
+{ 
+    subscribers[type].erase(subscribers[type].begin(), subscribers[type].end()); 
+}
+
+void Broker::clearPublishers(msg::id::MessageType type) 
+{ 
+    publishers[type].erase(publishers[type].begin(), publishers[type].end()); 
+}
+
 
 /**
  * @brief   Registers a subscriber to the broker

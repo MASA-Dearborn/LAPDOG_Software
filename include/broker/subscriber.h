@@ -8,7 +8,7 @@ namespace pubsub
     class GenericSubscriber
     {
         public:
-            GenericSubscriber() {}
+            GenericSubscriber() { m_isDataAvailable = false; }
             ~GenericSubscriber() { _unregisterSelf(); }
 
             bool isDataAvailable();
