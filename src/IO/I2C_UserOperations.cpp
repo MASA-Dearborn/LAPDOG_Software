@@ -23,7 +23,7 @@ void dequeueMessageFromInterface(IO::IOInterface* obj, msg::GENERIC_MESSAGE* des
         return;
 
     int size = ((msg::GENERIC_MESSAGE*)obj->getTXBuffer()->peek())->size;
-    if (dest->size > size)
+    if (dest->size >= size)
         obj->getTXBuffer()->dequeue((uint8_t*)dest, size);
 }
 
