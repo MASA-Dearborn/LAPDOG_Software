@@ -36,6 +36,7 @@ namespace IO
     {
         public:
             CAN_Interface();
+            CAN_Interface(const char* device_name);
             ~CAN_Interface();
 
             int readMessage(uint8_t* dest, const int num);
@@ -44,7 +45,7 @@ namespace IO
         protected:
             int _can_read();
             int _can_write();
-            void _openSocketCAN();
+            void _openSocketCAN(const char* device_name);
             friend void _can_io_handler(union sigval data);
 
             /* IO Handling Data */
