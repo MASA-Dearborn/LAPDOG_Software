@@ -14,8 +14,8 @@ int main()
     MessageHandler handler;
     CAN_Interface temp_can;
     msg::raw::TEST_MESSAGE_WRITE msg;
-    msg.VAR1 = 0x08;
-    msg.VAR2 = 0x04;
+    msg.VAR1 = 0xFF;
+    msg.VAR2 = 0x55;
 
     handler.attachIOInterface(&temp_can);
 
@@ -23,6 +23,7 @@ int main()
     {
         usleep(1000000);
         temp_can.writeMessage((uint8_t*)&msg, msg.size);
+        printf("Data Ready: %d\n", temp_can.getTXBuffer()->getDataSize());
     }
 
 }

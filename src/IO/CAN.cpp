@@ -84,8 +84,8 @@ int CAN_Interface::_can_read()
 int CAN_Interface::_can_write()
 {
     int retval;
-    uint8_t buffer[128] = {0};
     struct can_frame frame;
+    uint8_t buffer[128] = {0};
     msg::GENERIC_MESSAGE* message;
 
     /* Get GENERIC_MESSAGE from TX queue */
@@ -98,6 +98,7 @@ int CAN_Interface::_can_write()
     /* Setup CAN frame */
     frame.can_id = message->id;
     frame.can_dlc = message->size - sizeof(msg::GENERIC_MESSAGE);
+    memset(frame.data, 0, CAN_MAX_DLEN);
     memcpy(frame.data, &buffer[sizeof(msg::GENERIC_MESSAGE)], frame.can_dlc);
 
     /* Write the frame */

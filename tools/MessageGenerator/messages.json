@@ -8,9 +8,9 @@
                     "name" : "VAR1",
                     "ctype" : "int",
                     "init" : 0,
-                    "bits" : 10,
+                    "bits" : 16,
                     "min"   : 0,
-                    "max" : 1023
+                    "max" : 65565
                 },
                 {
                     "name" : "VAR2",
@@ -29,9 +29,9 @@
                     "name" : "VAR1",
                     "ctype" : "int",
                     "init" : 0,
-                    "bits" : 10,
+                    "bits" : 16,
                     "min"   : 0,
-                    "max" : 1023
+                    "max" : 65565
                 },
                 {
                     "name" : "VAR2",

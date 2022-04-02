@@ -178,13 +178,13 @@ namespace msg::raw {
 
     struct TEST_MESSAGE_READ : GENERIC_MESSAGE {
         TEST_MESSAGE_READ() { id = msg::id::TEST_MESSAGE_READ; size = sizeof(TEST_MESSAGE_READ); }
-        int VAR1 : 10;
+        int VAR1 : 16;
         int VAR2 : 16;
     };
     
     struct TEST_MESSAGE_WRITE : GENERIC_MESSAGE {
         TEST_MESSAGE_WRITE() { id = msg::id::TEST_MESSAGE_WRITE; size = sizeof(TEST_MESSAGE_WRITE); }
-        int VAR1 : 10;
+        int VAR1 : 16;
         int VAR2 : 16;
     };
     
