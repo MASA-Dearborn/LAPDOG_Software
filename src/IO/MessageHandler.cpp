@@ -253,6 +253,7 @@ void MessageHandler::_messageHandlerThread()
             if(sub->isDataAvailable())
             {
                 sendSubscribedToIO(sub->getGenericPointer());
+                sub->clearDataAvailable();
             }
         }
 
