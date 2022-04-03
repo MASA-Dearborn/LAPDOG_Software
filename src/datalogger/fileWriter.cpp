@@ -79,6 +79,7 @@ bool FileWriter::_hasTimeIntervalPassed()
     milliseconds interval_span = duration_cast<milliseconds>(current_time - time_since_first_write);
 
     if (interval_span > milliseconds(this->file_length_ms)) {
+        time_since_first_write = current_time;
         return true;
     } else {
         return false;
