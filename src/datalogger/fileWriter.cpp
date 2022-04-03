@@ -11,13 +11,14 @@ FileWriter::FileWriter()
     file_index = 1;
 }
 
-FileWriter::FileWriter(const char* name, uint64_t file_length_ms)
+FileWriter::FileWriter(const char* name, uint64_t file_length_ms, uint64_t base_time_epoch_ms)
 {
     file_index = 0;
     setBaseName(name);
     setIntervalMilliseconds(file_length_ms);
     _createNewIncrementedFile();
-    time_since_first_write = std::chrono::steady_clock::now();
+    this->time_since_first_write = std::chrono::steady_clock::now();
+    this->base_time_epoch_ms = base_time_epoch_ms;
 }
 
 FileWriter::~FileWriter()
@@ -28,10 +29,14 @@ FileWriter::~FileWriter()
 int FileWriter::writeToFile(void* data, int size)
 {
     using namespace std::chrono;
+    auto ms_timestamp = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count() - base_time_epoch_ms;
+    char buffer[32];
 
     if (_hasTimeIntervalPassed())
         _createNewIncrementedFile();
 
+    sprintf(buffer, "%lld ", ms_timestamp);
+    write(file_descriptor, buffer, strlen(buffer));
     return write(file_descriptor, data, size);
 }
 
@@ -57,7 +62,6 @@ void FileWriter::openFile()
 {
     static char indexedFileNameBuffer[144];
     sprintf(indexedFileNameBuffer, "%s_%04d.log", file_name, file_index);
-    // printf("Opening: %s\n", indexedFileNameBuffer);
     file_descriptor = open(indexedFileNameBuffer, O_RDWR | O_CREAT);
     if (file_descriptor < 0)
         perror("Open");
