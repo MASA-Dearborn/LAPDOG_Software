@@ -13,7 +13,8 @@ namespace IO
 
     enum IOInterfaceType
     {
-        TYPE_TCP = 0,
+        TYPE_UNDEFINED = 0,
+        TYPE_TCP = 1,
         TYPE_I2C,
         TYPE_SPI,
         TYPE_CAN,
@@ -22,12 +23,14 @@ namespace IO
         NUM_TYPES,
     };
 
-    // Pure Virtual interface class
+    // Virtual interface class
     class IOInterface
     {
     public:
 
-        virtual ~IOInterface() {}
+        ~IOInterface() { isValid = false; }
+        IOInterface();
+        IOInterface(IOInterfaceType type);
 
         // IO Interaction Methods
         virtual int readMessage(uint8_t* dest, const int num) = 0;
@@ -37,13 +40,17 @@ namespace IO
         int getMessageSize();
         int getMessageID();
         bool isMessageAvailable();
-        IOInterfaceType getType() { return type; }
         msg::GENERIC_MESSAGE* getMessagePtr();
+        IOInterfaceType getType() { return type; }
+        bool isInterfaceValid() { return isValid; };
+        StaticQueue<uint8_t, BUFFER_SIZE>* getRXBuffer() { return RX_BUFFER_PTR.get(); }
+        StaticQueue<uint8_t, BUFFER_SIZE>* getTXBuffer() { return TX_BUFFER_PTR.get(); }
 
     protected:
         int initBuffers();
 
-        IOInterfaceType type;
+        bool isValid = true;
+        const IOInterfaceType type;
         std::unique_ptr<StaticQueue<uint8_t, BUFFER_SIZE>> RX_BUFFER_PTR;
         std::unique_ptr<StaticQueue<uint8_t, BUFFER_SIZE>> TX_BUFFER_PTR;
 
@@ -52,13 +59,10 @@ namespace IO
     class GenericInterface : public IOInterface
     {
         public:
-            GenericInterface() { initBuffers(); }
+            GenericInterface() : IOInterface(TYPE_GENERIC) { initBuffers(); }
 
             int readMessage(uint8_t* dest, const int num) { return RX_BUFFER_PTR.get()->dequeue(dest, num); }
             int writeMessage(uint8_t* src, const int num) { return TX_BUFFER_PTR.get()->enqueue(src, num); }
-
-            StaticQueue<uint8_t, BUFFER_SIZE>* getRXBuffer() { return RX_BUFFER_PTR.get(); }
-            StaticQueue<uint8_t, BUFFER_SIZE>* getTXBuffer() { return TX_BUFFER_PTR.get(); }
     
     };
 

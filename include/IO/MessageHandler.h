@@ -8,7 +8,6 @@
 #include "../broker/broker.h"
 #include "IOInterface.h"
 
-
 class MessageHandler
 {
     public:
@@ -16,6 +15,8 @@ class MessageHandler
         ~MessageHandler();
 
         void attachIOInterface(IO::IOInterface* interface);
+        void attachReceptionPublisher(pubsub::GenericPublisher* publisher);
+        void attachTransmitSubscriber(pubsub::GenericSubscriber* subscriber);
 
     protected:
 
@@ -36,3 +37,5 @@ class MessageHandler
         std::thread messageHandlerThreadObj;
         bool messageHandlerThreadActive = true;
 };
+
+void defaultMessageHandlerSetup(MessageHandler& handler);

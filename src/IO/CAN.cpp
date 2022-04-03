@@ -7,11 +7,31 @@
 
 using namespace IO;
 
-CAN_Interface::CAN_Interface()
+CAN_Interface::CAN_Interface() : IOInterface(TYPE_CAN)
 {
     /* Initialize Buffers */
     if (initBuffers() < 0)
 		return;
+
+    _openSocketCAN("can0");
+
+    /* Setup the Timer */
+    io_event_data.ref = this;
+    io_event_data.time_count = 0;
+    io_timer.setHandler((void (*)(union sigval))&_can_io_handler);
+    io_timer.setHandlerDataPointer(&io_event_data);
+    io_timer.setIntervalMilliseconds(CAN_IO_INTERVAL_BASE_MS);
+    io_timer.setStartDelayMilliseconds(CAN_IO_INTERVAL_BASE_MS);
+    io_timer.startTimer();
+}
+
+CAN_Interface::CAN_Interface(const char* device_name)
+{
+    /* Initialize Buffers */
+    if (initBuffers() < 0)
+		return;
+
+    _openSocketCAN(device_name);
 
     /* Setup the Timer */
     io_event_data.ref = this;
@@ -64,8 +84,8 @@ int CAN_Interface::_can_read()
 int CAN_Interface::_can_write()
 {
     int retval;
-    uint8_t buffer[128] = {0};
     struct can_frame frame;
+    uint8_t buffer[128] = {0};
     msg::GENERIC_MESSAGE* message;
 
     /* Get GENERIC_MESSAGE from TX queue */
@@ -73,10 +93,13 @@ int CAN_Interface::_can_write()
     TX_BUFFER_PTR.get()->dequeue(buffer, message->size);
     message = (msg::GENERIC_MESSAGE*)buffer;
 
+    // printf("Writing message of ID: %d\n", message->id);
+
     /* Setup CAN frame */
     frame.can_id = message->id;
     frame.can_dlc = message->size - sizeof(msg::GENERIC_MESSAGE);
-    memcpy(&buffer[sizeof(msg::GENERIC_MESSAGE)], frame.data, frame.can_dlc);
+    memset(frame.data, 0, CAN_MAX_DLEN);
+    memcpy(frame.data, &buffer[sizeof(msg::GENERIC_MESSAGE)], frame.can_dlc);
 
     /* Write the frame */
     retval = write(can_socket_id, &frame, sizeof(struct can_frame));
@@ -88,19 +111,35 @@ int CAN_Interface::_can_write()
     return retval;
 }
 
-void CAN_Interface::_openSocketCAN()
+void CAN_Interface::_openSocketCAN(const char* device_name)
 {
+    int retval = 0;
     struct ifreq ifr;
 
     can_socket_id = socket(PF_CAN, SOCK_RAW, CAN_RAW);
+    if (can_socket_id < 0)
+    {
+        perror("CAN");
+        exit(0);
+    }
 
     strcpy(ifr.ifr_name, "can0");
-    ioctl(can_socket_id, SIOCGIFINDEX, &ifr);
+    retval = ioctl(can_socket_id, SIOCGIFINDEX, &ifr);
+    if (retval < 0)
+    {
+        perror("CAN");
+        exit(0);
+    }
 
     address.can_family = AF_CAN;
     address.can_ifindex = ifr.ifr_ifindex;
 
-    bind(can_socket_id, (struct sockaddr*)&address, sizeof(address));
+    retval = bind(can_socket_id, (struct sockaddr*)&address, sizeof(address));
+    if (retval < 0)
+    {
+        perror("CAN");
+        exit(0);
+    }
 }
 
 void IO::_can_io_handler(union sigval data)
@@ -118,7 +157,7 @@ void IO::_can_io_handler(union sigval data)
     if (pollObject.revents & POLLERR)
 	{
 		pollObject.revents -= POLLERR;
-		printf("CAN Socket Error\n");
+		printf("CAN: Error Event\n");
         return;
 	}
 

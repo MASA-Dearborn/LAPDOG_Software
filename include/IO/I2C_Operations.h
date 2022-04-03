@@ -1,8 +1,13 @@
+#include "messageTypes.h"
 #include <cstdint>
 
-void _i2c_read(int fileDescriptor, char* dest, const uint32_t num);
-void _i2c_write(int fileDescriptor, uint8_t reg, char* src, const uint32_t num);
-void _i2c_set_slave_address(int fileDescriptor, long slave_address);
-
 /* I2C Operations */
-void READ_TEST_MESSAGE(int fileDescriptor, int slave_address, char* buffer, int buffer_size);
+namespace i2c_operations
+{
+    void _i2c_read(int fileDescriptor, uint8_t* dest, const uint32_t num);
+    void _i2c_write(int fileDescriptor, uint8_t* data, const uint32_t num);
+    void _i2c_write(int fileDescriptor, uint8_t reg, uint8_t* src, const uint32_t num);
+    char _i2c_read_one(int fileDescriptor);
+    void _i2c_write_one(int fileDescriptor, uint8_t data);
+    void _i2c_set_slave_address(int fileDescriptor, long slave_address);
+}

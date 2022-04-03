@@ -8,8 +8,8 @@ namespace pubsub
     class GenericSubscriber
     {
         public:
-            GenericSubscriber() {}
-            ~GenericSubscriber() { unregisterSelf(); }
+            GenericSubscriber() { m_isDataAvailable = false; }
+            ~GenericSubscriber() { _unregisterSelf(); }
 
             bool isDataAvailable();
             void setDataAvailable();
@@ -23,14 +23,17 @@ namespace pubsub
         protected:
 
             friend class Broker;
-            void registerSelf();
-            void unregisterSelf();
+            friend GenericSubscriber* generateSubscriber(msg::id::MessageType type);
+            void _registerSelf();
+            void _unregisterSelf();
 
             std::mutex m_lock;
             msg::id::MessageType m_type = msg::id::UNDEFINED_MESSAGE;
             bool m_isDataAvailable;
             void* m_dataPointer = nullptr;
     };
+
+    GenericSubscriber* generateSubscriber(msg::id::MessageType type);
 
     /**
      * @brief   A type specific implementation of a subscriber. Should be used for messaging system subscriptions
@@ -47,14 +50,22 @@ namespace pubsub
             {
                 m_type = type; 
                 m_isDataAvailable = false;
-                registerSelf();
+                _registerSelf();
             }
 
-            ~Subscriber() { unregisterSelf(); }
-            const T* getData() 
+            ~Subscriber() { _unregisterSelf(); }
+            const T* getDataRef() 
             {
                 clearDataAvailable(); 
                 return (T*)m_dataPointer; 
+            }
+            T getDataCopy()
+            {
+                clearDataAvailable();
+                m_lock.lock();
+                T temp = *(T*)m_dataPointer;
+                m_lock.unlock();
+                return temp;
             }
     };
 

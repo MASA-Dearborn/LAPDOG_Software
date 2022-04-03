@@ -64,18 +64,18 @@ TEST_F(DataLoggerFixture, TestDataLoggerWrite)
     int retval = 0;
 
     strcpy(file_path, dl->getLogFolderNamePtr());
-    strcat(file_path, "/TEST_MESSAGE/TEST_MESSAGE_0001.log");
+    strcat(file_path, "/TEST_MESSAGE_READ/TEST_MESSAGE_READ_0001.log");
 
     // Send a message for logging
-    pubsub::Publisher<msg::real::TEST_MESSAGE>* pub = createNewPublisher(TEST_MESSAGE);
-    msg::real::TEST_MESSAGE send_message;
-    send_message.test = 5;
+    pubsub::Publisher<msg::real::TEST_MESSAGE_READ>* pub = createNewPublisher(TEST_MESSAGE_READ);
+    msg::real::TEST_MESSAGE_READ send_message;
+    send_message.VAR1 = 5;
     send_message.VAR2 = 0;
     pub->publish(&send_message);
 
     // Wait so datalogger timer can trigger (50ms)
     usleep(100000);
-    dl->getLoggerPtr(msg::id::TEST_MESSAGE)->log->closeFile();
+    dl->getLoggerPtr(msg::id::TEST_MESSAGE_READ)->log->closeFile();
     msg::conv::stringifyRealMessage(data_expected, &send_message);
 
     // Open the file written to

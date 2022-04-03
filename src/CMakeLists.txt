@@ -11,10 +11,12 @@ add_library(
     IO/IOInterface.cpp
     IO/CAN.cpp
     IO/TCP.cpp
-    IO/I2C.cpp
     IO/I2C_Operations.cpp
-    IO/SPI.cpp
+    IO/I2C_UserOperations.cpp
+    IO/I2C.cpp
     IO/SPI_Operations.cpp
+    IO/SPI_UserOperations.cpp
+    IO/SPI.cpp
     IO/UART.cpp
 )
 target_link_libraries(IO PUBLIC pubsub Timer)

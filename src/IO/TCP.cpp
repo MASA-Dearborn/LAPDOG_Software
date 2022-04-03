@@ -6,16 +6,14 @@
 
 using namespace IO;
 
-TCP_Interface::TCP_Interface()
+TCP_Interface::TCP_Interface() : IOInterface(TYPE_TCP)
 {
-	this->type = TYPE_TCP;
     this->serverInfo.listeningPort = LISTEN_PORT;
     init();
 }
 
-TCP_Interface::TCP_Interface(int listeningPort)
+TCP_Interface::TCP_Interface(int listeningPort) : IOInterface(TYPE_TCP)
 {
-	this->type = TYPE_TCP;
     this->serverInfo.listeningPort = listeningPort;
     init();
 }

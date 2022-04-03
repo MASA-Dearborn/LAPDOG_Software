@@ -10,7 +10,7 @@ using namespace IO;
 
 static bool _timeIntervalPassed(uint64_t& last_trigger, uint64_t& current_time, uint64_t& interval);
 
-SPI_Interface::SPI_Interface()
+SPI_Interface::SPI_Interface() : IOInterface(TYPE_SPI)
 {
     io_event_data.ref = this;
     io_event_data.time_count = 0;
@@ -43,8 +43,6 @@ void SPI_Interface::_init()
     /* Initialize Buffers */
     if (initBuffers() < 0)
 		return;
-
-    // TODO: Define all default SPI devices here
 
     /* Setup the Timer */
     io_timer.setHandler((void (*)(union sigval))&_spi_io_handler);
@@ -83,7 +81,7 @@ void SPI_Interface::_closeDevice(spi_device& device)
  * @param name          The physical device name
  * @param device_file   The devie file associated with the device
  */
-void SPI_Interface::_registerDevice(const char* name, const char* device_file)
+void SPI_Interface::registerDevice(const char* name, const char* device_file)
 {
     if (device_count >= MAX_SPI_DEVICES)
         return;
@@ -104,7 +102,7 @@ void SPI_Interface::_registerDevice(const char* name, const char* device_file)
  * @param interval_ms   The period the function should be called at
  * @param func          Pointer to the operation function
  */
-void SPI_Interface::_registerOperation(const char* device_name, SPI_OperationType type, msg::id::MessageType msg_id, int interval_ms, int (*func)(int, msg::GENERIC_MESSAGE*))
+void SPI_Interface::registerOperation(const char* device_name, SPI_OperationType op_type, msg::id::MessageType msg_id, int interval_ms, void (*func)(int, IOInterface*))
 {
     // Find device with matching name
     int dev_idx;
@@ -121,7 +119,7 @@ void SPI_Interface::_registerOperation(const char* device_name, SPI_OperationTyp
 
     spi_device& dev = (devices[dev_idx]);
 
-    switch (type) {
+    switch (op_type) {
         case SPI_WRITE:
             if (dev.num_write_operations > MAX_SPI_OPERATIONS)
                 break;
@@ -140,6 +138,18 @@ void SPI_Interface::_registerOperation(const char* device_name, SPI_OperationTyp
     }
 }
 
+void SPI_Interface::registerInitFunction(const char* device_name, void (*func)(int, IOInterface*))
+{
+    for (int i = 0; i < device_count; i++)
+    {
+        if (strcmp(devices[i].name, device_name) == 0)
+        {
+            func(devices[i].file_descriptor, this);
+            break;
+        }
+    }
+}
+
 void IO::_spi_io_handler(union sigval data)
 {
     /* Get the needed references from data */
@@ -151,8 +161,6 @@ void IO::_spi_io_handler(union sigval data)
     while (obj->TX_BUFFER_PTR.get()->getDataSize() > 0)
     {
         msg::GENERIC_MESSAGE* temp = (msg::GENERIC_MESSAGE*)obj->TX_BUFFER_PTR.get()->peek();
-        obj->TX_BUFFER_PTR.get()->dequeue(data_buffer, temp->size);
-        temp = (msg::GENERIC_MESSAGE*)data_buffer;
 
         std::for_each (obj->devices.begin(), obj->devices.begin() + obj->device_count, [&](spi_device& device)
         {
@@ -161,7 +169,7 @@ void IO::_spi_io_handler(union sigval data)
 
             std::for_each (device.write_operations.begin(), device.write_operations.begin() + device.num_write_operations, [&](SPI_Slave_Message& op) {
                 if (op.msg_type == temp->id)
-                    op.function(device.file_descriptor, temp);
+                    op.function(device.file_descriptor, obj);
             });
         });
     }
@@ -174,9 +182,9 @@ void IO::_spi_io_handler(union sigval data)
 
         std::for_each (device.read_operations.begin(), device.read_operations.begin() + device.num_read_operations, [&](SPI_Slave_Message& op) {
             if (_timeIntervalPassed(op.last_trigger, args->time_count, op.interval_ms))
-                op.function(device.file_descriptor, (msg::GENERIC_MESSAGE*)data_buffer);
-
-            obj->RX_BUFFER_PTR.get()->enqueue(data_buffer, ((msg::GENERIC_MESSAGE*)data_buffer)->size);
+            {
+                op.function(device.file_descriptor, obj);
+            }
         });
     });
 

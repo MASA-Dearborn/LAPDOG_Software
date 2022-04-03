@@ -14,8 +14,20 @@ Broker::~Broker()
     for(int i = 0; i < (int)msg::id::META_NUM_MESSAGES; i++)
     {
         clearSubscribers((msg::id::MessageType)i);
+        clearPublishers((msg::id::MessageType)i);
     }
 }
+
+void Broker::clearSubscribers(msg::id::MessageType type) 
+{ 
+    subscribers[type].erase(subscribers[type].begin(), subscribers[type].end()); 
+}
+
+void Broker::clearPublishers(msg::id::MessageType type) 
+{ 
+    publishers[type].erase(publishers[type].begin(), publishers[type].end()); 
+}
+
 
 /**
  * @brief   Registers a subscriber to the broker
@@ -45,6 +57,8 @@ void Broker::registerPublisher(GenericPublisher* publisher)
  */
 void Broker::unregisterSubscriber(GenericSubscriber* subscriber)
 {
+    if (subscriber == nullptr)
+        return;
 
     msg::id::MessageType type = subscriber->getType();
 
@@ -95,18 +109,8 @@ void* Broker::getLocalDataPointer(msg::id::MessageType type)
 
 void Broker::setMessageUpdateFlag(msg::id::MessageType type)
 {
-
-    //auto setFlag = [](std::unique_ptr<GenericSubscriber>& sub)
-    //{
-    //    sub.get()->setDataAvailable();
-    //    printf("set\n");
-    //};
-
-    //std::for_each(subscribers[type].begin(), subscribers[type].end(), setFlag);
-
     for(std::unique_ptr<GenericSubscriber>& sub : subscribers[type])
     {
         sub.get()->setDataAvailable();
     }
-
 }

@@ -39,6 +39,7 @@ class DataLogger
         Timer io_timer;
         data_logger_timer_data io_event_data;
 
+        uint64_t time_epoch_ms_at_start;
         char log_folder_name[256];
         std::array<Logger, msg::id::META_NUM_MESSAGES> loggers;
 

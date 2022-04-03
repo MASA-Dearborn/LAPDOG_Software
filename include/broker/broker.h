@@ -15,7 +15,9 @@ namespace pubsub {
         Broker() {}
         ~Broker();
 
+        msg::GENERIC_MESSAGE* getCurrentMessagePtr(msg::id::MessageType type) { return (msg::GENERIC_MESSAGE*)msg::getMessageAddressFromCollection(MessageCollection, type); }
         int getNumSubscribers(msg::id::MessageType type) { return subscribers[type].size(); }
+        int getNumPublishers(msg::id::MessageType type) { return publishers[type].size(); }
 
     protected:
 
@@ -29,7 +31,8 @@ namespace pubsub {
         void* getLocalDataPointer(msg::id::MessageType type);
         void setMessageUpdateFlag(msg::id::MessageType type);
 
-        void clearSubscribers(msg::id::MessageType type) { subscribers[type].erase(subscribers[type].begin(), subscribers[type].end()); }
+        void clearSubscribers(msg::id::MessageType type);
+        void clearPublishers(msg::id::MessageType type);
 
 
         std::array<std::list<std::unique_ptr<GenericSubscriber>>, msg::id::META_NUM_MESSAGES> subscribers;      // Array of Vectors of unique_ptrs to GenericSubscribers

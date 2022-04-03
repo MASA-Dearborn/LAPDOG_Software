@@ -3,12 +3,12 @@
 
 using namespace pubsub;
 
-void GenericSubscriber::registerSelf()
+void GenericSubscriber::_registerSelf()
 {
     DataBroker.registerSubscriber(this);
 }
 
-void GenericSubscriber::unregisterSelf()
+void GenericSubscriber::_unregisterSelf()
 {
     DataBroker.unregisterSubscriber(this);
 }
@@ -38,4 +38,13 @@ void GenericSubscriber::clearDataAvailable()
 void GenericSubscriber::unsubscribe() 
 { 
     this->~GenericSubscriber(); 
+}
+
+GenericSubscriber* pubsub::generateSubscriber(msg::id::MessageType type)
+{
+    GenericSubscriber* subscriber = new GenericSubscriber();
+    subscriber->m_type = type;
+    subscriber->m_isDataAvailable;
+    subscriber->_registerSelf();
+    return subscriber;
 }

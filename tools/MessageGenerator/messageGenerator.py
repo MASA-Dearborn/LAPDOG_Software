@@ -20,6 +20,8 @@ collection_case_statements = ''
 raw_to_real_converter = ''
 real_to_raw_converter = ''
 stringify_function = ''
+size_array_real = ''
+size_array_raw = ''
 
 def signalToRawString(signal):
     return 'int ' + signal['name'] + ' : ' + str(signal['bits']) + ';\n'
@@ -68,8 +70,10 @@ def addMessageToIds(message, id):
     '''
         Adds a message to the message id enum with a specified id
     '''
-    global ids_enum
+    global ids_enum, size_array_real, size_array_raw
     ids_enum += '    ' + message['name'] + ' = ' + str(id) + ',\n'
+    size_array_real += '    sizeof(msg::real::' + message['name'] + '),\n'
+    size_array_raw += '    sizeof(msg::raw::' + message['name'] + '),\n'
     return
 
 def addMessageToTypes(message):
@@ -86,7 +90,10 @@ def addMessageToStringify(message):
     type_dict = {
         'double' : '%.3f',
         'float' : '%.3f',
-        'int' : '%d'
+        'int' : '%d',
+        'char' : '%d',
+        'bool' : '%d',
+        'unsigned int' : '%u',
     }
 
     stringify_function += '    case msg::id::' + message['name'] + ':\n'
@@ -197,7 +204,10 @@ def initGlobalStrings():
         Prefixes global strings to ensure valid C code
         Called before string creation section
     '''
-    global ids_enum, message_collection_struct, collection_case_statements, real_message_union, raw_message_union, raw_to_real_converter, real_to_raw_converter, stringify_function
+    global ids_enum, message_collection_struct, collection_case_statements, real_message_union, raw_message_union, raw_to_real_converter, real_to_raw_converter, stringify_function, size_array_raw, size_array_real
+
+    size_array_raw = 'const int RAW_MESSAGE_SIZES[] = {\n'
+    size_array_real = 'const int REAL_MESSAGE_SIZES[] = {\n'
 
     message_collection_struct += 'struct MessageCollection {\n'
 
@@ -228,7 +238,10 @@ def finishGlobalStrings():
         Appends endings to global strings to make valid C code
         Called at end of string creation section
     '''
-    global ids_enum, message_collection_struct, collection_case_statements, real_message_union, raw_message_union, raw_to_real_converter, real_to_raw_converter, stringify_function
+    global ids_enum, message_collection_struct, collection_case_statements, real_message_union, raw_message_union, raw_to_real_converter, real_to_raw_converter, stringify_function, size_array_raw, size_array_real
+
+    size_array_raw += '};\n'
+    size_array_real += '};\n'
 
     message_collection_struct += '};\n'
     real_message_union += '};\n'
@@ -345,7 +358,7 @@ def writeGenericNamespace(file):
     file.write('\n}\n\n')
 
 def writeNamespaceMsg(file):
-    global collection_case_statements, message_collection_struct, real_message_union, raw_message_union
+    global collection_case_statements, message_collection_struct, real_message_union, raw_message_union, size_array_raw, size_array_real
 
     collection_case_statements = '    ' + collection_case_statements
     collection_case_statements = collection_case_statements.replace('\n', '\n    ')
@@ -360,6 +373,14 @@ def writeNamespaceMsg(file):
     raw_message_union = raw_message_union.replace('\n', '\n    ')
 
     file.write('namespace msg {\n\n')
+
+    size_array_raw = '    ' + size_array_raw.replace('\n', '\n    ')
+    file.write(size_array_raw)
+    file.write('\n')
+
+    size_array_real = '    ' + size_array_real.replace('\n', '\n    ')
+    file.write(size_array_real)
+    file.write('\n')
 
     # Write Generated Messages
     file.write(message_collection_struct)

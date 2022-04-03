@@ -2,6 +2,12 @@
 
 using namespace IO;
 
+IOInterface::IOInterface() : type(TYPE_GENERIC)
+{}
+
+IOInterface::IOInterface(IOInterfaceType type) : type(type)
+{}
+
 int IOInterface::getMessageSize() 
 { 
     if (getMessagePtr() == nullptr) 
@@ -33,7 +39,9 @@ bool IOInterface::isMessageAvailable()
 
 msg::GENERIC_MESSAGE* IOInterface::getMessagePtr()
 {
-    return (msg::GENERIC_MESSAGE*)RX_BUFFER_PTR.get()->peek();
+    msg::GENERIC_MESSAGE* message  = (msg::GENERIC_MESSAGE*)RX_BUFFER_PTR.get()->peek();
+    if (message != nullptr)
+        return message;
 }
 
 /**

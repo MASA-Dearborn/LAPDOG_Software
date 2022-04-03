@@ -1,5 +1,5 @@
 #include "IO/I2C.h"
-#include "IO/I2C_Operations.h"
+#include "IO/I2C_UserOperations.h"
 
 #include <algorithm>
 #include <fcntl.h>
@@ -7,7 +7,7 @@
 
 using namespace IO;
 
-I2C_Interface::I2C_Interface()
+I2C_Interface::I2C_Interface() : IOInterface(TYPE_I2C)
 {
     io_event_data.ref = this;
     io_event_data.time_count = 0;
@@ -24,10 +24,6 @@ void I2C_Interface::_init()
     /* Initialize Buffers */
     if (initBuffers() < 0)
 		return;
-
-    /* Reigster Devices */
-
-    /* Registration Functions */
 
     /* Start Timer */
     io_timer.setHandler((void (*)(union sigval))&_i2c_io_handler);
@@ -60,19 +56,20 @@ void I2C_Interface::_closeDevice(i2c_device& device)
     close(device.file_descriptor);
 }
 
-void I2C_Interface::_registerDevice(const char* name, const char* device_file, int slave_address)
+void I2C_Interface::registerDevice(const char* name, const char* device_file, int slave_address)
 {
     if (device_count >= MAX_I2C_DEVICES)
         return;
 
     strcpy(devices[device_count].name, name);
     strcpy(devices[device_count].device_file, device_file);
+    devices[device_count].slave_address = slave_address;
 
     _openDevice(devices[device_count]);
     device_count++;
 }
 
-void I2C_Interface::_registerOperation(const char* device_name, I2C_OperationType type, msg::id::MessageType msg_id, int interval_ms, void (*func)(int, int, msg::GENERIC_MESSAGE*))
+void I2C_Interface::registerOperation(const char* device_name, I2C_OperationType op_type, msg::id::MessageType msg_id, int interval_ms, void (*func)(int, int, IOInterface*))
 {
     // Find device with matching name
     int dev_idx;
@@ -89,7 +86,7 @@ void I2C_Interface::_registerOperation(const char* device_name, I2C_OperationTyp
 
     i2c_device& dev = (devices[dev_idx]);
 
-    switch (type) {
+    switch (op_type) {
         case I2C_WRITE:
             if (dev.num_write_operations > MAX_I2C_OPERATIONS)
                 break;
@@ -108,6 +105,17 @@ void I2C_Interface::_registerOperation(const char* device_name, I2C_OperationTyp
     }
 }
 
+void I2C_Interface::registerInitFunction(const char* device_name, void (*func)(int, int, IOInterface*))
+{
+    for (int i = 0; i < device_count; i++)
+    {
+        if (strcmp(devices[i].name, device_name) == 0)
+        {
+            func(devices[i].file_descriptor, devices[i].slave_address, this);
+            break;
+        }
+    }
+}
 
 static bool _timeIntervalPassed(uint64_t& last_trigger, uint64_t& current_time, uint64_t& interval)
 {
@@ -125,14 +133,15 @@ void IO::_i2c_io_handler(union sigval data)
     /* Get the needed references from data */
     i2c_timer_data* args = (i2c_timer_data*)data.sival_ptr;
     I2C_Interface* obj = (I2C_Interface*)args->ref;
-    static uint8_t data_buffer[1024];
+    static uint8_t data_buffer[1024]; // depcrecated
+
+    if (obj == nullptr)
+        return;
 
     /* Write message to devices */
     while (obj->TX_BUFFER_PTR.get()->getDataSize() > 0)
     {
         msg::GENERIC_MESSAGE* temp = (msg::GENERIC_MESSAGE*)obj->TX_BUFFER_PTR.get()->peek();
-        obj->TX_BUFFER_PTR.get()->dequeue(data_buffer, temp->size);
-        temp = (msg::GENERIC_MESSAGE*)data_buffer;
 
         std::for_each (obj->devices.begin(), obj->devices.begin() + obj->device_count, [&](i2c_device& device)
         {
@@ -141,7 +150,7 @@ void IO::_i2c_io_handler(union sigval data)
 
             std::for_each (device.write_operations.begin(), device.write_operations.begin() + device.num_write_operations, [&](I2C_Slave_Message& op) {
                 if (op.msg_type == temp->id)
-                    op.function(device.file_descriptor, device.slave_address, temp);
+                    op.function(device.file_descriptor, device.slave_address, obj);
             });
         });
     }
@@ -154,9 +163,9 @@ void IO::_i2c_io_handler(union sigval data)
 
         std::for_each (device.read_operations.begin(), device.read_operations.begin() + device.num_read_operations, [&](I2C_Slave_Message& op) {
             if (_timeIntervalPassed(op.last_trigger, args->time_count, op.interval_ms))
-                op.function(device.file_descriptor, device.slave_address, (msg::GENERIC_MESSAGE*)data_buffer);
-
-            obj->RX_BUFFER_PTR.get()->enqueue(data_buffer, ((msg::GENERIC_MESSAGE*)data_buffer)->size);
+            {
+                op.function(device.file_descriptor, device.slave_address, obj);
+            }
         });
     });
 

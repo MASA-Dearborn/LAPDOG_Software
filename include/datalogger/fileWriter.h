@@ -4,7 +4,7 @@
 class FileWriter {
     public:
         FileWriter();
-        FileWriter(const char* name, uint64_t file_length_ms);
+        FileWriter(const char* name, uint64_t file_length_ms, uint64_t base_time_epoch_ms);
         ~FileWriter();
         
         int writeToFile(void* data, int size);
@@ -23,6 +23,7 @@ class FileWriter {
         /* Time Member Variables */
         std::chrono::time_point<std::chrono::steady_clock> time_since_first_write;
         uint64_t file_length_ms;
+        uint64_t base_time_epoch_ms;
 
         /* File Member Variables */
         int file_descriptor = -1;

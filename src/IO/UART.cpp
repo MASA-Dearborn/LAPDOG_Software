@@ -4,7 +4,7 @@
 
 using namespace IO;
 
-UART_Interface::UART_Interface()
+UART_Interface::UART_Interface() : IOInterface(TYPE_UART)
 {
     _init();
 }
