@@ -133,7 +133,7 @@ void IO::_i2c_io_handler(union sigval data)
     /* Get the needed references from data */
     i2c_timer_data* args = (i2c_timer_data*)data.sival_ptr;
     I2C_Interface* obj = (I2C_Interface*)args->ref;
-    static uint8_t data_buffer[1024];
+    static uint8_t data_buffer[1024]; // depcrecated
 
     if (obj == nullptr)
         return;

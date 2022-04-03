@@ -93,7 +93,7 @@ int CAN_Interface::_can_write()
     TX_BUFFER_PTR.get()->dequeue(buffer, message->size);
     message = (msg::GENERIC_MESSAGE*)buffer;
 
-    printf("Writing message of ID: %d\n", message->id);
+    // printf("Writing message of ID: %d\n", message->id);
 
     /* Setup CAN frame */
     frame.can_id = message->id;
