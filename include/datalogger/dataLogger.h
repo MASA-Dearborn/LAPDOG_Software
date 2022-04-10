@@ -26,6 +26,7 @@ class DataLogger
         DataLogger();
         ~DataLogger();
 
+        void addLoggableMessage(msg::id::MessageType id, uint64_t interval);
         const char* getLogFolderNamePtr() { return log_folder_name; }
         const Logger* getLoggerPtr(msg::id::MessageType id) { return &loggers[id]; }
 
@@ -33,7 +34,6 @@ class DataLogger
         friend void _data_logger_handler(union sigval data);
         friend class DataLoggerFixture;
         void _createLogFolder();
-        void _init();
 
         /* IO Handling Data */
         Timer io_timer;
