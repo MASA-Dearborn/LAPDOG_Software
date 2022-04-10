@@ -232,6 +232,9 @@ inline bool StaticQueue<T, buffer_size>::willOverflow(const int amount)
 template<typename T, const int buffer_size>
 inline bool StaticQueue<T, buffer_size>::willUnderflow(const int amount)
 {
+    if (this == nullptr)
+        return 0;
+
     return (top > bottom) && (bottom + amount > top) || (top < bottom) && (((bottom + amount) % size) > top) || (top == bottom);
 }
 
@@ -244,6 +247,8 @@ inline bool StaticQueue<T, buffer_size>::willUnderflow(const int amount)
 template<typename T, const int buffer_size>
 inline int StaticQueue<T, buffer_size>::needWrap(const int amount)
 {
+    if (this == nullptr)
+        return 0;
 
     int wrapped = 0;
     int unwrapped = 0;
