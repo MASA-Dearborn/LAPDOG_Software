@@ -349,6 +349,27 @@ namespace msg {
         sizeof(msg::real::BNO055_DATA_MAG),
     };
     
+    static const char* messageNames[] = {
+        "TEST_MESSAGE_READ",
+        "TEST_MESSAGE_WRITE",
+        "BNO055_PAGE",
+        "ALTIMETER_COEFFS",
+        "ALTIMETER_DATA",
+        "HUMIDITY_DATA",
+        "BNO055_ACCEL_CONFIG",
+        "BNO055_GYRO_CONFIG",
+        "BNO055_MAG_CONFIG",
+        "BNO055_OPR_MODE",
+        "BNO055_AXIS_CONFIG",
+        "BNO055_UNIT_SELECTION",
+        "BNO055_CAL_ACCEL",
+        "BNO055_CAL_MAG",
+        "BNO055_CAL_GYRO",
+        "BNO055_DATA_ACCEL",
+        "BNO055_DATA_GYRO",
+        "BNO055_DATA_MAG",
+    };
+    
     struct MessageCollection {
         real::TEST_MESSAGE_READ TEST_MESSAGE_READ;
         real::TEST_MESSAGE_WRITE TEST_MESSAGE_WRITE;
