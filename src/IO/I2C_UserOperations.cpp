@@ -34,8 +34,11 @@ void sendMessageToInterface(IO::IOInterface* obj, msg::GENERIC_MESSAGE* m)
 
 void _setup_callback(unsigned long delay_ms, void (*func)(sigval), int fileDescriptor, int slave_address, IO::IOInterface* obj)
 {
-    i2c_operations::callback_data temp = {.fileDescriptor = fileDescriptor, .slave_address = slave_address, .obj = obj};
-    Timer callback_timer = Timer(func, &temp, 0, delay_ms);
+    i2c_operations::callback_data* temp = new i2c_operations::callback_data();
+    (*temp).fileDescriptor = fileDescriptor;
+    (*temp).slave_address = slave_address;
+    (*temp).obj = obj;
+    Timer callback_timer = Timer(func, temp, 0, delay_ms);
 }
 
 void i2c_operations::ALTIMETER_READ_ALTITUDE(int fileDescriptor, int slave_address, IO::IOInterface* obj)
@@ -56,6 +59,7 @@ void i2c_operations::ALTIMETER_READ_ALTITUDE_CALLBACK(sigval data)
 
     m.pressure_bar = *(uint32_t*)buffer;
     sendMessageToInterface(args->obj, &m);
+    delete args;
 }
 
 void i2c_operations::ALTIMETER_READ_CONFIG(int fileDescriptor, int slave_address, IO::IOInterface* obj)
@@ -122,6 +126,7 @@ void i2c_operations::HTU20D_READ_HUMIDITY_CALLBACK(sigval data)
     m.relative_humidity = *(int*)buffer;
 
     sendMessageToInterface(args->obj, &m);
+    delete args;
 }
 
 void i2c_operations::HTU20D_READ_TEMPERATURE(int fileDescriptor, int slave_address, IO::IOInterface* obj)
@@ -147,6 +152,7 @@ void i2c_operations::HTU20D_READ_TEMPERATURE_CALLBACK(sigval data)
     m.temp_celcius = *(int*)buffer;
 
     sendMessageToInterface(args->obj, &m);
+    delete args;
 }
 
 

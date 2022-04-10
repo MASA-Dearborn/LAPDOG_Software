@@ -164,7 +164,8 @@ void IO::_i2c_io_handler(union sigval data)
         std::for_each (device.read_operations.begin(), device.read_operations.begin() + device.num_read_operations, [&](I2C_Slave_Message& op) {
             if (_timeIntervalPassed(op.last_trigger, args->time_count, op.interval_ms))
             {
-                op.function(device.file_descriptor, device.slave_address, obj);
+                if (obj != nullptr)
+                    op.function(device.file_descriptor, device.slave_address, obj);
             }
         });
     });
