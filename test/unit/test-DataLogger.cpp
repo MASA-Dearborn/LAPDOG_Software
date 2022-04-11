@@ -44,6 +44,7 @@ public:
     void SetUp()
     {
         dl = new DataLogger();
+        dl->addLoggableMessage(msg::id::TEST_MESSAGE_READ, 5000);
     }
 
     void TearDown()
@@ -82,7 +83,15 @@ TEST_F(DataLoggerFixture, TestDataLoggerWrite)
     int file_descriptor = open(file_path, O_RDWR);
     EXPECT_TRUE(file_descriptor > 0);
  
+    int idx = -1;
+    while (idx < 64)
+    {
+        idx++;
+        if (data_read[idx] == '\n')
+            break;
+    }
+
     retval = read(file_descriptor, data_read, 64);
-    EXPECT_STREQ(data_read, data_expected) << data_read << " != " << data_expected << "\n";
+    EXPECT_STREQ(data_read + idx, data_expected) << data_read << " != " << data_expected << "\n";
 
 }
