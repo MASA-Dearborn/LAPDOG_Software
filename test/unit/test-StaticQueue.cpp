@@ -8,17 +8,17 @@
 
 TEST(StaticQueueTest, Initialization) 
 {
-    StaticQueue<int, 16> buffer;
+    StaticQueue<uint8_t, 16> buffer;
     EXPECT_EQ(buffer.getBufferSize(), 16);
-    EXPECT_EQ(buffer.top, 0);
-    EXPECT_EQ(buffer.bottom, 0);
+    EXPECT_EQ(buffer.top, nullptr);
+    EXPECT_EQ(buffer.bottom, nullptr);
 }
 
 TEST(StaticQueueTest, EnqueueMultiple)
 {
 
-    StaticQueue<int, 8> buffer;
-    int data[4] = {1, 2, 3, 4};
+    StaticQueue<uint8_t, 8> buffer;
+    uint8_t data[4] = {1, 2, 3, 4};
     const int size = 4;
 
     EXPECT_EQ(buffer.enqueue(data, size), 4);
@@ -29,12 +29,12 @@ TEST(StaticQueueTest, EnqueueMultiple)
 TEST(StaticQueueTest, EnqueueMultipleWrap)
 {
 
-    StaticQueue<int, 4> buffer;
-    buffer.top = 2;
-    buffer.bottom = 2;
+    StaticQueue<uint8_t, 4> buffer;
+    buffer.top = buffer.data + 2;
+    buffer.bottom = buffer.data + 2;
 
-    int data[4] = {1, 2, 3, 4};
-    int expect[4] = {3, 4, 1, 2};
+    uint8_t data[4] = {1, 2, 3, 4};
+    uint8_t expect[4] = {3, 4, 1, 2};
     const int size = 4;
 
     EXPECT_EQ(buffer.enqueue(data, size), 4);
@@ -44,9 +44,9 @@ TEST(StaticQueueTest, EnqueueMultipleWrap)
 
 TEST(StaticQueueTest, EnqueueMultipleOverflow)
 {
-    StaticQueue<int, 4> buffer;
+    StaticQueue<uint8_t, 4> buffer;
 
-    int data[5] = {1, 2, 3, 4, 5};
+    uint8_t data[5] = {1, 2, 3, 4, 5};
 
     EXPECT_EQ(buffer.enqueue(data, 5), 0);
 
@@ -54,10 +54,10 @@ TEST(StaticQueueTest, EnqueueMultipleOverflow)
 
 TEST(StaticQueueTest, DequeueMultiple)
 {
-    StaticQueue<int, 8> buffer;
+    StaticQueue<uint8_t, 8> buffer;
 
-    int data[4] = {1, 2, 3, 4};
-    int dest[4];
+    uint8_t data[4] = {1, 2, 3, 4};
+    uint8_t dest[4];
     buffer.enqueue(data, 4);
 
     EXPECT_EQ(buffer.dequeue(dest, 4), 4);
@@ -66,10 +66,10 @@ TEST(StaticQueueTest, DequeueMultiple)
 
 TEST(StaticQueueTest, DequeueMultipleUnderflow)
 {
-    StaticQueue<int, 8> buffer;
+    StaticQueue<uint8_t, 8> buffer;
     
-    int data[4] = {1, 2, 3, 4};
-    int dest[10];
+    uint8_t data[4] = {1, 2, 3, 4};
+    uint8_t dest[10];
     buffer.enqueue(data, 4);
 
     EXPECT_EQ(buffer.dequeue(dest, 6), 0);
@@ -80,12 +80,12 @@ TEST(StaticQueueTest, DequeueMultipleUnderflow)
 TEST(StaticQueueTest, DequeueMultipleWrap)
 {
 
-    StaticQueue<int, 6> buffer;
-    buffer.top = 4;
-    buffer.bottom = 4;
+    StaticQueue<uint8_t, 6> buffer;
+    buffer.top = buffer.data + 4;
+    buffer.bottom = buffer.data + 4;
 
-    int data[4] = {1, 2, 3, 4};
-    int dest[4];
+    uint8_t data[4] = {1, 2, 3, 4};
+    uint8_t dest[4];
     const int size = 4;
 
     buffer.enqueue(data, size);
@@ -96,9 +96,25 @@ TEST(StaticQueueTest, DequeueMultipleWrap)
 
 TEST(StaticQueueTest, DequeueBeforeEnqueue)
 {
-    StaticQueue<int, 8> buffer;
-    int dest[8];
+    StaticQueue<uint8_t, 8> buffer;
+    uint8_t dest[8];
 
     EXPECT_EQ(buffer.dequeue(dest, 4), 0);
 
+}
+
+TEST(StaticQueueTest, EnqueueAndDequeueFromBound)
+{
+    StaticQueue<uint8_t, 4> buffer;
+    uint8_t data[4] = {0x01, 0x02, 0x03, 0x04};
+    uint8_t dest[2];
+
+    buffer.enqueue(data, 2);
+    buffer.dequeue(dest, 2);
+    buffer.enqueue(data + 2, 2);
+    EXPECT_TRUE(buffer.top == buffer.data);
+
+    buffer.dequeue(dest, 2);
+    EXPECT_TRUE(0 == std::memcmp(data + 2, dest, 2));
+    EXPECT_TRUE(buffer.bottom == buffer.data);
 }
