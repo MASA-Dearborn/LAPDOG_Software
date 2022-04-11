@@ -37,19 +37,21 @@ def signalRawToReal(signal):
     # real.signal = raw.signal * factor + min
     if signal['ctype'] in ['float', 'double']:
         factor = (signal['max'] - signal['min']) / 2**signal['bits']
+        return signal['name'] + ' = (raw->' + signal['name'] + ' * ' + str(factor) + ') + ' + str(signal['min']) + ';\n'
     else:
-        factor = 1
+        return signal['name'] + ' = (raw->' + signal['name'] + ');\n'
 
-    return signal['name'] + ' = (raw->' + signal['name'] + ' * ' + str(factor) + ') + ' + str(signal['min']) + ';\n'
+    # return signal['name'] + ' = (raw->' + signal['name'] + ' * ' + str(factor) + ') + ' + str(signal['min']) + ';\n'
 
 def signalRealToRaw(signal):
     # raw.signal = (real.signal - min) / factor
     if signal['ctype'] in ['float', 'double']:
         factor = (signal['max'] - signal['min']) / 2**signal['bits']
+        return signal['name'] + ' = (real->' + signal['name'] + ' - ' + str(signal['min']) + ') / ' + str(factor) + ';\n'
     else:
-        factor = 1
+        return signal['name'] + ' = (real->' + signal['name'] + ');\n'
 
-    return signal['name'] + ' = (real->' + signal['name'] + ' - ' + str(signal['min']) + ') / ' + str(factor) + ';\n'
+    #return signal['name'] + ' = (real->' + signal['name'] + ' - ' + str(signal['min']) + ') / ' + str(factor) + ';\n'
 
 def createRawStructStr(message):
     struct = "struct " + message['name'] + ' : GENERIC_MESSAGE {\n'

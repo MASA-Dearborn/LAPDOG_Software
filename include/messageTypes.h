@@ -484,32 +484,32 @@ namespace msg::conv {
 
     inline msg::real::TEST_MESSAGE_READ TEST_MESSAGE_READ_TO_REAL(msg::raw::TEST_MESSAGE_READ* raw) {
         msg::real::TEST_MESSAGE_READ real;
-        real.VAR1 = (raw->VAR1 * 1) + 0;
+        real.VAR1 = (raw->VAR1);
         real.VAR2 = (raw->VAR2 * 0.00152587890625) + 0;
         return real;
     }
     
     inline msg::real::TEST_MESSAGE_WRITE TEST_MESSAGE_WRITE_TO_REAL(msg::raw::TEST_MESSAGE_WRITE* raw) {
         msg::real::TEST_MESSAGE_WRITE real;
-        real.VAR1 = (raw->VAR1 * 1) + 0;
+        real.VAR1 = (raw->VAR1);
         real.VAR2 = (raw->VAR2 * 0.0030517578125) + 0;
         return real;
     }
     
     inline msg::real::BNO055_PAGE BNO055_PAGE_TO_REAL(msg::raw::BNO055_PAGE* raw) {
         msg::real::BNO055_PAGE real;
-        real.page = (raw->page * 1) + 0;
+        real.page = (raw->page);
         return real;
     }
     
     inline msg::real::ALTIMETER_COEFFS ALTIMETER_COEFFS_TO_REAL(msg::raw::ALTIMETER_COEFFS* raw) {
         msg::real::ALTIMETER_COEFFS real;
-        real.coeff_1 = (raw->coeff_1 * 1) + 0;
-        real.coeff_2 = (raw->coeff_2 * 1) + 0;
-        real.coeff_3 = (raw->coeff_3 * 1) + 0;
-        real.coeff_4 = (raw->coeff_4 * 1) + 0;
-        real.coeff_5 = (raw->coeff_5 * 1) + 0;
-        real.coeff_6 = (raw->coeff_6 * 1) + 0;
+        real.coeff_1 = (raw->coeff_1);
+        real.coeff_2 = (raw->coeff_2);
+        real.coeff_3 = (raw->coeff_3);
+        real.coeff_4 = (raw->coeff_4);
+        real.coeff_5 = (raw->coeff_5);
+        real.coeff_6 = (raw->coeff_6);
         return real;
     }
     
@@ -529,132 +529,132 @@ namespace msg::conv {
     
     inline msg::real::BNO055_ACCEL_CONFIG BNO055_ACCEL_CONFIG_TO_REAL(msg::raw::BNO055_ACCEL_CONFIG* raw) {
         msg::real::BNO055_ACCEL_CONFIG real;
-        real.G_RANGE = (raw->G_RANGE * 1) + 0;
-        real.SAMPLE_RATE = (raw->SAMPLE_RATE * 1) + 0;
-        real.OPERATION_MODE = (raw->OPERATION_MODE * 1) + 0;
+        real.G_RANGE = (raw->G_RANGE);
+        real.SAMPLE_RATE = (raw->SAMPLE_RATE);
+        real.OPERATION_MODE = (raw->OPERATION_MODE);
         return real;
     }
     
     inline msg::real::BNO055_GYRO_CONFIG BNO055_GYRO_CONFIG_TO_REAL(msg::raw::BNO055_GYRO_CONFIG* raw) {
         msg::real::BNO055_GYRO_CONFIG real;
-        real.RANGE = (raw->RANGE * 1) + 0;
-        real.SAMPLE_RATE = (raw->SAMPLE_RATE * 1) + 0;
-        real.OPERATION_MODE = (raw->OPERATION_MODE * 1) + 0;
+        real.RANGE = (raw->RANGE);
+        real.SAMPLE_RATE = (raw->SAMPLE_RATE);
+        real.OPERATION_MODE = (raw->OPERATION_MODE);
         return real;
     }
     
     inline msg::real::BNO055_MAG_CONFIG BNO055_MAG_CONFIG_TO_REAL(msg::raw::BNO055_MAG_CONFIG* raw) {
         msg::real::BNO055_MAG_CONFIG real;
-        real.SAMPLE_RATE = (raw->SAMPLE_RATE * 1) + 0;
-        real.OPERATION_MODE = (raw->OPERATION_MODE * 1) + 0;
+        real.SAMPLE_RATE = (raw->SAMPLE_RATE);
+        real.OPERATION_MODE = (raw->OPERATION_MODE);
         return real;
     }
     
     inline msg::real::BNO055_OPR_MODE BNO055_OPR_MODE_TO_REAL(msg::raw::BNO055_OPR_MODE* raw) {
         msg::real::BNO055_OPR_MODE real;
-        real.MODE = (raw->MODE * 1) + 0;
+        real.MODE = (raw->MODE);
         return real;
     }
     
     inline msg::real::BNO055_AXIS_CONFIG BNO055_AXIS_CONFIG_TO_REAL(msg::raw::BNO055_AXIS_CONFIG* raw) {
         msg::real::BNO055_AXIS_CONFIG real;
-        real.X_MAP = (raw->X_MAP * 1) + 0;
-        real.Y_MAP = (raw->Y_MAP * 1) + 0;
-        real.Z_MAP = (raw->Z_MAP * 1) + 0;
-        real.X_SIGN_INVERT = (raw->X_SIGN_INVERT * 1) + 0;
-        real.Y_SIGN_INVERT = (raw->Y_SIGN_INVERT * 1) + 0;
-        real.Z_SIGN_INVERT = (raw->Z_SIGN_INVERT * 1) + 0;
+        real.X_MAP = (raw->X_MAP);
+        real.Y_MAP = (raw->Y_MAP);
+        real.Z_MAP = (raw->Z_MAP);
+        real.X_SIGN_INVERT = (raw->X_SIGN_INVERT);
+        real.Y_SIGN_INVERT = (raw->Y_SIGN_INVERT);
+        real.Z_SIGN_INVERT = (raw->Z_SIGN_INVERT);
         return real;
     }
     
     inline msg::real::BNO055_UNIT_SELECTION BNO055_UNIT_SELECTION_TO_REAL(msg::raw::BNO055_UNIT_SELECTION* raw) {
         msg::real::BNO055_UNIT_SELECTION real;
-        real.ACCELERATION = (raw->ACCELERATION * 1) + 0;
-        real.ANGULAR_RATE = (raw->ANGULAR_RATE * 1) + 0;
-        real.EULER_ANGLES = (raw->EULER_ANGLES * 1) + 0;
-        real.TEMPERATURE = (raw->TEMPERATURE * 1) + 0;
-        real.FUSION_OUTPUT_FORMAT = (raw->FUSION_OUTPUT_FORMAT * 1) + 0;
+        real.ACCELERATION = (raw->ACCELERATION);
+        real.ANGULAR_RATE = (raw->ANGULAR_RATE);
+        real.EULER_ANGLES = (raw->EULER_ANGLES);
+        real.TEMPERATURE = (raw->TEMPERATURE);
+        real.FUSION_OUTPUT_FORMAT = (raw->FUSION_OUTPUT_FORMAT);
         return real;
     }
     
     inline msg::real::BNO055_CAL_ACCEL BNO055_CAL_ACCEL_TO_REAL(msg::raw::BNO055_CAL_ACCEL* raw) {
         msg::real::BNO055_CAL_ACCEL real;
-        real.RADIUS = (raw->RADIUS * 1) + -32768;
-        real.OFFSET_X = (raw->OFFSET_X * 1) + -32768;
-        real.OFFSET_Y = (raw->OFFSET_Y * 1) + -32768;
-        real.OFFSET_Z = (raw->OFFSET_Z * 1) + -32768;
+        real.RADIUS = (raw->RADIUS);
+        real.OFFSET_X = (raw->OFFSET_X);
+        real.OFFSET_Y = (raw->OFFSET_Y);
+        real.OFFSET_Z = (raw->OFFSET_Z);
         return real;
     }
     
     inline msg::real::BNO055_CAL_MAG BNO055_CAL_MAG_TO_REAL(msg::raw::BNO055_CAL_MAG* raw) {
         msg::real::BNO055_CAL_MAG real;
-        real.RADIUS = (raw->RADIUS * 1) + -32768;
-        real.OFFSET_X = (raw->OFFSET_X * 1) + -32768;
-        real.OFFSET_Y = (raw->OFFSET_Y * 1) + -32768;
-        real.OFFSET_Z = (raw->OFFSET_Z * 1) + -32768;
+        real.RADIUS = (raw->RADIUS);
+        real.OFFSET_X = (raw->OFFSET_X);
+        real.OFFSET_Y = (raw->OFFSET_Y);
+        real.OFFSET_Z = (raw->OFFSET_Z);
         return real;
     }
     
     inline msg::real::BNO055_CAL_GYRO BNO055_CAL_GYRO_TO_REAL(msg::raw::BNO055_CAL_GYRO* raw) {
         msg::real::BNO055_CAL_GYRO real;
-        real.OFFSET_X = (raw->OFFSET_X * 1) + -32768;
-        real.OFFSET_Y = (raw->OFFSET_Y * 1) + -32768;
-        real.OFFSET_Z = (raw->OFFSET_Z * 1) + -32768;
+        real.OFFSET_X = (raw->OFFSET_X);
+        real.OFFSET_Y = (raw->OFFSET_Y);
+        real.OFFSET_Z = (raw->OFFSET_Z);
         return real;
     }
     
     inline msg::real::BNO055_DATA_ACCEL BNO055_DATA_ACCEL_TO_REAL(msg::raw::BNO055_DATA_ACCEL* raw) {
         msg::real::BNO055_DATA_ACCEL real;
-        real.X = (raw->X * 1) + -32768;
-        real.Y = (raw->Y * 1) + -32768;
-        real.Z = (raw->Z * 1) + -32768;
+        real.X = (raw->X);
+        real.Y = (raw->Y);
+        real.Z = (raw->Z);
         return real;
     }
     
     inline msg::real::BNO055_DATA_GYRO BNO055_DATA_GYRO_TO_REAL(msg::raw::BNO055_DATA_GYRO* raw) {
         msg::real::BNO055_DATA_GYRO real;
-        real.X = (raw->X * 1) + -32768;
-        real.Y = (raw->Y * 1) + -32768;
-        real.Z = (raw->Z * 1) + -32768;
+        real.X = (raw->X);
+        real.Y = (raw->Y);
+        real.Z = (raw->Z);
         return real;
     }
     
     inline msg::real::BNO055_DATA_MAG BNO055_DATA_MAG_TO_REAL(msg::raw::BNO055_DATA_MAG* raw) {
         msg::real::BNO055_DATA_MAG real;
-        real.X = (raw->X * 1) + -32768;
-        real.Y = (raw->Y * 1) + -32768;
-        real.Z = (raw->Z * 1) + -32768;
+        real.X = (raw->X);
+        real.Y = (raw->Y);
+        real.Z = (raw->Z);
         return real;
     }
     
     inline msg::raw::TEST_MESSAGE_READ TEST_MESSAGE_READ_TO_RAW(msg::real::TEST_MESSAGE_READ* real) {
         msg::raw::TEST_MESSAGE_READ raw;
-        raw.VAR1 = (real->VAR1 - 0) / 1;
+        raw.VAR1 = (real->VAR1);
         raw.VAR2 = (real->VAR2 - 0) / 0.00152587890625;
         return raw;
     }
     
     inline msg::raw::TEST_MESSAGE_WRITE TEST_MESSAGE_WRITE_TO_RAW(msg::real::TEST_MESSAGE_WRITE* real) {
         msg::raw::TEST_MESSAGE_WRITE raw;
-        raw.VAR1 = (real->VAR1 - 0) / 1;
+        raw.VAR1 = (real->VAR1);
         raw.VAR2 = (real->VAR2 - 0) / 0.0030517578125;
         return raw;
     }
     
     inline msg::raw::BNO055_PAGE BNO055_PAGE_TO_RAW(msg::real::BNO055_PAGE* real) {
         msg::raw::BNO055_PAGE raw;
-        raw.page = (real->page - 0) / 1;
+        raw.page = (real->page);
         return raw;
     }
     
     inline msg::raw::ALTIMETER_COEFFS ALTIMETER_COEFFS_TO_RAW(msg::real::ALTIMETER_COEFFS* real) {
         msg::raw::ALTIMETER_COEFFS raw;
-        raw.coeff_1 = (real->coeff_1 - 0) / 1;
-        raw.coeff_2 = (real->coeff_2 - 0) / 1;
-        raw.coeff_3 = (real->coeff_3 - 0) / 1;
-        raw.coeff_4 = (real->coeff_4 - 0) / 1;
-        raw.coeff_5 = (real->coeff_5 - 0) / 1;
-        raw.coeff_6 = (real->coeff_6 - 0) / 1;
+        raw.coeff_1 = (real->coeff_1);
+        raw.coeff_2 = (real->coeff_2);
+        raw.coeff_3 = (real->coeff_3);
+        raw.coeff_4 = (real->coeff_4);
+        raw.coeff_5 = (real->coeff_5);
+        raw.coeff_6 = (real->coeff_6);
         return raw;
     }
     
@@ -674,101 +674,101 @@ namespace msg::conv {
     
     inline msg::raw::BNO055_ACCEL_CONFIG BNO055_ACCEL_CONFIG_TO_RAW(msg::real::BNO055_ACCEL_CONFIG* real) {
         msg::raw::BNO055_ACCEL_CONFIG raw;
-        raw.G_RANGE = (real->G_RANGE - 0) / 1;
-        raw.SAMPLE_RATE = (real->SAMPLE_RATE - 0) / 1;
-        raw.OPERATION_MODE = (real->OPERATION_MODE - 0) / 1;
+        raw.G_RANGE = (real->G_RANGE);
+        raw.SAMPLE_RATE = (real->SAMPLE_RATE);
+        raw.OPERATION_MODE = (real->OPERATION_MODE);
         return raw;
     }
     
     inline msg::raw::BNO055_GYRO_CONFIG BNO055_GYRO_CONFIG_TO_RAW(msg::real::BNO055_GYRO_CONFIG* real) {
         msg::raw::BNO055_GYRO_CONFIG raw;
-        raw.RANGE = (real->RANGE - 0) / 1;
-        raw.SAMPLE_RATE = (real->SAMPLE_RATE - 0) / 1;
-        raw.OPERATION_MODE = (real->OPERATION_MODE - 0) / 1;
+        raw.RANGE = (real->RANGE);
+        raw.SAMPLE_RATE = (real->SAMPLE_RATE);
+        raw.OPERATION_MODE = (real->OPERATION_MODE);
         return raw;
     }
     
     inline msg::raw::BNO055_MAG_CONFIG BNO055_MAG_CONFIG_TO_RAW(msg::real::BNO055_MAG_CONFIG* real) {
         msg::raw::BNO055_MAG_CONFIG raw;
-        raw.SAMPLE_RATE = (real->SAMPLE_RATE - 0) / 1;
-        raw.OPERATION_MODE = (real->OPERATION_MODE - 0) / 1;
+        raw.SAMPLE_RATE = (real->SAMPLE_RATE);
+        raw.OPERATION_MODE = (real->OPERATION_MODE);
         return raw;
     }
     
     inline msg::raw::BNO055_OPR_MODE BNO055_OPR_MODE_TO_RAW(msg::real::BNO055_OPR_MODE* real) {
         msg::raw::BNO055_OPR_MODE raw;
-        raw.MODE = (real->MODE - 0) / 1;
+        raw.MODE = (real->MODE);
         return raw;
     }
     
     inline msg::raw::BNO055_AXIS_CONFIG BNO055_AXIS_CONFIG_TO_RAW(msg::real::BNO055_AXIS_CONFIG* real) {
         msg::raw::BNO055_AXIS_CONFIG raw;
-        raw.X_MAP = (real->X_MAP - 0) / 1;
-        raw.Y_MAP = (real->Y_MAP - 0) / 1;
-        raw.Z_MAP = (real->Z_MAP - 0) / 1;
-        raw.X_SIGN_INVERT = (real->X_SIGN_INVERT - 0) / 1;
-        raw.Y_SIGN_INVERT = (real->Y_SIGN_INVERT - 0) / 1;
-        raw.Z_SIGN_INVERT = (real->Z_SIGN_INVERT - 0) / 1;
+        raw.X_MAP = (real->X_MAP);
+        raw.Y_MAP = (real->Y_MAP);
+        raw.Z_MAP = (real->Z_MAP);
+        raw.X_SIGN_INVERT = (real->X_SIGN_INVERT);
+        raw.Y_SIGN_INVERT = (real->Y_SIGN_INVERT);
+        raw.Z_SIGN_INVERT = (real->Z_SIGN_INVERT);
         return raw;
     }
     
     inline msg::raw::BNO055_UNIT_SELECTION BNO055_UNIT_SELECTION_TO_RAW(msg::real::BNO055_UNIT_SELECTION* real) {
         msg::raw::BNO055_UNIT_SELECTION raw;
-        raw.ACCELERATION = (real->ACCELERATION - 0) / 1;
-        raw.ANGULAR_RATE = (real->ANGULAR_RATE - 0) / 1;
-        raw.EULER_ANGLES = (real->EULER_ANGLES - 0) / 1;
-        raw.TEMPERATURE = (real->TEMPERATURE - 0) / 1;
-        raw.FUSION_OUTPUT_FORMAT = (real->FUSION_OUTPUT_FORMAT - 0) / 1;
+        raw.ACCELERATION = (real->ACCELERATION);
+        raw.ANGULAR_RATE = (real->ANGULAR_RATE);
+        raw.EULER_ANGLES = (real->EULER_ANGLES);
+        raw.TEMPERATURE = (real->TEMPERATURE);
+        raw.FUSION_OUTPUT_FORMAT = (real->FUSION_OUTPUT_FORMAT);
         return raw;
     }
     
     inline msg::raw::BNO055_CAL_ACCEL BNO055_CAL_ACCEL_TO_RAW(msg::real::BNO055_CAL_ACCEL* real) {
         msg::raw::BNO055_CAL_ACCEL raw;
-        raw.RADIUS = (real->RADIUS - -32768) / 1;
-        raw.OFFSET_X = (real->OFFSET_X - -32768) / 1;
-        raw.OFFSET_Y = (real->OFFSET_Y - -32768) / 1;
-        raw.OFFSET_Z = (real->OFFSET_Z - -32768) / 1;
+        raw.RADIUS = (real->RADIUS);
+        raw.OFFSET_X = (real->OFFSET_X);
+        raw.OFFSET_Y = (real->OFFSET_Y);
+        raw.OFFSET_Z = (real->OFFSET_Z);
         return raw;
     }
     
     inline msg::raw::BNO055_CAL_MAG BNO055_CAL_MAG_TO_RAW(msg::real::BNO055_CAL_MAG* real) {
         msg::raw::BNO055_CAL_MAG raw;
-        raw.RADIUS = (real->RADIUS - -32768) / 1;
-        raw.OFFSET_X = (real->OFFSET_X - -32768) / 1;
-        raw.OFFSET_Y = (real->OFFSET_Y - -32768) / 1;
-        raw.OFFSET_Z = (real->OFFSET_Z - -32768) / 1;
+        raw.RADIUS = (real->RADIUS);
+        raw.OFFSET_X = (real->OFFSET_X);
+        raw.OFFSET_Y = (real->OFFSET_Y);
+        raw.OFFSET_Z = (real->OFFSET_Z);
         return raw;
     }
     
     inline msg::raw::BNO055_CAL_GYRO BNO055_CAL_GYRO_TO_RAW(msg::real::BNO055_CAL_GYRO* real) {
         msg::raw::BNO055_CAL_GYRO raw;
-        raw.OFFSET_X = (real->OFFSET_X - -32768) / 1;
-        raw.OFFSET_Y = (real->OFFSET_Y - -32768) / 1;
-        raw.OFFSET_Z = (real->OFFSET_Z - -32768) / 1;
+        raw.OFFSET_X = (real->OFFSET_X);
+        raw.OFFSET_Y = (real->OFFSET_Y);
+        raw.OFFSET_Z = (real->OFFSET_Z);
         return raw;
     }
     
     inline msg::raw::BNO055_DATA_ACCEL BNO055_DATA_ACCEL_TO_RAW(msg::real::BNO055_DATA_ACCEL* real) {
         msg::raw::BNO055_DATA_ACCEL raw;
-        raw.X = (real->X - -32768) / 1;
-        raw.Y = (real->Y - -32768) / 1;
-        raw.Z = (real->Z - -32768) / 1;
+        raw.X = (real->X);
+        raw.Y = (real->Y);
+        raw.Z = (real->Z);
         return raw;
     }
     
     inline msg::raw::BNO055_DATA_GYRO BNO055_DATA_GYRO_TO_RAW(msg::real::BNO055_DATA_GYRO* real) {
         msg::raw::BNO055_DATA_GYRO raw;
-        raw.X = (real->X - -32768) / 1;
-        raw.Y = (real->Y - -32768) / 1;
-        raw.Z = (real->Z - -32768) / 1;
+        raw.X = (real->X);
+        raw.Y = (real->Y);
+        raw.Z = (real->Z);
         return raw;
     }
     
     inline msg::raw::BNO055_DATA_MAG BNO055_DATA_MAG_TO_RAW(msg::real::BNO055_DATA_MAG* real) {
         msg::raw::BNO055_DATA_MAG raw;
-        raw.X = (real->X - -32768) / 1;
-        raw.Y = (real->Y - -32768) / 1;
-        raw.Z = (real->Z - -32768) / 1;
+        raw.X = (real->X);
+        raw.Y = (real->Y);
+        raw.Z = (real->Z);
         return raw;
     }
     
