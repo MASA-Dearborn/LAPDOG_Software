@@ -149,8 +149,10 @@ void IO::_i2c_io_handler(union sigval data)
                 return;
 
             std::for_each (device.write_operations.begin(), device.write_operations.begin() + device.num_write_operations, [&](I2C_Slave_Message& op) {
-                if (op.msg_type == temp->id)
+                if (op.msg_type == temp->id || op.msg_type == msg::id::UNDEFINED_MESSAGE)
+                {
                     op.function(device.file_descriptor, device.slave_address, obj);
+                }
             });
         });
     }
