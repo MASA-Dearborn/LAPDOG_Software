@@ -1,5 +1,6 @@
 #pragma once
 #include <cstring>
+#include <mutex>
 // Does not work when dequeuing SIZE from the queue. If buffer is 4 big and we dequeue 4, does not work.
 
 template<typename T, const int buffer_size>
@@ -30,6 +31,7 @@ protected:
     T* top {nullptr};               // next free space ptr
     T* bottom {nullptr};            // first occupied space ptr
     unsigned int size {buffer_size};
+    std::mutex data_lock;
 
 };
 
@@ -83,8 +85,14 @@ int StaticQueue<T, buffer_size>::enqueue(const T* source, const unsigned int amo
 {
     int wrappedAmount;
     int unwrappedAmount;
-    if (willOverflow(amount)) 
+
+    data_lock.lock();
+    
+    if (willOverflow(amount))
+    {
+        data_lock.unlock();
         return 0;
+    }
 
     if (bottom == nullptr || top == nullptr)
     {
@@ -98,7 +106,7 @@ int StaticQueue<T, buffer_size>::enqueue(const T* source, const unsigned int amo
         unwrappedAmount = amount - wrappedAmount;
         memcpy(top, source, unwrappedAmount);
         memcpy(data, source + unwrappedAmount, wrappedAmount);
-        top = data + unwrappedAmount;
+        top = data + wrappedAmount;
     }
     else
     {
@@ -108,6 +116,7 @@ int StaticQueue<T, buffer_size>::enqueue(const T* source, const unsigned int amo
             top = data;
     }
 
+    data_lock.unlock();
     return amount;
 }
 
@@ -122,8 +131,13 @@ int StaticQueue<T, buffer_size>::dequeue(T* dest, const unsigned int amount)
     int wrappedAmount;
     int unwrappedAmount;
 
-    if(willUnderflow(amount)) 
+    data_lock.lock();
+
+    if(willUnderflow(amount))
+    {
+        data_lock.unlock();
         return 0;
+    }
 
     wrappedAmount = needUnwrap(amount);
     if(wrappedAmount > 0)
@@ -141,6 +155,7 @@ int StaticQueue<T, buffer_size>::dequeue(T* dest, const unsigned int amount)
             bottom = data;
     }
 
+    data_lock.unlock();
     return amount;
 }
 
@@ -180,7 +195,9 @@ inline bool StaticQueue<T, buffer_size>::willUnderflow(const int amount)
     if (this == nullptr)
         return 0;
 
-    return (top > bottom) && (bottom + amount > top) || (top < bottom) && (((getPtrOffset(bottom) + amount) % size) > getPtrOffset(top)) || (top == bottom);
+    return (top > bottom) && (bottom + amount > top) 
+        || (top < bottom) && (((getPtrOffset(bottom) + amount) % size) > getPtrOffset(top)) && ((getPtrOffset(bottom) + amount) > size)
+        || (top == bottom);
 }
 
 /**
