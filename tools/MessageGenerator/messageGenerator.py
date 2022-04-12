@@ -25,7 +25,10 @@ size_array_raw = ''
 name_array = ''
 
 def signalToRawString(signal):
-    return 'int ' + signal['name'] + ' : ' + str(signal['bits']) + ';\n'
+    if signal['ctype'] in ['float', 'double']:
+        return 'unsigned int ' + signal['name'] + ' : ' + str(signal['bits']) + ';\n'
+    else:
+        return 'int ' + signal['name'] + ' : ' + str(signal['bits']) + ';\n'
 
 def signalToRealString(signal):
     if(signal['init']):
@@ -97,6 +100,7 @@ def addMessageToStringify(message):
         'char' : '%d',
         'bool' : '%d',
         'unsigned int' : '%u',
+        'unsigned short' : '%hu',
     }
 
     stringify_function += '    case msg::id::' + message['name'] + ':\n'

@@ -64,12 +64,12 @@ namespace msg::real {
     
     struct ALTIMETER_COEFFS : GENERIC_MESSAGE {
         ALTIMETER_COEFFS() { id = msg::id::ALTIMETER_COEFFS; size = sizeof(ALTIMETER_COEFFS); }
-        unsigned int coeff_1;
-        unsigned int coeff_2;
-        unsigned int coeff_3;
-        unsigned int coeff_4;
-        unsigned int coeff_5;
-        unsigned int coeff_6;
+        unsigned short coeff_1;
+        unsigned short coeff_2;
+        unsigned short coeff_3;
+        unsigned short coeff_4;
+        unsigned short coeff_5;
+        unsigned short coeff_6;
     };
     
     struct ALTIMETER_DATA : GENERIC_MESSAGE {
@@ -179,13 +179,13 @@ namespace msg::raw {
     struct TEST_MESSAGE_READ : GENERIC_MESSAGE {
         TEST_MESSAGE_READ() { id = msg::id::TEST_MESSAGE_READ; size = sizeof(TEST_MESSAGE_READ); }
         int VAR1 : 16;
-        int VAR2 : 16;
+        unsigned int VAR2 : 16;
     };
     
     struct TEST_MESSAGE_WRITE : GENERIC_MESSAGE {
         TEST_MESSAGE_WRITE() { id = msg::id::TEST_MESSAGE_WRITE; size = sizeof(TEST_MESSAGE_WRITE); }
         int VAR1 : 16;
-        int VAR2 : 16;
+        unsigned int VAR2 : 16;
     };
     
     struct BNO055_PAGE : GENERIC_MESSAGE {
@@ -205,14 +205,14 @@ namespace msg::raw {
     
     struct ALTIMETER_DATA : GENERIC_MESSAGE {
         ALTIMETER_DATA() { id = msg::id::ALTIMETER_DATA; size = sizeof(ALTIMETER_DATA); }
-        int pressure_bar : 24;
-        int temp_celcius : 24;
+        unsigned int pressure_bar : 24;
+        unsigned int temp_celcius : 24;
     };
     
     struct HUMIDITY_DATA : GENERIC_MESSAGE {
         HUMIDITY_DATA() { id = msg::id::HUMIDITY_DATA; size = sizeof(HUMIDITY_DATA); }
-        int relative_humidity : 10;
-        int temp_celcius : 12;
+        unsigned int relative_humidity : 10;
+        unsigned int temp_celcius : 12;
     };
     
     struct BNO055_ACCEL_CONFIG : GENERIC_MESSAGE {
@@ -909,7 +909,7 @@ namespace msg::conv {
                     ((msg::real::BNO055_PAGE*)message)->page);
             break;
         case msg::id::ALTIMETER_COEFFS:
-            sprintf(dest, "%u %u %u %u %u %u \n", 
+            sprintf(dest, "%hu %hu %hu %hu %hu %hu \n", 
                     ((msg::real::ALTIMETER_COEFFS*)message)->coeff_1, 
                     ((msg::real::ALTIMETER_COEFFS*)message)->coeff_2, 
                     ((msg::real::ALTIMETER_COEFFS*)message)->coeff_3, 
