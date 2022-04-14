@@ -30,7 +30,7 @@ int IOInterface::getMessageID()
 bool IOInterface::isMessageAvailable()
 {   
     if (getMessagePtr() == nullptr) 
-        return -1;
+        return false;
 
     int messageID = (getMessagePtr())->id;
     int messageSize = getMessagePtr()->size;

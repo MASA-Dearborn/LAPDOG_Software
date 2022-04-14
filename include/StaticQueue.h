@@ -1,5 +1,6 @@
 #pragma once
-
+#include <cstring>
+#include <mutex>
 // Does not work when dequeuing SIZE from the queue. If buffer is 4 big and we dequeue 4, does not work.
 
 template<typename T, const int buffer_size>
@@ -14,9 +15,7 @@ public:
     unsigned int getBufferSize() const;
     unsigned int getDataSize() const;
 
-    int enqueue(const T& value);
     int enqueue(const T* source, const unsigned int amount);
-    T dequeue();
     int dequeue(T* dest, const unsigned int amount);
     const T* peek();
 
@@ -24,14 +23,23 @@ protected:
 
     inline bool willOverflow(const int amount);
     inline bool willUnderflow(const int amount);
+    inline int needUnwrap(const int amount);
     inline int needWrap(const int amount);
+    inline int getPtrOffset(const T* ptr) const;
 
     T data[buffer_size];
+    T* top {nullptr};               // next free space ptr
+    T* bottom {nullptr};            // first occupied space ptr
     unsigned int size {buffer_size};
-    unsigned int top {0};
-    unsigned int bottom {0};
+    std::mutex data_lock;
 
 };
+
+template<typename T, const int buffer_size>
+int StaticQueue<T, buffer_size>::getPtrOffset(const T* ptr) const
+{
+    return (ptr - data); 
+}
 
 template<typename T, const int buffer_size>
 bool StaticQueue<T, buffer_size>::isEmpty() const
@@ -39,7 +47,7 @@ bool StaticQueue<T, buffer_size>::isEmpty() const
     if (this == nullptr)
         return 0;
 
-    return top == bottom;
+    return (top == nullptr) || (bottom == nullptr) || (top == bottom);
 }
 
 template<typename T, const int buffer_size>
@@ -60,32 +68,9 @@ unsigned int StaticQueue<T, buffer_size>::getDataSize() const
     if (top > bottom)
         return top - bottom;
     else if (top < bottom)
-        return (size - bottom) + top;
+        return (size - getPtrOffset(bottom)) + getPtrOffset(top);
     else
         return 0;
-}
-
-/**
- *  @brief  Queue a single element 
- *  @param  value   Const reference to value to be stored in the queue
- * 
- *  @return Returns 1 on success or 0 on failure
-**/
-template<typename T, const int buffer_size>
-int StaticQueue<T, buffer_size>::enqueue(const T& value)
-{
-
-    if(willOverflow(1))
-    {
-        return 0;
-    }
-    else
-    {
-        data[top] = value;
-        top = (top + 1) % size;
-        return 1;
-    }
-
 }
 
 /**
@@ -98,63 +83,41 @@ int StaticQueue<T, buffer_size>::enqueue(const T& value)
 template<typename T, const int buffer_size>
 int StaticQueue<T, buffer_size>::enqueue(const T* source, const unsigned int amount)
 {
-    if(willOverflow(amount)) return 0;
+    int wrappedAmount;
+    int unwrappedAmount;
 
-    int wrappedAmount = needWrap(amount);
+    data_lock.lock();
+    
+    if (willOverflow(amount))
+    {
+        data_lock.unlock();
+        return 0;
+    }
+
+    if (bottom == nullptr || top == nullptr)
+    {
+        bottom = data;
+        top = data;
+    }
+
+    wrappedAmount = needWrap(amount);
     if(wrappedAmount > 0)
     {
-        int unwrappedAmount = amount - wrappedAmount;
-
-        for(int i = 0; i < unwrappedAmount; i++)
-        {
-            data[top + i] = source[i];
-        }
-
-        for(int i = 0; i < wrappedAmount; i++)
-        {
-            data[i] = source[unwrappedAmount + i];
-        }
-
-        top = wrappedAmount;
-
+        unwrappedAmount = amount - wrappedAmount;
+        memcpy(top, source, unwrappedAmount);
+        memcpy(data, source + unwrappedAmount, wrappedAmount);
+        top = data + wrappedAmount;
     }
     else
     {
-
-        for(int i = 0; i < amount; i++)
-        {
-            data[top + i] = source[i];
-        }
-
-        top = top + amount;
-
+        memcpy(top, source, amount);
+        top += amount;
+        if (top == data + size)
+            top = data;
     }
 
+    data_lock.unlock();
     return amount;
-
-}
-
-/**
- *  @brief  Dequeue one element 
- * 
- *  @return Dequeued element of type T
-**/
-template<typename T, const int buffer_size>
-T StaticQueue<T, buffer_size>::dequeue()
-{
-    T retVal = data[bottom];
-
-    if(willUnderflow(1))
-    {
-        retVal = nullptr;
-    } 
-    else 
-    {
-        bottom = (bottom + 1) % size;
-    }
-
-    return retVal;
-
 }
 
 /**
@@ -165,45 +128,42 @@ T StaticQueue<T, buffer_size>::dequeue()
 template<typename T, const int buffer_size>
 int StaticQueue<T, buffer_size>::dequeue(T* dest, const unsigned int amount)
 {
+    int wrappedAmount;
+    int unwrappedAmount;
 
-    if(willUnderflow(amount)) return 0;
+    data_lock.lock();
 
-    int wrappedAmount = needWrap(amount);
+    if(willUnderflow(amount))
+    {
+        data_lock.unlock();
+        return 0;
+    }
+
+    wrappedAmount = needUnwrap(amount);
     if(wrappedAmount > 0)
     {
-        int unwrappedAmount = amount - wrappedAmount;
-
-        for(int i = 0; i < unwrappedAmount; i++)
-        {
-            dest[i] = data[bottom + i];
-        }
-
-        for(int i = 0; i < wrappedAmount; i++)
-        {
-            dest[i + unwrappedAmount] = data[i];
-        }
-
-        bottom = wrappedAmount;
+        unwrappedAmount = amount - wrappedAmount;
+        memcpy(dest, bottom, unwrappedAmount);
+        memcpy(dest + unwrappedAmount, data, wrappedAmount);
+        bottom = data + wrappedAmount;
     }
     else
     {
-        for(int i = 0; i < amount; i++)
-        {
-            dest[i] = data[bottom + i];
-        }
-
+        memcpy(dest, bottom, amount);
         bottom += amount;
+        if (bottom == data + size)
+            bottom = data;
     }
 
+    data_lock.unlock();
     return amount;
-
 }
 
 template<typename T, const int buffer_size>
 const T* StaticQueue<T, buffer_size>::peek()
 {
-    if (this != NULL)
-        return &data[bottom];
+    if (this != NULL && bottom != nullptr && top != nullptr)
+        return bottom;
     else
         return NULL;
 }
@@ -220,7 +180,7 @@ inline bool StaticQueue<T, buffer_size>::willOverflow(const int amount)
     if (this == nullptr)
         return 0;
         
-    return (top < bottom) && (top + amount > bottom) || (top > bottom) && ((top + amount % size) > bottom) || (top == bottom) && (amount > size);
+    return ((top < bottom) && ((top + amount) > bottom)) || ((top > bottom) && ((getPtrOffset(top + amount) % size) > getPtrOffset(bottom))) || (top == bottom) && (amount > size);
 }
 
 /**
@@ -232,7 +192,12 @@ inline bool StaticQueue<T, buffer_size>::willOverflow(const int amount)
 template<typename T, const int buffer_size>
 inline bool StaticQueue<T, buffer_size>::willUnderflow(const int amount)
 {
-    return (top > bottom) && (bottom + amount > top) || (top < bottom) && (((bottom + amount) % size) > top) || (top == bottom);
+    if (this == nullptr)
+        return 0;
+
+    return (top > bottom) && (bottom + amount > top) 
+        || (top < bottom) && (((getPtrOffset(bottom) + amount) % size) > getPtrOffset(top)) && ((getPtrOffset(bottom) + amount) > size)
+        || (top == bottom);
 }
 
 /**
@@ -244,16 +209,36 @@ inline bool StaticQueue<T, buffer_size>::willUnderflow(const int amount)
 template<typename T, const int buffer_size>
 inline int StaticQueue<T, buffer_size>::needWrap(const int amount)
 {
+    if (this == nullptr)
+        return 0;
 
     int wrapped = 0;
     int unwrapped = 0;
 
-    if (top + amount > size)
+    if (getPtrOffset(top + amount) > size)
     {
-        unwrapped = size - top;
+        unwrapped = size - getPtrOffset(top);
         wrapped = amount - unwrapped;
     }
 
     return wrapped;
 
+}
+
+template<typename T, const int buffer_size>
+inline int StaticQueue<T, buffer_size>::needUnwrap(const int amount)
+{
+    if (this == nullptr)
+        return 0;
+
+    int wrapped = 0;
+    int unwrapped = 0;
+
+    if (getPtrOffset(bottom) + amount > size)
+    {
+        unwrapped = size - getPtrOffset(bottom);
+        wrapped = amount - unwrapped;
+    }
+
+    return wrapped;
 }

@@ -117,7 +117,6 @@ void MessageHandler::publishRawMessageToBroker(msg::GENERIC_MESSAGE* message)
         return;
 
     msg::RealMessageUnion temp;
-
     msg::conv::convertRawToReal(&temp, message);
 
     if (publishers[message->id] != nullptr)
@@ -226,7 +225,6 @@ void MessageHandler::_initIOInterface()
  */
 void MessageHandler::_messageHandlerThread()
 {
-    uint8_t* buffer = new uint8_t[2048];
 
     while(messageHandlerThreadActive)
     {
@@ -238,6 +236,7 @@ void MessageHandler::_messageHandlerThread()
             {
                 while(IOInterface->isInterfaceValid() && IOInterface->isMessageAvailable())
                 {
+                    uint8_t buffer[MAX_RAW_MESSAGE_SIZE];
                     int size = IOInterface->readMessage(buffer, IOInterface->getMessageSize());
                     publishRawMessageToBroker((msg::GENERIC_MESSAGE*)buffer);
                 }
@@ -260,5 +259,4 @@ void MessageHandler::_messageHandlerThread()
         usleep(1000);
 
     }
-    delete buffer;
 }

@@ -22,9 +22,13 @@ real_to_raw_converter = ''
 stringify_function = ''
 size_array_real = ''
 size_array_raw = ''
+name_array = ''
 
 def signalToRawString(signal):
-    return 'int ' + signal['name'] + ' : ' + str(signal['bits']) + ';\n'
+    if signal['ctype'] in ['float', 'double']:
+        return 'unsigned int ' + signal['name'] + ' : ' + str(signal['bits']) + ';\n'
+    else:
+        return 'int ' + signal['name'] + ' : ' + str(signal['bits']) + ';\n'
 
 def signalToRealString(signal):
     if(signal['init']):
@@ -36,19 +40,21 @@ def signalRawToReal(signal):
     # real.signal = raw.signal * factor + min
     if signal['ctype'] in ['float', 'double']:
         factor = (signal['max'] - signal['min']) / 2**signal['bits']
+        return signal['name'] + ' = (raw->' + signal['name'] + ' * ' + str(factor) + ') + ' + str(signal['min']) + ';\n'
     else:
-        factor = 1
+        return signal['name'] + ' = (raw->' + signal['name'] + ');\n'
 
-    return signal['name'] + ' = (raw->' + signal['name'] + ' * ' + str(factor) + ') + ' + str(signal['min']) + ';\n'
+    # return signal['name'] + ' = (raw->' + signal['name'] + ' * ' + str(factor) + ') + ' + str(signal['min']) + ';\n'
 
 def signalRealToRaw(signal):
     # raw.signal = (real.signal - min) / factor
     if signal['ctype'] in ['float', 'double']:
         factor = (signal['max'] - signal['min']) / 2**signal['bits']
+        return signal['name'] + ' = (real->' + signal['name'] + ' - ' + str(signal['min']) + ') / ' + str(factor) + ';\n'
     else:
-        factor = 1
+        return signal['name'] + ' = (real->' + signal['name'] + ');\n'
 
-    return signal['name'] + ' = (real->' + signal['name'] + ' - ' + str(signal['min']) + ') / ' + str(factor) + ';\n'
+    #return signal['name'] + ' = (real->' + signal['name'] + ' - ' + str(signal['min']) + ') / ' + str(factor) + ';\n'
 
 def createRawStructStr(message):
     struct = "struct " + message['name'] + ' : GENERIC_MESSAGE {\n'
@@ -94,6 +100,7 @@ def addMessageToStringify(message):
         'char' : '%d',
         'bool' : '%d',
         'unsigned int' : '%u',
+        'unsigned short' : '%hu',
     }
 
     stringify_function += '    case msg::id::' + message['name'] + ':\n'
@@ -182,6 +189,11 @@ def addMessageToConversionStatement(message):
     real_to_raw_converter += (statement_real_to_raw)
     return
 
+def addMessageToNameArray(message):
+    global name_array
+    name_array += '    "' + message['name'] + '",\n'
+    return
+
 def addMessage(message, id):
     '''
         Add a JSON message to the string collections
@@ -196,6 +208,7 @@ def addMessage(message, id):
     addMessageRealToRawConversion(message)
     addMessageRawToRealConversion(message)
     addMessageToConversionStatement(message)
+    addMessageToNameArray(message)
 
     return
 
@@ -204,7 +217,8 @@ def initGlobalStrings():
         Prefixes global strings to ensure valid C code
         Called before string creation section
     '''
-    global ids_enum, message_collection_struct, collection_case_statements, real_message_union, raw_message_union, raw_to_real_converter, real_to_raw_converter, stringify_function, size_array_raw, size_array_real
+    global ids_enum, message_collection_struct, collection_case_statements, real_message_union, raw_message_union
+    global raw_to_real_converter, real_to_raw_converter, stringify_function, size_array_raw, size_array_real, name_array
 
     size_array_raw = 'const int RAW_MESSAGE_SIZES[] = {\n'
     size_array_real = 'const int REAL_MESSAGE_SIZES[] = {\n'
@@ -231,6 +245,8 @@ def initGlobalStrings():
     stringify_function += 'inline void stringifyRealMessage(char* dest, msg::GENERIC_MESSAGE* message) {\n'
     stringify_function += '    switch(message->id) {\n'
 
+    name_array = 'static const char* messageNames[] = {\n'
+
     return
 
 def finishGlobalStrings():
@@ -238,7 +254,8 @@ def finishGlobalStrings():
         Appends endings to global strings to make valid C code
         Called at end of string creation section
     '''
-    global ids_enum, message_collection_struct, collection_case_statements, real_message_union, raw_message_union, raw_to_real_converter, real_to_raw_converter, stringify_function, size_array_raw, size_array_real
+    global ids_enum, message_collection_struct, collection_case_statements, real_message_union, raw_message_union 
+    global raw_to_real_converter, real_to_raw_converter, stringify_function, size_array_raw, size_array_real, name_array
 
     size_array_raw += '};\n'
     size_array_real += '};\n'
@@ -260,6 +277,8 @@ def finishGlobalStrings():
     real_to_raw_converter += '    }\n    return real->id;\n}\n'
 
     stringify_function += '    }\n}\n'
+
+    name_array += '};\n'
 
     return
 
@@ -358,7 +377,7 @@ def writeGenericNamespace(file):
     file.write('\n}\n\n')
 
 def writeNamespaceMsg(file):
-    global collection_case_statements, message_collection_struct, real_message_union, raw_message_union, size_array_raw, size_array_real
+    global collection_case_statements, message_collection_struct, real_message_union, raw_message_union, size_array_raw, size_array_real, name_array
 
     collection_case_statements = '    ' + collection_case_statements
     collection_case_statements = collection_case_statements.replace('\n', '\n    ')
@@ -380,6 +399,10 @@ def writeNamespaceMsg(file):
 
     size_array_real = '    ' + size_array_real.replace('\n', '\n    ')
     file.write(size_array_real)
+    file.write('\n')
+
+    name_array = '    ' + name_array.replace('\n', '\n    ')
+    file.write(name_array)
     file.write('\n')
 
     # Write Generated Messages

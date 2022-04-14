@@ -33,3 +33,10 @@ add_library(
     datalogger/fileWriter.cpp
 )
 target_link_libraries(DataLogger PUBLIC pubsub Timer)
+
+add_library(
+    AirbrakeModule
+    airbrake/RocketDeployment_data.cpp
+    airbrake/RocketDeployment.cpp
+    airbrake/AirbrakeController.cpp
+)

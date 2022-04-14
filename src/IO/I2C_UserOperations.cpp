@@ -2,6 +2,16 @@
 #include "IO/I2C_UserOperations.h"
 #include "IO/I2C_Devices.h"
 #include "broker/broker.h"
+#include <endian.h>
+
+uint32_t getsp2( void )
+{
+    volatile uint32_t address = 0;
+    asm volatile ("mov %0, sp\n\t"
+     : "=r" ( address)
+     );
+    return address;
+}
 
 void _bnoSetPage(uint8_t page, int fileDescriptor, IO::IOInterface* obj)
 {
@@ -34,59 +44,82 @@ void sendMessageToInterface(IO::IOInterface* obj, msg::GENERIC_MESSAGE* m)
 
 void _setup_callback(unsigned long delay_ms, void (*func)(sigval), int fileDescriptor, int slave_address, IO::IOInterface* obj)
 {
-    i2c_operations::callback_data temp = {.fileDescriptor = fileDescriptor, .slave_address = slave_address, .obj = obj};
-    Timer callback_timer = Timer(func, &temp, 0, delay_ms);
+    if (func == nullptr || obj == nullptr)
+        return;
+
+    i2c_operations::callback_data* temp = new i2c_operations::callback_data();
+    (*temp).fileDescriptor = fileDescriptor;
+    (*temp).slave_address = slave_address;
+    (*temp).obj = obj;
+    Timer callback_timer = Timer(func, temp, 0, delay_ms);
+}
+
+void swap_u8(uint8_t* a, uint8_t* b)
+{
+    uint8_t temp = *a;
+    *a = *b;
+    *b = temp;
 }
 
 void i2c_operations::ALTIMETER_READ_ALTITUDE(int fileDescriptor, int slave_address, IO::IOInterface* obj)
 {
     _i2c_set_slave_address(fileDescriptor, slave_address);
     _i2c_write_one(fileDescriptor, (uint8_t)MS5083_ALTIMETER_COMMANDS::CONVERT_PRESSURE_2048);
-    _setup_callback(5, &ALTIMETER_READ_ALTITUDE_CALLBACK, fileDescriptor, slave_address, obj);
+    _setup_callback(8, &ALTIMETER_READ_ALTITUDE_CALLBACK, fileDescriptor, slave_address, obj);
 }
 
 void i2c_operations::ALTIMETER_READ_ALTITUDE_CALLBACK(sigval data)
 {
     uint8_t buffer[3] = {0};
-    msg::raw::ALTIMETER_DATA m;
+    static msg::raw::ALTIMETER_DATA m;
     callback_data* args = ((callback_data*)data.sival_ptr);
 
     _i2c_set_slave_address(args->fileDescriptor, args->slave_address);
+    _i2c_write_one(args->fileDescriptor, 0x00);
     _i2c_read(args->fileDescriptor, buffer, 3);
+    swap_u8(buffer, buffer + 2);
 
     m.pressure_bar = *(uint32_t*)buffer;
     sendMessageToInterface(args->obj, &m);
+
+    delete args;
 }
 
 void i2c_operations::ALTIMETER_READ_CONFIG(int fileDescriptor, int slave_address, IO::IOInterface* obj)
 {
     uint8_t buffer[32];
-    msg::raw::ALTIMETER_COEFFS m;
+    static msg::raw::ALTIMETER_COEFFS m;
     _i2c_set_slave_address(fileDescriptor, slave_address);
 
     // Read Coefficients
     _i2c_write_one(fileDescriptor, (uint8_t)MS5083_ALTIMETER_COMMANDS::PROM_READ_COEFF_1);
     _i2c_read(fileDescriptor, buffer, 2);
+    swap_u8((uint8_t*)buffer, (uint8_t*)(buffer + 1));
     m.coeff_1 = *(uint16_t*)buffer;
 
     _i2c_write_one(fileDescriptor, (uint8_t)MS5083_ALTIMETER_COMMANDS::PROM_READ_COEFF_2);
     _i2c_read(fileDescriptor, buffer, 2);
+    swap_u8((uint8_t*)buffer, (uint8_t*)(buffer + 1));
     m.coeff_2 = *(uint16_t*)buffer;
 
     _i2c_write_one(fileDescriptor, (uint8_t)MS5083_ALTIMETER_COMMANDS::PROM_READ_COEFF_3);
     _i2c_read(fileDescriptor, buffer, 2);
+    swap_u8((uint8_t*)buffer, (uint8_t*)(buffer + 1));
     m.coeff_3 = *(uint16_t*)buffer;
 
     _i2c_write_one(fileDescriptor, (uint8_t)MS5083_ALTIMETER_COMMANDS::PROM_READ_COEFF_4);
     _i2c_read(fileDescriptor, buffer, 2);
+    swap_u8((uint8_t*)buffer, (uint8_t*)(buffer + 1));
     m.coeff_4 = *(uint16_t*)buffer;
 
     _i2c_write_one(fileDescriptor, (uint8_t)MS5083_ALTIMETER_COMMANDS::PROM_READ_COEFF_5);
     _i2c_read(fileDescriptor, buffer, 2);
+    swap_u8((uint8_t*)buffer, (uint8_t*)(buffer + 1));
     m.coeff_5 = *(uint16_t*)buffer;
 
     _i2c_write_one(fileDescriptor, (uint8_t)MS5083_ALTIMETER_COMMANDS::PROM_READ_COEFF_6);
     _i2c_read(fileDescriptor, buffer, 2);
+    swap_u8((uint8_t*)buffer, (uint8_t*)(buffer + 1));
     m.coeff_6 = *(uint16_t*)buffer;
 
     sendMessageToInterface(obj, &m);
@@ -109,7 +142,7 @@ void i2c_operations::HTU20D_READ_HUMIDITY(int fileDescriptor, int slave_address,
 void i2c_operations::HTU20D_READ_HUMIDITY_CALLBACK(sigval data)
 {
     uint8_t buffer[2] = {0};
-    msg::raw::HUMIDITY_DATA m;
+    static msg::raw::HUMIDITY_DATA m;
     callback_data* args = ((callback_data*)data.sival_ptr);
 
     // Update m to current
@@ -122,6 +155,7 @@ void i2c_operations::HTU20D_READ_HUMIDITY_CALLBACK(sigval data)
     m.relative_humidity = *(int*)buffer;
 
     sendMessageToInterface(args->obj, &m);
+    delete args;
 }
 
 void i2c_operations::HTU20D_READ_TEMPERATURE(int fileDescriptor, int slave_address, IO::IOInterface* obj)
@@ -134,7 +168,7 @@ void i2c_operations::HTU20D_READ_TEMPERATURE(int fileDescriptor, int slave_addre
 void i2c_operations::HTU20D_READ_TEMPERATURE_CALLBACK(sigval data)
 {
     uint8_t buffer[2] = {0};
-    msg::raw::HUMIDITY_DATA m;
+    static msg::raw::HUMIDITY_DATA m;
     callback_data* args = ((callback_data*)data.sival_ptr);
 
     // Update m to current
@@ -147,13 +181,14 @@ void i2c_operations::HTU20D_READ_TEMPERATURE_CALLBACK(sigval data)
     m.temp_celcius = *(int*)buffer;
 
     sendMessageToInterface(args->obj, &m);
+    delete args;
 }
 
 
 void i2c_operations::BNO_READ_ACCEL_DATA(int fileDescriptor, int slave_address, IO::IOInterface* obj)
 {
     uint8_t buffer[6];
-    msg::raw::BNO055_DATA_ACCEL msg;
+    static msg::raw::BNO055_DATA_ACCEL msg;
 
     // Read data
     _i2c_set_slave_address(fileDescriptor, slave_address);
@@ -162,17 +197,18 @@ void i2c_operations::BNO_READ_ACCEL_DATA(int fileDescriptor, int slave_address, 
     _i2c_read(fileDescriptor, buffer, 6);
 
     // Distribute data
-    msg.X = *(uint16_t*)&buffer[0];
-    msg.Y = *(uint16_t*)&buffer[2];
-    msg.Z = *(uint16_t*)&buffer[4];
+    msg.X = *(int16_t*)&buffer[0];
+    msg.Y = *(int16_t*)&buffer[2];
+    msg.Z = *(int16_t*)&buffer[4];
 
+    // printf("Read Accel %d %d %d\n", msg.X, msg.Y, msg.Z);
     sendMessageToInterface(obj, &msg);
 }
 
 void i2c_operations::BNO_READ_GYRO_DATA(int fileDescriptor, int slave_address, IO::IOInterface* obj)
 {
     uint8_t buffer[6];
-    msg::raw::BNO055_DATA_GYRO msg;
+    static msg::raw::BNO055_DATA_GYRO msg;
 
     // Read data
     _i2c_set_slave_address(fileDescriptor, slave_address);
@@ -191,7 +227,7 @@ void i2c_operations::BNO_READ_GYRO_DATA(int fileDescriptor, int slave_address, I
 void i2c_operations::BNO_READ_MAG_DATA(int fileDescriptor, int slave_address, IO::IOInterface* obj)
 {
     uint8_t buffer[6];
-    msg::raw::BNO055_DATA_MAG msg;
+    static msg::raw::BNO055_DATA_MAG msg;
 
     // Read data
     _i2c_set_slave_address(fileDescriptor, slave_address);
@@ -209,7 +245,7 @@ void i2c_operations::BNO_READ_MAG_DATA(int fileDescriptor, int slave_address, IO
 
 void i2c_operations::BNO_SET_OPR_MODE(int fileDescriptor, int slave_address, IO::IOInterface* obj)
 {
-    msg::raw::BNO055_OPR_MODE msg;
+    static msg::raw::BNO055_OPR_MODE msg;
     dequeueMessageFromInterface(obj, &msg);
 
     uint8_t data[2];
@@ -223,7 +259,7 @@ void i2c_operations::BNO_SET_OPR_MODE(int fileDescriptor, int slave_address, IO:
 
 void i2c_operations::BNO_SET_AXIS_CONFIG(int fileDescriptor, int slave_address, IO::IOInterface* obj)
 {
-    msg::raw::BNO055_AXIS_CONFIG msg;
+    static msg::raw::BNO055_AXIS_CONFIG msg;
     dequeueMessageFromInterface(obj, &msg);
 
     uint8_t map_config[2];
@@ -242,7 +278,7 @@ void i2c_operations::BNO_SET_AXIS_CONFIG(int fileDescriptor, int slave_address, 
 
 void i2c_operations::BNO_SET_UNIT_SELECTION(int fileDescriptor, int slave_address, IO::IOInterface* obj)
 {
-    msg::raw::BNO055_UNIT_SELECTION msg;
+    static msg::raw::BNO055_UNIT_SELECTION msg;
     dequeueMessageFromInterface(obj, &msg);
 
     uint8_t data[2];
@@ -257,7 +293,7 @@ void i2c_operations::BNO_SET_UNIT_SELECTION(int fileDescriptor, int slave_addres
 
 void i2c_operations::BNO_SET_ACCEL_CONFIG(int fileDescriptor, int slave_address, IO::IOInterface* obj)
 {
-    msg::raw::BNO055_ACCEL_CONFIG msg;
+    static msg::raw::BNO055_ACCEL_CONFIG msg;
     dequeueMessageFromInterface(obj, &msg);
 
     uint8_t data = msg.G_RANGE | msg.SAMPLE_RATE << 2 | msg.OPERATION_MODE << 5;
@@ -268,7 +304,7 @@ void i2c_operations::BNO_SET_ACCEL_CONFIG(int fileDescriptor, int slave_address,
 
 void i2c_operations::BNO_SET_GYRO_CONFIG(int fileDescriptor, int slave_address, IO::IOInterface* obj)
 {
-    msg::raw::BNO055_GYRO_CONFIG msg;
+    static msg::raw::BNO055_GYRO_CONFIG msg;
     dequeueMessageFromInterface(obj, &msg);
 
     uint8_t data_0 = msg.RANGE | msg.SAMPLE_RATE << 3;
@@ -282,7 +318,7 @@ void i2c_operations::BNO_SET_GYRO_CONFIG(int fileDescriptor, int slave_address, 
 
 void i2c_operations::BNO_SET_MAG_CONFIG(int fileDescriptor, int slave_address, IO::IOInterface* obj)
 {
-    msg::raw::BNO055_MAG_CONFIG msg;
+    static msg::raw::BNO055_MAG_CONFIG msg;
     dequeueMessageFromInterface(obj, &msg);
 
     uint8_t data = msg.SAMPLE_RATE | msg.OPERATION_MODE << 3; // Need powermode

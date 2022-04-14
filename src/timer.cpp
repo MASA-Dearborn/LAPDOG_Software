@@ -1,4 +1,5 @@
 #include "timer.h"
+#include <stdio.h>
 
 const long int SECOND_IN_NANOSECONDS = 1000000000;
 const long int MILLISECONDS_TO_NANOSECONDS = 1000000;
@@ -25,8 +26,18 @@ Timer::~Timer()
 
 void Timer::startTimer()
 {
-    timer_create(CLOCK_REALTIME, &sev, &timer);
-    timer_settime(timer, 0, &timer_specs, NULL);
+    int retval;
+    retval = timer_create(CLOCK_REALTIME, &sev, &timer);
+    if (retval < 0) {
+        perror("timer_create");
+        return;
+    }
+
+    retval = timer_settime(timer, 0, &timer_specs, NULL);
+    if (retval < 0) {
+        perror("timer_settime");
+        return;
+    }
 }
 
 void Timer::stopTimer()

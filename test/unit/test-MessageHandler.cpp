@@ -12,7 +12,6 @@ TEST(MessageHandlerTest, PublishAndSendTest)
 
     MessageHandler handler;
 
-    pubsub::Subscriber<msg::real::TEST_MESSAGE_READ>* sub = createNewSubscriber(TEST_MESSAGE_READ);
     pubsub::Publisher<msg::real::TEST_MESSAGE_WRITE>* pub = createNewPublisher(TEST_MESSAGE_WRITE);
     IO::GenericInterface* interface = new IO::GenericInterface();
 
@@ -26,8 +25,7 @@ TEST(MessageHandlerTest, PublishAndSendTest)
     output.VAR2 = 30.4992676;
     
     pub->publish(&output);
-    sched_yield();
-    usleep(1000);
+    while (interface->getTXBuffer()->isEmpty());
 
     returned_output = *((msg::raw::TEST_MESSAGE_WRITE*)interface->getTXBuffer());
     msg::conv::convertRawToReal(&converted_message, &returned_output);
@@ -36,7 +34,6 @@ TEST(MessageHandlerTest, PublishAndSendTest)
     EXPECT_EQ(output.VAR1, converted_message.TEST_MESSAGE_WRITE.VAR1);
     EXPECT_EQ(output.VAR2, converted_message.TEST_MESSAGE_WRITE.VAR2);
 
-    sub->unsubscribe();
     pub->unregister();
 }
 
